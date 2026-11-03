@@ -70,6 +70,10 @@ const isDisabled = computed(() => props.disabled || props.loading)
 // texto del tema encima (invisible en light). Cae al color seguro.
 const safeColor = computed(() => (isColor(props.color) ? props.color : 'neutral'))
 
+// Una variante fuera del set no tiene estilos: el botón quedaba con el texto del tema
+// sobre el fondo del contenedor (invisible en algunos temas). Cae a `ghost`, el default.
+const safeVariant = computed(() => (isVariantFull(props.variant) ? props.variant : 'ghost'))
+
 // `button` es el default; sin el fallback, `type="foo"` cae en el default del
 // navegador para un valor inválido, que es submit.
 const buttonType = computed(() => (isButtonType(props.type) ? props.type : 'button'))
@@ -161,7 +165,7 @@ const colorStyles = computed(() => ({
 // envolvía a un `<button>` (dos nodos interactivos, HTML inválido).
 const rootClasses = computed(() => [
   'cu-button',
-  `cu-button--${props.variant}`,
+  `cu-button--${safeVariant.value}`,
   `cu-button--${props.size}`,
   {
     'cu-button--disabled': isDisabled.value,

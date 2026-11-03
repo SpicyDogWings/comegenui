@@ -1,7 +1,11 @@
 <script setup lang="ts">
 import { computed, nextTick, onBeforeUnmount, ref, useAttrs, useSlots, watch, type PropType } from "vue";
 import { isModalSize } from '@/utils/validators'
-import { useMagicKeys, whenever } from "@vueuse/core";
+import {
+  registerOverlay,
+  unregisterOverlay,
+  type OverlayId,
+} from "@/composables/useOverlayStack";
 import Button from "../buttons/Button.vue";
 
 const props = defineProps({
@@ -189,15 +193,39 @@ function handleKeydown(event: KeyboardEvent) {
   }
 }
 
+/**
+ * `Escape` lo atiende la pila compartida de overlays y sólo sobre el de arriba: con un
+ * listener propio, un `Escape` cerraba el modal y el `SideOver` (o el menú y su
+ * submenú) a la vez. `persistent` sigue bloqueando el cierre.
+ */
+let overlayId: OverlayId | null = null;
+
+function claimOverlay() {
+  if (overlayId) return;
+  overlayId = registerOverlay({
+    close: () => {
+      if (!props.persistent) close();
+    },
+  });
+}
+
+function releaseOverlay() {
+  if (!overlayId) return;
+  unregisterOverlay(overlayId);
+  overlayId = null;
+}
+
 /** Abre el modal. */
 function open() {
   if (isOpen.value) return;
   trigger.value = document.activeElement instanceof HTMLElement ? document.activeElement : null;
   isOpen.value = true;
+  claimOverlay();
 }
 /** Cierra el modal. */
 function close() {
   isOpen.value = false;
+  releaseOverlay();
 }
 /** Alterna la visibilidad del modal. */
 function toggle() {
@@ -212,9 +240,6 @@ function handleAccept() {
   emit("accept");
   close();
 }
-
-const keys = useMagicKeys({ target: typeof window !== "undefined" ? window : undefined });
-whenever(() => keys.Escape?.value, () => !props.persistent && isOpen.value && close());
 
 function handleBackdropClick(event: MouseEvent) {
   if (!props.persistent && event.target === event.currentTarget) {
@@ -231,12 +256,14 @@ watch(isOpen, (newVal) => {
       if (isOpen.value) focusFirst();
     });
   } else {
+    releaseOverlay();
     document.removeEventListener("keydown", handleKeydown);
     restoreFocus();
   }
 });
 
 onBeforeUnmount(() => {
+  releaseOverlay();
   document.removeEventListener("keydown", handleKeydown);
 });
 

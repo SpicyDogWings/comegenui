@@ -89,6 +89,24 @@ const items = [
 </template>
 ```
 
+Con `items` el panel es un menú de verdad: el trigger por defecto lleva
+`aria-haspopup="menu"`, `aria-expanded` y `aria-controls` (el panel recibe un `id` propio) y cada
+fila es `role="menuitem"`. Las filas **no** son paradas de tabulación: el menú es una sola parada
+(el trigger) y adentro se navega con el teclado. Un `<a>` deshabilitado sigue siendo `menuitem`,
+con `aria-disabled` y fuera del tab order. `Select`, `Autocomplete` y `DatePicker` no pasan `items`
+(usan su propio combobox/diálogo), así que su teclado no cambia.
+
+## Teclado
+
+| Tecla | Acción |
+|-------|--------|
+| <kbd>Flecha abajo</kbd> / <kbd>Flecha arriba</kbd> | Fila siguiente / anterior (salteando deshabilitadas, con vuelta al extremo). Cerrado, abre el menú con la primera / última fila |
+| <kbd>Home</kbd> / <kbd>End</kbd> | Primera / última fila habilitada |
+| Letras | Typeahead: enfoca la fila cuyo label empieza con lo tipeado |
+| <kbd>Enter</kbd> / <kbd>Espacio</kbd> | Activa la fila enfocada (acción o link) |
+| <kbd>Tab</kbd> | Cierra el menú y sigue el orden de tabulación |
+| <kbd>Escape</kbd> | Cierra el menú (sólo si es el overlay de arriba) y devuelve el foco al trigger |
+
 ## Posición
 
 `position` (`bottom` default, `top`, `left`, `right`), `align` (`start` default, `center`,
@@ -99,6 +117,9 @@ Si el panel se saldría del área visible de un ancestro con `overflow` distinto
 card, una tabla), se posiciona contra el viewport solo, igual que con `fixed`: no hay que pasarlo a
 mano. El único caso en que no: un ancestro con `transform`, `filter` o `contain`, que ancla a sus
 descendientes `fixed`.
+
+Contra el viewport el panel se **voltea** al lado opuesto si no entra (`right` → `left`,
+`bottom` → `top`) y se **clampea** al borde: nada de scroll horizontal ni coordenadas negativas.
 
 ```vue
 <template>
@@ -235,7 +256,14 @@ import Dropdown from "@/components/overlay/Dropdown.vue";
 ## Submenús anidados
 
 Un `Dropdown` dentro del panel de otro se detecta como **anidado**: se renderiza como fila de
-menú (con `icon`) y abre en cascada hacia la derecha, manteniendo el padre abierto.
+menú (con `icon` y `role="menuitem"` si el panel padre es un `menu`), con `aria-haspopup` y
+`aria-expanded`, y abre en cascada hacia la derecha manteniendo el padre abierto. La detección
+cruza slots y shadow roots (`assignedSlot` / `getRootNode().host`), así que funciona igual en Vue y
+dentro de un custom element; `position="bottom"` (el default) es el que produce la cascada, y un
+`position` distinto (`top`, `left`, `right`) manda.
+
+Si el submenú no entra a la derecha, se voltea a la izquierda (ver [Posición](#posicion)) en vez de
+salirse de la pantalla.
 
 ```vue
 <script setup lang="ts">

@@ -176,6 +176,10 @@ atrapado: `Tab` cicla entre los controles del modal y `Shift+Tab` retrocede, sin
 de la página. Al cerrar —con el botón, el backdrop o `Escape`— el foco vuelve al elemento que abrió
 el modal.
 
+`Escape` cierra el modal **sólo si es el overlay de arriba**: si encima hay un `cu-side-over` o un
+menú abierto, esa pulsación cierra ese overlay y el modal sigue abierto. La pila de overlays
+(`Escape` + bloqueo del scroll) es compartida por `cu-modal`, `cu-side-over` y los menús.
+
 ```html
 <!-- Sin `title`: el nombre accesible es el aria-label del elemento -->
 <cu-modal id="modalSinTitulo" aria-label="Confirmar eliminación">

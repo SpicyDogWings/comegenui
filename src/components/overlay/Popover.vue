@@ -1,6 +1,12 @@
 <script setup lang="ts">
 import { ref, computed, nextTick, onMounted, onUnmounted, type PropType } from "vue";
 import { isAlign, isPosition } from '@/utils/validators'
+import { parentInFlatTree } from "@/utils/flatTree";
+import {
+  registerOverlay,
+  unregisterOverlay,
+  type OverlayId,
+} from "@/composables/useOverlayStack";
 
 const props = defineProps({
   position: {
@@ -116,6 +122,60 @@ const popoverRef = ref<HTMLElement | null>(null);
 // Panel renderizado: se mide para decidir si un ancestro lo recorta.
 const panelEl = ref<HTMLElement | null>(null);
 
+// ── Nombre accesible del panel ──
+// `menu` y `dialog` exigen nombre y el panel no tiene un título propio del que sacarlo:
+// sin esto el lector de pantalla anunciaba "menú"/"diálogo" a secas. Se deriva del
+// trigger (`aria-label`, `title`, `label` del CE o su texto), que es lo que nombra el
+// patrón menu button. Con `role` vacío (tooltip, contenido libre) no se toca nada.
+const NAMED_ROLES: Record<string, true> = { menu: true, dialog: true, alertdialog: true };
+const panelLabel = ref("");
+
+/** Primer elemento del slot `toggle` (el ancla que el consumidor abre). */
+function toggleElement(): HTMLElement | null {
+  const root = popoverRef.value;
+  if (!root) return null;
+  for (const child of Array.from(root.children)) {
+    if (child === panelEl.value) continue;
+    if (child instanceof HTMLElement) return child;
+  }
+  return null;
+}
+
+/** Texto del trigger, con la misma precedencia que usa su nombre accesible. */
+function triggerLabel(el: HTMLElement | null): string {
+  if (!el) return "";
+  return (
+    el.getAttribute("aria-label") ||
+    el.getAttribute("title") ||
+    // convención de los custom elements de la lib (`<cu-button label="…">`)
+    el.getAttribute("label") ||
+    el.textContent ||
+    ""
+  )
+    .replace(/\s+/g, " ")
+    .trim();
+}
+
+function namePanel() {
+  panelLabel.value = NAMED_ROLES[props.role] ? triggerLabel(toggleElement()) : "";
+}
+
+// ── Pila de overlays ──
+// `Escape` lo atiende la pila compartida y sólo sobre el overlay de arriba: con un
+// listener propio, un Escape cerraba el menú y su submenú a la vez.
+let overlayId: OverlayId | null = null;
+
+function claimOverlay() {
+  if (overlayId) return;
+  overlayId = registerOverlay({ close });
+}
+
+function releaseOverlay() {
+  if (!overlayId) return;
+  unregisterOverlay(overlayId);
+  overlayId = null;
+}
+
 // ── Foco ──
 // Al abrir se recuerda quién tenía el foco (el trigger). Al cerrar, si el foco
 // quedó adentro del panel o se perdió en el `body`, vuelve ahí: antes, cerrar con
@@ -194,72 +254,133 @@ function onDocumentClick(e: MouseEvent) {
   }
 }
 
-function onKeyDown(e: KeyboardEvent) {
-  if (e.key === "Escape" && isOpen.value) {
-    isOpen.value = false;
-    emit("close");
-    restoreFocus();
-  }
-}
-
 // El listener de scroll va PASIVO: sólo lee geometría para reposicionar el panel
 // (nunca llama a `preventDefault`), así que no debe bloquear el scrolling
 // asíncrono. Un listener de scroll no pasivo en `document` es exactamente lo que
 // Firefox marca como "scroll-linked positioning effect".
 const SCROLL_OPTS = { capture: true, passive: true } as const;
 
+// Elemento raíz recordado al montar: en `onUnmounted` el template ref ya es `null` y
+// sin esto el registry de hover se quedaba con una entrada muerta (que además
+// apuntaba a un nodo desconectado).
+let mountedRoot: HTMLElement | null = null;
+
 onMounted(() => {
+  mountedRoot = popoverRef.value;
   document.addEventListener("click", onDocumentClick, true);
-  document.addEventListener("keydown", onKeyDown);
   window.addEventListener("resize", onViewportChange);
   document.addEventListener("scroll", onViewportChange, SCROLL_OPTS);
 });
 onUnmounted(() => {
+  clearHoverTimers();
   unregisterHover();
+  releaseOverlay();
   document.removeEventListener("click", onDocumentClick, true);
-  document.removeEventListener("keydown", onKeyDown);
   window.removeEventListener("resize", onViewportChange);
   document.removeEventListener("scroll", onViewportChange, SCROLL_OPTS);
   document.removeEventListener("mousemove", onPointerMove, true);
   pointerListening = false;
+  mountedRoot = null;
 });
 
-// Recalcula la posición del panel en modo fixed (coordenadas de viewport) al
-// abrir y en cada scroll/resize mientras está abierto.
-function positionPanel() {
+// Margen mínimo entre el panel y el borde del viewport al voltear/clamp.
+const VIEWPORT_MARGIN = 8;
+
+/**
+ * Inicio del eje cruzado (X en `bottom`/`top`, Y en `left`/`right`) según `align`.
+ */
+function crossAxisStart(anchorStart: number, anchorSize: number, panelSize: number, align: string): number {
+  if (align === "start") return anchorStart;
+  if (align === "end") return anchorStart + anchorSize - panelSize;
+  return anchorStart + anchorSize / 2 - panelSize / 2;
+}
+
+/** Deja el panel dentro del viewport sin generar scroll (nunca negativo). */
+function clampToViewport(value: number, size: number, viewport: number): number {
+  const max = Math.max(VIEWPORT_MARGIN, viewport - size - VIEWPORT_MARGIN);
+  return Math.min(Math.max(value, VIEWPORT_MARGIN), max);
+}
+
+/**
+ * Recalcula la posición del panel en modo fixed (coordenadas de viewport) al abrir y
+ * en cada scroll/resize mientras está abierto.
+ *
+ * Con el tamaño medido el panel se ubica por coordenadas y se **voltea** al lado
+ * opuesto si no entra (right→left, bottom→top) y se **clampea** al viewport: antes,
+ * `position="right"` en el borde derecho generaba scroll horizontal (scrollWidth
+ * 1201 > 900) y `left` daba x=-308.
+ */
+function positionPanel(measured?: { width: number; height: number }) {
   if (!fixedMode.value || !popoverRef.value) return;
   const r = popoverRef.value.getBoundingClientRect();
   const vw = window.innerWidth;
   const vh = window.innerHeight;
-  const pos = effectivePosition.value;
   const align = effectiveAlign.value;
+  const gap = props.offset;
   const style: Record<string, string> = {};
 
-  if (pos === "bottom") {
-    style.top = `${r.bottom + props.offset}px`;
+  const box = measured ?? panelEl.value?.getBoundingClientRect();
+  const pw = box?.width ?? 0;
+  const ph = box?.height ?? 0;
+
+  // Espacio libre a cada lado del ancla (descontando el gap y el margen).
+  const room = {
+    right: vw - r.right - gap - VIEWPORT_MARGIN,
+    left: r.left - gap - VIEWPORT_MARGIN,
+    bottom: vh - r.bottom - gap - VIEWPORT_MARGIN,
+    top: r.top - gap - VIEWPORT_MARGIN,
+  };
+
+  let pos = effectivePosition.value;
+  if (pw > 0) {
+    if (pos === "right" && room.right < pw && room.left >= pw) pos = "left";
+    else if (pos === "left" && room.left < pw && room.right >= pw) pos = "right";
+  }
+  if (ph > 0) {
+    if (pos === "bottom" && room.bottom < ph && room.top >= ph) pos = "top";
+    else if (pos === "top" && room.top < ph && room.bottom >= ph) pos = "bottom";
+  }
+
+  if (pw > 0 || ph > 0) {
+    let left: number;
+    let top: number;
+    if (pos === "bottom" || pos === "top") {
+      left = crossAxisStart(r.left, r.width, pw, align);
+      top = pos === "bottom" ? r.bottom + gap : r.top - gap - ph;
+    } else {
+      top = crossAxisStart(r.top, r.height, ph, align);
+      left = pos === "right" ? r.right + gap : r.left - gap - pw;
+    }
+    if (pw > 0) left = clampToViewport(left, pw, vw);
+    if (ph > 0) top = clampToViewport(top, ph, vh);
+    style.left = `${left}px`;
+    style.top = `${top}px`;
+  } else if (pos === "bottom") {
+    style.top = `${r.bottom + gap}px`;
     if (align === "start") style.left = `${r.left}px`;
     else if (align === "end") style.right = `${vw - r.right}px`;
     else { style.left = `${r.left + r.width / 2}px`; style.transform = "translateX(-50%)"; }
   } else if (pos === "top") {
-    style.bottom = `${vh - r.top + props.offset}px`;
+    style.bottom = `${vh - r.top + gap}px`;
     if (align === "start") style.left = `${r.left}px`;
     else if (align === "end") style.right = `${vw - r.right}px`;
     else { style.left = `${r.left + r.width / 2}px`; style.transform = "translateX(-50%)"; }
   } else if (pos === "right") {
-    style.left = `${r.right + props.offset}px`;
+    style.left = `${r.right + gap}px`;
     if (align === "start") style.top = `${r.top}px`;
     else if (align === "end") style.bottom = `${vh - r.bottom}px`;
     else { style.top = `${r.top + r.height / 2}px`; style.transform = "translateY(-50%)"; }
   } else {
-    style.right = `${vw - r.left + props.offset}px`;
+    style.right = `${vw - r.left + gap}px`;
     if (align === "start") style.top = `${r.top}px`;
     else if (align === "end") style.bottom = `${vh - r.bottom}px`;
     else { style.top = `${r.top + r.height / 2}px`; style.transform = "translateY(-50%)"; }
   }
   // En el fallback automático el panel no puede heredar el `width: 100%` del modo
-  // absoluto (ya no está en el flujo del ancla): toma el ancho del ancla para no
-  // cambiar el aspecto. Con la prop `fixed` explícita no se toca nada.
-  if (autoFixed.value && !props.panelWidth) style.width = `${r.width}px`;
+  // absoluto (ya no está en el flujo del ancla): conserva el ancho ya medido (el del
+  // ancla si era `100%`, el del contenido si era `auto`). Con `fixed` explícito o
+  // `panelWidth` no se toca nada.
+  if (autoFixed.value && !props.panelWidth && pw > 0) style.width = `${pw}px`;
   panelPos.value = style;
 }
 
@@ -288,10 +409,9 @@ function clipsDescendants(cs: CSSStyleDeclaration): boolean {
 
 // Recorre el árbol desde el ancla (en el flat tree) buscando un ancestro que recorte
 // el panel ya renderizado. Sin layout (jsdom) devuelve false: no hay nada que medir.
-function isClippedByAncestor(panel: HTMLElement, anchor: HTMLElement): boolean {
-  const pr = panel.getBoundingClientRect();
+function isClippedByAncestor(panel: HTMLElement, anchor: HTMLElement, pr: DOMRect): boolean {
   if (!pr.width && !pr.height) return false;
-  let el: Element | null = flatParent(anchor);
+  let el: Element | null = parentInFlatTree(anchor);
   while (el) {
     const cs = getComputedStyle(el);
     if (anchorsFixedDescendants(cs)) return false;
@@ -301,36 +421,35 @@ function isClippedByAncestor(panel: HTMLElement, anchor: HTMLElement): boolean {
         return true;
       }
     }
-    el = flatParent(el);
+    el = parentInFlatTree(el);
   }
   return false;
 }
 
-// Padre en el flat tree: lo que el usuario ve. Un hijo con slot está *dentro* del
-// shadow root que lo proyecta (p. ej. `<cu-select>` es hijo de `<cu-card>` pero su
-// ancestro recortante es el `article.cu-card` del shadow), así que `parentElement`
-// no alcanza: el salto lo da `assignedSlot`.
-function flatParent(el: Element): Element | null {
-  const slotted = (el as Element & { assignedSlot?: Element | null }).assignedSlot;
-  if (slotted) return slotted;
-  if (el.parentElement) return el.parentElement;
-  return (el.getRootNode() as ShadowRoot).host ?? null;
+/** ¿El panel medido se sale del viewport? (en `absolute` eso genera scroll). */
+function overflowsViewport(pr: DOMRect): boolean {
+  if (!pr.width && !pr.height) return false;
+  return pr.left < 0 || pr.top < 0 || pr.right > window.innerWidth || pr.bottom > window.innerHeight;
 }
 
 // Se decide después del render (necesita el rect del panel) y dentro del mismo tick:
-// el panel pasa a `fixed` antes del primer paint, sin parpadeo en `absolute`.
-async function autoFixIfClipped() {
+// el panel pasa a `fixed` antes del primer paint, sin parpadeo en `absolute`. Además
+// del recorte por ancestro, se pasa a `fixed` si el panel se sale del viewport: ahí
+// `positionPanel` lo voltea y lo clampea (nunca scroll horizontal).
+async function autoFixIfNeeded() {
   await nextTick();
   const panel = panelEl.value;
   const anchor = popoverRef.value;
   if (!panel || !anchor || !isOpen.value || props.fixed) return;
-  if (!isClippedByAncestor(panel, anchor)) return;
+  const box = panel.getBoundingClientRect();
+  if (!isClippedByAncestor(panel, anchor, box) && !overflowsViewport(box)) return;
   autoFixed.value = true;
-  positionPanel();
+  positionPanel({ width: box.width, height: box.height });
 }
 
-let hoverTimer: ReturnType<typeof setTimeout> | null = null;
-let hoverCloseTimer: ReturnType<typeof setTimeout> | null = null;
+// `undefined` (y no `null`) para "sin timer": `clearTimeout` lo acepta sin guarda.
+let hoverTimer: ReturnType<typeof setTimeout> | undefined;
+let hoverCloseTimer: ReturnType<typeof setTimeout> | undefined;
 
 // Registry (global, sobre globalThis) de popovers abiertos por hover: al abrir
 // uno nuevo se cierran los hermanos abiertos AL INSTANTE (sin esperar el delay
@@ -347,17 +466,25 @@ function hoverRegistry(): HoverEntry[] {
   return (g[HOVER_REGISTRY_KEY] ??= []);
 }
 
+/** ¿`ancestor` contiene a `el` en el flat tree? Un submenú puede vivir en otro shadow. */
+function containsOverlay(ancestor: HTMLElement, el: HTMLElement): boolean {
+  for (let node: Element | null = el; node; node = parentInFlatTree(node)) {
+    if (node === ancestor) return true;
+  }
+  return false;
+}
+
 function registerHoverOpen() {
   const el = popoverRef.value;
   if (!el) return;
   const reg = hoverRegistry();
-  const toClose = reg.filter((entry) => entry.el !== el && !entry.el.contains(el));
+  const toClose = reg.filter((entry) => entry.el !== el && !containsOverlay(entry.el, el));
   reg.push({ el, close });
   for (const entry of toClose) entry.close();
 }
 
 function unregisterHover() {
-  const el = popoverRef.value;
+  const el = popoverRef.value ?? mountedRoot;
   if (!el) return;
   const reg = hoverRegistry();
   const idx = reg.findIndex((entry) => entry.el === el);
@@ -392,23 +519,44 @@ function isPointerInside() {
   );
 }
 
+/**
+ * Cancela los timers de hover. Sin esto, desmontar dentro del delay dejaba correr un
+ * `open()`/`close()` sobre un nodo ya desconectado: sumaba el popover al registry
+ * global de hover, a la pila de overlays, y emitía eventos de un componente que ya no
+ * existe. Es el único corte necesario: los dos timers viven por instancia y se crean
+ * siempre acá, así que `onUnmounted` los alcanza.
+ */
+function clearHoverTimers() {
+  clearTimeout(hoverTimer);
+  hoverTimer = undefined;
+  clearTimeout(hoverCloseTimer);
+  hoverCloseTimer = undefined;
+}
+
 function onMouseEnter() {
   if (!props.hover || props.disabled) return;
-  if (hoverTimer) clearTimeout(hoverTimer);
-  if (hoverCloseTimer) { clearTimeout(hoverCloseTimer); hoverCloseTimer = null; }
+  clearTimeout(hoverTimer);
+  hoverTimer = undefined;
+  clearTimeout(hoverCloseTimer);
+  hoverCloseTimer = undefined;
   if (props.hoverDelay === 0) {
     open();
   } else {
-    hoverTimer = setTimeout(() => open(), props.hoverDelay);
+    hoverTimer = setTimeout(() => {
+      hoverTimer = undefined;
+      open();
+    }, props.hoverDelay);
   }
 }
 
 function onMouseLeave() {
   if (!props.hover) return;
-  if (hoverTimer) clearTimeout(hoverTimer);
+  clearTimeout(hoverTimer);
+  hoverTimer = undefined;
   ensurePointerListener();
-  if (hoverCloseTimer) clearTimeout(hoverCloseTimer);
+  clearTimeout(hoverCloseTimer);
   hoverCloseTimer = setTimeout(() => {
+    hoverCloseTimer = undefined;
     if (isPointerInside()) return;
     close();
   }, 120);
@@ -420,17 +568,23 @@ function open() {
   autoFixed.value = false;
   rememberFocus();
   positionPanel();
+  namePanel();
   isOpen.value = true;
+  claimOverlay();
   emit("open");
   if (props.hover) registerHoverOpen();
-  // Sin `fixed` explícito, el panel se mide ya renderizado: si un ancestro lo recorta,
-  // se posiciona contra el viewport (fallback automático).
-  if (!props.fixed) void autoFixIfClipped();
+  // Sin `fixed` explícito, el panel se mide ya renderizado: si un ancestro lo recorta o
+  // se sale del viewport, se posiciona contra el viewport (fallback automático).
+  if (!props.fixed) void autoFixIfNeeded();
+  // `fixed` explícito también necesita el tamaño del panel ya renderizado para
+  // voltearlo/clampearlo contra el viewport.
+  else void nextTick(() => { if (isOpen.value) positionPanel(); });
 }
 function close() {
   if (!isOpen.value) return;
   isOpen.value = false;
   autoFixed.value = false;
+  releaseOverlay();
   emit("close");
   unregisterHover();
   restoreFocus();
@@ -463,6 +617,7 @@ defineExpose({ open, close, toggle, isOpen: () => isOpen.value });
       :style="panelStyle"
       :class="['cu-popover-panel', panelClass]"
       :role="role || undefined"
+      :aria-label="panelLabel || undefined"
     >
       <slot />
     </div>

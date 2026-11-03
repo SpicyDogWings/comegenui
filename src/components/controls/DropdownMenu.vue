@@ -3,6 +3,8 @@ import { ref, computed, watch, nextTick, onMounted, onUnmounted, type PropType }
 import { isAlign, isColor, isPosition, isTextAlign, isVariantFull } from '@/utils/validators'
 import { textAlignStyle } from '@/utils/textAlign'
 import { useUniqueId } from '@/utils/uniqueId'
+import { useMenuNavigation } from "@/composables/useMenuNavigation";
+import { detectDropdownNesting } from "@/utils/dropdownNesting";
 import Dropdown from "../overlay/Dropdown.vue";
 import Button from "../buttons/Button.vue";
 import MenuOption from "./MenuOption.vue";
@@ -116,15 +118,6 @@ function panelEl(): HTMLElement | null {
   return (rootEl()?.querySelector(".cu-popover-panel") as HTMLElement | null) ?? null;
 }
 
-/** Filas elegibles por teclado: sin deshabilitar (botón nativo o link con guarda). */
-function enabledRows(): HTMLElement[] {
-  const panel = panelEl();
-  if (!panel) return [];
-  return Array.from(panel.querySelectorAll<HTMLElement>(".cu-dropdown-item")).filter(
-    (row) => !row.hasAttribute("disabled") && row.getAttribute("aria-disabled") !== "true",
-  );
-}
-
 /**
  * Índice (dentro de `menuItems`) de cada fila elegible, en el mismo orden que el DOM.
  * Es lo que permite el roving tabindex sin depender del slot: la fila activa es la
@@ -137,135 +130,16 @@ const enabledItemIndices = computed(() =>
     .map(({ index }) => index),
 );
 
-/** Fila activa: índice dentro de las filas elegibles. */
-const activeRow = ref(0);
-const effectiveActiveRow = computed(() =>
-  Math.min(activeRow.value, Math.max(0, enabledItemIndices.value.length - 1)),
-);
-
-function itemTabindex(index: number): number {
-  const position = enabledItemIndices.value.indexOf(index);
-  return position >= 0 && position === effectiveActiveRow.value ? 0 : -1;
-}
-
-function focusRow(rows: HTMLElement[], index: number) {
-  const position = (index + rows.length) % rows.length;
-  const row = rows[position];
-  if (!row) return;
-  activeRow.value = position;
-  row.focus();
-  row.scrollIntoView?.({ block: "nearest" });
-}
-
-/** Texto comparable del typeahead (sin acentos ni mayúsculas). */
-function foldText(value: string): string {
-  return value
-    .normalize("NFD")
-    .replace(/[\u0300-\u036f]/g, "")
-    .replace(/\s+/g, " ")
-    .trim()
-    .toLowerCase();
-}
-
-let typeahead = "";
-let typeaheadTimer: ReturnType<typeof setTimeout> | null = null;
-
-function clearTypeahead() {
-  typeahead = "";
-  if (typeaheadTimer) {
-    clearTimeout(typeaheadTimer);
-    typeaheadTimer = null;
-  }
-}
-
-function searchByPrefix(char: string, rows: HTMLElement[], from: number) {
-  typeahead += foldText(char);
-  if (typeaheadTimer) clearTimeout(typeaheadTimer);
-  typeaheadTimer = setTimeout(clearTypeahead, 500);
-
-  const start = from >= 0 ? from : 0;
-  for (let step = 1; step <= rows.length; step++) {
-    const index = (start + step) % rows.length;
-    if (foldText(rows[index]!.textContent ?? "").startsWith(typeahead)) {
-      focusRow(rows, index);
-      return;
-    }
-  }
-}
-
-function onMenuKeydown(e: KeyboardEvent) {
-  if (!isOpen.value || e.altKey || e.ctrlKey || e.metaKey) return;
-  const panel = panelEl();
-  const target = e.target as HTMLElement | null;
-  if (!panel || !target || !panel.contains(target)) return;
-  // Un dropdown anidado en el panel trae su propio handler: si la tecla nace en el
-  // submenú, el menú padre no vuelve a mover el foco (dos saltos por flecha).
-  if (target.closest(".cu-dropdown") !== rootEl()) return;
-
-  const rows = enabledRows();
-  if (rows.length === 0) return;
-  const current = rows.indexOf(target.closest(".cu-dropdown-item") as HTMLElement);
-
-  if (e.key === "ArrowDown") {
-    e.preventDefault();
-    focusRow(rows, current < 0 ? 0 : current + 1);
-    return;
-  }
-  if (e.key === "ArrowUp") {
-    e.preventDefault();
-    focusRow(rows, current < 0 ? rows.length - 1 : current - 1);
-    return;
-  }
-  if (e.key === "Home") {
-    e.preventDefault();
-    focusRow(rows, 0);
-    return;
-  }
-  if (e.key === "End") {
-    e.preventDefault();
-    focusRow(rows, rows.length - 1);
-    return;
-  }
-  if (e.key === "Tab") {
-    // El foco sigue su camino (la fila activa es la única con tabindex 0) y el menú se
-    // cierra en `focusout`, cuando el foco ya salió: así `restoreFocus` no lo roba.
-    tabLeaving = true;
-    return;
-  }
-  if (e.key === " ") {
-    // Un link no se activa con Espacio (el navegador scrollea): se replica el click.
-    const row = target.closest(".cu-dropdown-item") as HTMLElement | null;
-    if (row && row.tagName === "A") {
-      e.preventDefault();
-      row.click();
-    }
-    return;
-  }
-  if (e.key.length === 1) {
-    e.preventDefault();
-    searchByPrefix(e.key, rows, current);
-  }
-}
-
-// Tab tiene que cerrar el menú, pero el cierre se decide cuando el foco ya se movió:
-// cerrar en el `keydown` hacía que `Popover.restoreFocus` devolviera el foco al trigger
-// y se tragara el Tab.
-let tabLeaving = false;
-
-/** Un gesto de puntero no es Tab: descarta el cierre pendiente por foco. */
-function onRootPointerDown() {
-  tabLeaving = false;
-}
-
-function onRootFocusOut(e: FocusEvent) {
-  if (!tabLeaving || !isOpen.value) return;
-  tabLeaving = false;
-  const next = e.relatedTarget as Node | null;
-  if (next && rootEl()?.contains(next)) return;
-  setTimeout(() => {
-    if (dropdownRef.value?.isOpen()) dropdownRef.value?.close();
-  }, 0);
-}
+// El teclado y el roving tabindex son los mismos que los del `Dropdown` con `items`:
+// `useMenuNavigation` es dueño de las filas, el typeahead y el cierre por `Tab`.
+const nav = useMenuNavigation({
+  root: rootEl,
+  panel: panelEl,
+  rowSelector: ".cu-dropdown-item",
+  enabledIndices: enabledItemIndices,
+  isOpen: () => isOpen.value,
+  close: () => dropdownRef.value?.close(),
+});
 
 // Abrir con el teclado deja el foco en la primera/última fila (patrón menu button).
 // Abrir por click o por API no mueve el foco: el usuario está en el trigger o en otro lado.
@@ -277,8 +151,8 @@ function onToggleKeydown(e: KeyboardEvent) {
   if (isOpen.value) {
     if (!isArrow) return;
     e.preventDefault();
-    const rows = enabledRows();
-    if (rows.length > 0) focusRow(rows, e.key === "ArrowUp" ? rows.length - 1 : 0);
+    const rows = nav.enabledRows();
+    if (rows.length > 0) nav.focusRow(rows, e.key === "ArrowUp" ? rows.length - 1 : 0);
     return;
   }
   if (!isArrow && e.key !== "Enter" && e.key !== " ") return;
@@ -292,46 +166,32 @@ function onToggleKeydown(e: KeyboardEvent) {
 watch(isOpen, async (open) => {
   if (!open) {
     openIntent = null;
-    tabLeaving = false;
-    clearTypeahead();
+    nav.reset();
     return;
   }
   const intent = openIntent;
   openIntent = null;
   await nextTick();
-  const rows = enabledRows();
+  const rows = nav.enabledRows();
   if (rows.length === 0) return;
-  if (intent) focusRow(rows, intent === "last" ? rows.length - 1 : 0);
-  else activeRow.value = 0;
+  if (intent) nav.focusRow(rows, intent === "last" ? rows.length - 1 : 0);
+  else nav.activeRow.value = 0;
 });
 
 /**
- * El roving tabindex sigue al foco real (click o teclado): la fila enfocada es la
- * que queda como parada de tabulación del menú.
+ * Submenú: cuando el menú se pinta dentro del panel de otro dropdown, el trigger lo
+ * dibuja el motor (`Dropdown`) como fila de menú. Su propio `Button` rompería la
+ * cascada y dejaría un control suelto dentro del `menu` padre.
  */
-function onRootFocusIn(e: FocusEvent) {
-  const target = e.target as HTMLElement | null;
-  const row = target?.closest?.(".cu-dropdown-item") as HTMLElement | null;
-  if (!row) return;
-  const position = enabledRows().indexOf(row);
-  if (position >= 0) activeRow.value = position;
-}
+const nested = ref(false);
 
-let menuRoot: HTMLElement | null = null;
 onMounted(() => {
-  menuRoot = rootEl();
-  menuRoot?.addEventListener("keydown", onMenuKeydown);
-  menuRoot?.addEventListener("focusout", onRootFocusOut);
-  menuRoot?.addEventListener("focusin", onRootFocusIn);
-  menuRoot?.addEventListener("pointerdown", onRootPointerDown);
+  nav.attach(rootEl());
+  nested.value = detectDropdownNesting(rootEl()).nested;
 });
 onUnmounted(() => {
-  menuRoot?.removeEventListener("keydown", onMenuKeydown);
-  menuRoot?.removeEventListener("focusout", onRootFocusOut);
-  menuRoot?.removeEventListener("focusin", onRootFocusIn);
-  menuRoot?.removeEventListener("pointerdown", onRootPointerDown);
-  menuRoot = null;
-  clearTypeahead();
+  nav.detach();
+  nav.reset();
 });
 
 defineExpose({
@@ -361,7 +221,7 @@ defineExpose({
     @open="emit('open')"
     @close="emit('close')"
   >
-    <template #toggle="{ toggle, isOpen }">
+    <template v-if="!nested" #toggle="{ toggle, isOpen }">
       <!-- Contenido del trigger; scoped: { toggle, isOpen, aria }. -->
       <slot name="toggle" :toggle="toggle" :isOpen="isOpen" :aria="toggleAria">
         <Button
@@ -411,7 +271,7 @@ defineExpose({
             :selected="!!item.selected"
             :role="item.selected ? 'menuitemcheckbox' : 'menuitem'"
             :aria-checked="item.selected ? 'true' : undefined"
-            :tabindex="itemTabindex(i)"
+            :tabindex="nav.itemTabindex(i)"
             class="cu-dropdown-item"
             :style="itemStyle"
             @click="handleItemClick(item)"

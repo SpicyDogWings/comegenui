@@ -167,3 +167,58 @@ describe("cu-dropdown-menu — custom element real", () => {
     el.remove();
   });
 });
+
+// El caso de #111: un `<cu-dropdown-menu>` dentro del panel de otro es un submenú. El
+// contenido light del padre existe antes de que su panel lo proyecte, así que la
+// detección no puede depender de `parentElement` (frena en el shadow root) ni de
+// `assignedSlot` (todavía es null): el submenú quedaba como un dropdown suelto.
+describe("cu-dropdown-menu — submenú dentro del panel de otro", () => {
+  type MenuElement = HTMLElement & { open(): void; close(): void; isOpen(): boolean };
+
+  function nestedPair(): { parent: MenuElement; sub: MenuElement } {
+    const parent = make<MenuElement>("cu-dropdown-menu");
+    parent.setAttribute("label", "Acciones");
+    parent.innerHTML = `<div id="panel-hijo"><cu-dropdown-menu id="sub-menu" label="Compartir"></cu-dropdown-menu></div>`;
+    return { parent, sub: parent.querySelector<MenuElement>("#sub-menu")! };
+  }
+
+  it("el submenú se dibuja como fila `menuitem` del panel padre, con cascada a la derecha", async () => {
+    const { parent, sub } = nestedPair();
+    await tick();
+    await tick();
+
+    parent.open();
+    await tick();
+    await tick();
+
+    const row = sub.shadowRoot!.querySelector(".cu-dropdown-menu-item");
+    expect(row).toBeTruthy();
+    expect(row!.getAttribute("role")).toBe("menuitem");
+    expect(row!.textContent).toContain("Compartir");
+    expect(row!.querySelector(".cu-dropdown-menu-item-chevron")!.getAttribute("aria-hidden")).toBe(
+      "true",
+    );
+
+    sub.open();
+    await tick();
+    await tick();
+
+    const panel = sub.shadowRoot!.querySelector<HTMLElement>(".cu-popover-panel")!;
+    expect(sub.isOpen()).toBe(true);
+    expect(panel.style.position).toBe("absolute");
+    expect(panel.style.left).toBe("100%");
+    expect(panel.style.marginLeft).toBe("4px");
+    parent.remove();
+  });
+
+  it("un `cu-dropdown-menu` suelto no se marca como submenú", async () => {
+    const el = make<MenuElement>("cu-dropdown-menu");
+    el.setAttribute("label", "Suelto");
+    await tick();
+    await tick();
+
+    expect(el.shadowRoot!.querySelector(".cu-dropdown-toggle")).toBeTruthy();
+    expect(el.shadowRoot!.querySelector(".cu-dropdown-menu-item")).toBeNull();
+    el.remove();
+  });
+});

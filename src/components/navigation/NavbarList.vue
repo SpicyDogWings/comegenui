@@ -94,7 +94,13 @@ function itemIcon(item: NavItem): string {
             @click="t"
           >
             <span class="cu-navbar-icon" v-html="itemIcon(item)"></span>
-            <LucideChevronRight :width="14" :height="14" class="cu-navbar-compact-chevron" />
+            <LucideChevronRight
+              :width="14"
+              :height="14"
+              class="cu-navbar-compact-chevron"
+              aria-hidden="true"
+              focusable="false"
+            />
           </button>
         </template>
         <NavbarMenu :items="item.children" :trigger="props.trigger" />

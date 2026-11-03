@@ -39,6 +39,10 @@ borde), `link` (texto subrayado, sin padding) y `none` (igual que `solid`).
 <Button color="primary" variant="none">none</Button>
 ```
 
+Un `variant` fuera del set cae a `ghost` (el default), igual que un `color` inválido cae a
+`neutral` y un `type` inválido a `button`: la clase `cu-button--{variant}` no existe para otro
+valor y el botón quedaba sin estilos (texto del tema sobre el fondo del contenedor).
+
 ## Colores
 
 `color` es un nombre semántico, no un hex: se resuelve con los tokens del tema activo

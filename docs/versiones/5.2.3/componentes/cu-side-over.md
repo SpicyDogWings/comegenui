@@ -107,8 +107,10 @@ tenía el foco antes de abrir. El nombre accesible sale del `title` (`aria-label
 se usa el `aria-label` del host o `"Panel"`.
 
 Con dos paneles abiertos, `Escape` y `Tab` los atiende sólo el de arriba (el último abierto) y el
-scroll del body se libera recién cuando se cierra el último. Con `prefers-reduced-motion: reduce`
-la entrada y la salida no animan.
+scroll del body se libera recién cuando se cierra el último. La pila es compartida con `cu-modal` y
+con los menús: un `Escape` cierra **un solo** overlay, el de arriba (un panel abierto sobre un modal
+lo tapa, así que la pulsación cierra el panel y deja el modal). Con
+`prefers-reduced-motion: reduce` la entrada y la salida no animan.
 
 ## Interacción
 

@@ -69,6 +69,9 @@ const items = ref([
 
 `position` (`bottom` default, además `top`, `left` y `right`) y `align` (`start` default, `center`, `end`) eligen dónde se abre el panel y cómo queda alineado con el toggle; `offset` (default `4`) es la separación en píxeles y `fixed` usa `position: fixed`. Un valor fuera del set cae a `bottom` / `start` (y `textAlign` a `left`): sin ese fallback el panel quedaba en el flujo, sin pegarse al trigger.
 
+Contra el viewport el panel se **voltea** al lado opuesto si no entra y se **clampea** al borde: no
+genera scroll horizontal ni coordenadas negativas.
+
 ```vue
 <DropdownMenu label="bottom / start" position="bottom" align="start" :items="items" />
 <DropdownMenu label="bottom / center" position="bottom" align="center" :items="items" />
@@ -155,9 +158,32 @@ el panel y sólo se usa cuando `items` está vacío.
 </template>
 ```
 
+## Submenús anidados
+
+Un `DropdownMenu` dentro del slot (panel) de otro es un **submenú**: su trigger deja de ser un
+`Button` y se dibuja como fila del menú padre (`role="menuitem"`, `aria-haspopup` y
+`aria-expanded`), y su panel abre en cascada a la derecha manteniendo el padre abierto. La detección
+cruza slots y shadow roots, así que el mismo HTML se comporta igual en Vue y dentro del custom
+element.
+
+```vue
+<script setup lang="ts">
+import DropdownMenu from "@/components/controls/DropdownMenu.vue";
+
+const editar = { label: "Editar", onClick: () => console.log("editar") };
+const compartir = { label: "Compartir", onClick: () => console.log("compartir") };
+</script>
+
+<template>
+  <DropdownMenu label="Acciones" :items="[editar]">
+    <DropdownMenu label="Más" :items="[compartir]" />
+  </DropdownMenu>
+</template>
+```
+
 ## Interacción
 
-`open` y `close` son los dos emits propios, y `open()`, `close()`, `toggle()` e `isOpen()` se llaman por `ref`. El panel se anuncia como `role="menu"`; al cerrarse con `Escape` (o al elegir un item), el foco vuelve al trigger. Con `items` vacío el panel muestra el slot por defecto; las entradas nulas o que no son objetos se ignoran (no rompen el menú).
+`open` y `close` son los dos emits propios, y `open()`, `close()`, `toggle()` e `isOpen()` se llaman por `ref`. El panel se anuncia como `role="menu"`; al cerrarse con `Escape` (o al elegir un item), el foco vuelve al trigger. `Escape` cierra sólo el menú **de arriba** (la pila de overlays es compartida con `Modal`, `SideOver` y los submenús: un menú con un submenú abierto cierra el submenú y deja el menú). Con `items` vacío el panel muestra el slot por defecto; las entradas nulas o que no son objetos se ignoran (no rompen el menú).
 
 ```vue
 <script setup lang="ts">
@@ -204,7 +230,7 @@ trigger) y adentro se navega con el teclado.
 | Letras | Typeahead: enfoca la fila cuyo label empieza con lo tipeado |
 | <kbd>Enter</kbd> / <kbd>Espacio</kbd> | Activa la fila enfocada (acción o link) |
 | <kbd>Tab</kbd> | Cierra el menú y sigue el orden de tabulación |
-| <kbd>Escape</kbd> | Cierra el menú y devuelve el foco al trigger |
+| <kbd>Escape</kbd> | Cierra el menú (sólo si es el overlay de arriba) y devuelve el foco al trigger |
 
 Con un trigger propio (slot `toggle`) el manejo de teclado del menú abre igual, pero la apertura
 inicial con flechas depende de tu trigger: aplicá `v-bind="aria"` y llamá a `toggle` desde tu
@@ -213,6 +239,8 @@ control.
 ## Accesibilidad
 
 - El trigger lleva `aria-haspopup="menu"`, `aria-expanded` y `aria-controls` con el `id` del panel.
+- El panel toma su **nombre accesible del trigger** (`aria-label`): un `role="menu"` sin nombre se
+  anunciaba como "menú" a secas. Un submenú anidado es `menuitem` con `aria-haspopup`/`aria-expanded`.
 - El panel es `role="menu"` y cada fila es `role="menuitem"`. Un item con `selected: true` se
   anuncia como `menuitemcheckbox` marcado (`aria-checked="true"`); el check de lucide es decorativo.
 - Los divisores (`divider`) se anuncian como separador, y un item `disabled` se anuncia

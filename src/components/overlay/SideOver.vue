@@ -1,31 +1,12 @@
-<script lang="ts">
-// Estado compartido por todas las instancias (module scope, no por setup).
-// El body se bloquea una sola vez y Escape/Tab sólo los atiende el panel que
-// está arriba de la pila: con dos paneles abiertos, cerrar el de abajo no puede
-// devolverle el scroll a la página ni Escape puede cerrarlos a los dos.
-const openInstances: symbol[] = [];
-
-let scrollLocks = 0;
-let previousBodyOverflow = "";
-
-function lockBodyScroll() {
-  if (scrollLocks === 0) {
-    previousBodyOverflow = document.body.style.overflow;
-    document.body.style.overflow = "hidden";
-  }
-  scrollLocks += 1;
-}
-
-function unlockBodyScroll() {
-  if (scrollLocks === 0) return;
-  scrollLocks -= 1;
-  if (scrollLocks === 0) document.body.style.overflow = previousBodyOverflow;
-}
-</script>
-
 <script setup lang="ts">
 import { computed, nextTick, watch, onMounted, onUnmounted, ref, useAttrs, useId, type PropType } from 'vue'
 import { isPosition } from '@/utils/validators'
+import {
+  registerOverlay,
+  unregisterOverlay,
+  isTopmostOverlay,
+  type OverlayId,
+} from '@/composables/useOverlayStack'
 
 // SideOver: panel overlay que desliza desde un borde (izquierda/derecha/arriba/
 // abajo) sobre el contenido, con scrim y cierre por backdrop/Escape. Opción
@@ -191,27 +172,24 @@ function trapTab(event: KeyboardEvent) {
   }
 }
 
-const instanceId = Symbol('cu-sideover');
+// Pila compartida de overlays (la misma de `Modal` y `Popover`): `Escape` cierra sólo
+// el panel de arriba y el bloqueo del scroll es uno solo para todos, así cerrar el de
+// abajo no devuelve el `overflow` de la página mientras queda otro abierto.
+let overlayId: OverlayId | null = null;
 let registered = false;
 
-function isTopmost() {
-  return openInstances[openInstances.length - 1] === instanceId;
-}
-
 function onKeydown(e: KeyboardEvent) {
-  if (!props.modelValue || !isTopmost()) return;
-  if (e.key === 'Escape') {
-    close();
-    return;
-  }
+  // `Escape` lo atiende la pila; acá sólo queda la trampa de `Tab`, y sólo del panel
+  // que está arriba.
+  if (!props.modelValue || !overlayId || !isTopmostOverlay(overlayId)) return;
   if (e.key === 'Tab') trapTab(e);
 }
 
 function register() {
   if (registered) return;
   registered = true;
-  openInstances.push(instanceId);
-  lockBodyScroll();
+  // `close()` ya respeta `persistent`: la pila sólo necesita la referencia.
+  overlayId = registerOverlay({ close, lockScroll: true });
   // `deepActiveElement` para que, dentro de un custom element, el foco vuelva
   // al control real del shadow (el host no siempre es enfocable).
   const active = deepActiveElement();
@@ -225,9 +203,8 @@ function register() {
 function unregister() {
   if (!registered) return;
   registered = false;
-  const index = openInstances.indexOf(instanceId);
-  if (index !== -1) openInstances.splice(index, 1);
-  unlockBodyScroll();
+  if (overlayId) unregisterOverlay(overlayId);
+  overlayId = null;
   document.removeEventListener('keydown', onKeydown);
   restoreFocus();
 }

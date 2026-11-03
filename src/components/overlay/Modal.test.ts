@@ -285,3 +285,39 @@ describe("Modal — nombre accesible", () => {
     expect(w.find("[role=dialog]").attributes("aria-label")).toBe("Paleta de comandos");
   });
 });
+
+describe("Modal — cierre por Escape", () => {
+  const pressEscape = () => document.dispatchEvent(new KeyboardEvent("keydown", { key: "Escape" }));
+
+  it("Escape cierra el modal abierto y emite close + closed", async () => {
+    const w = mount(Modal, { attachTo: document.body });
+    vm(w).open();
+    await flushPromises();
+
+    pressEscape();
+    await flushPromises();
+
+    expect(vm(w).isOpen()).toBe(false);
+    expect(w.emitted("close")).toHaveLength(1);
+    expect(w.emitted("closed")).toHaveLength(1);
+  });
+
+  it("un modal `persistent` no se cierra por Escape", async () => {
+    const w = mount(Modal, { attachTo: document.body, props: { persistent: true } });
+    vm(w).open();
+    await flushPromises();
+
+    pressEscape();
+    await flushPromises();
+
+    expect(vm(w).isOpen()).toBe(true);
+    expect(w.emitted("close")).toBeUndefined();
+  });
+
+  it("Escape con el modal cerrado no emite nada", async () => {
+    const w = mount(Modal, { attachTo: document.body });
+    pressEscape();
+    await flushPromises();
+    expect(w.emitted("close")).toBeUndefined();
+  });
+});

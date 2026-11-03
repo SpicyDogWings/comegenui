@@ -145,3 +145,14 @@ describe("NavbarList — ícono saneado", () => {
     expect(probe.__xss).toBeUndefined();
   });
 });
+
+describe("NavbarList — modo compacto", () => {
+  it("el chevron del trigger compacto es decorativo (el nombre lo da el label)", () => {
+    const w = mount(NavbarList, { props: { items, compact: true } });
+    const chevron = w.find(".cu-navbar-compact-chevron");
+
+    expect(chevron.exists()).toBe(true);
+    expect(chevron.attributes("aria-hidden")).toBe("true");
+    expect(chevron.attributes("focusable")).toBe("false");
+  });
+});

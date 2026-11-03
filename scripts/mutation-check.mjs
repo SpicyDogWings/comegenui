@@ -459,13 +459,6 @@ const MUTATIONS = [
     event.preventDefault();`,
   },
   {
-    id: "side-over-escape-cierra-todos",
-    file: "src/components/overlay/SideOver.vue",
-    expect: "Escape sólo cierra el panel de arriba",
-    find: `  if (!props.modelValue || !isTopmost()) return;`,
-    replace: `  if (!props.modelValue) return;`,
-  },
-  {
     id: "side-over-montado-abierto-sin-lock",
     file: "src/components/overlay/SideOver.vue",
     expect: "montar el panel ya abierto bloquea el scroll",
@@ -474,10 +467,11 @@ const MUTATIONS = [
   },
   {
     id: "side-over-unlock-con-otro-abierto",
-    file: "src/components/overlay/SideOver.vue",
+    file: "src/composables/useOverlayStack.ts",
+    test: "src/components/overlay/SideOver.test.ts",
     expect: "cerrar un panel no libera el scroll si queda otro abierto",
-    find: `  if (scrollLocks === 0) document.body.style.overflow = previousBodyOverflow;`,
-    replace: `  document.body.style.overflow = previousBodyOverflow;`,
+    find: `  if (stack.scrollLocks === 0 && typeof document !== "undefined") {`,
+    replace: `  if (typeof document !== "undefined") {`,
   },
   {
     id: "side-over-ce-metodos-sin-evento",
@@ -798,9 +792,9 @@ const MUTATIONS = [
     file: "src/components/overlay/Popover.vue",
     expect: "si un ancestro con overflow recorta el panel, el panel pasa a fixed",
     find: `  autoFixed.value = true;
-  positionPanel();`,
+  positionPanel({ width: box.width, height: box.height });`,
     replace: `  autoFixed.value = false;
-  positionPanel();`,
+  positionPanel({ width: box.width, height: box.height });`,
   },
   {
     id: "popover-fallback-ignora-containing-block",
@@ -860,27 +854,29 @@ const MUTATIONS = [
   },
   {
     id: "dropdown-menu-flechas-no-mueven",
-    file: "src/components/controls/DropdownMenu.vue",
+    file: "src/composables/useMenuNavigation.ts",
     expect: "las flechas mueven el foco entre las filas",
-    find: `function focusRow(rows: HTMLElement[], index: number) {
-  const position = (index + rows.length) % rows.length;`,
-    replace: `function focusRow(rows: HTMLElement[], index: number) {
-  if (rows.length >= 0) return;
-  const position = (index + rows.length) % rows.length;`,
+    find: `  function focusRow(rows: HTMLElement[], index: number) {
+    const position = (index + rows.length) % rows.length;`,
+    replace: `  function focusRow(rows: HTMLElement[], index: number) {
+    if (rows.length >= 0) return;
+    const position = (index + rows.length) % rows.length;`,
   },
   {
     id: "dropdown-menu-typeahead-sin-buscar",
-    file: "src/components/controls/DropdownMenu.vue",
+    file: "src/composables/useMenuNavigation.ts",
+    test: "src/components/controls/DropdownMenu.test.ts",
     expect: "tipear una letra enfoca la fila que empieza con ella",
     find: `    searchByPrefix(e.key, rows, current);`,
     replace: `    void e.key;`,
   },
   {
     id: "dropdown-menu-tab-no-cierra",
-    file: "src/components/controls/DropdownMenu.vue",
+    file: "src/composables/useMenuNavigation.ts",
+    test: "src/components/controls/DropdownMenu.test.ts",
     expect: "Tab saca el foco del menú y lo cierra",
-    find: `    tabLeaving = true;
-    return;`,
+    find: `      tabLeaving = true;
+      return;`,
     replace: `    tabLeaving = false;
     return;`,
   },
@@ -895,11 +891,11 @@ const MUTATIONS = [
   },
   {
     id: "dropdown-menu-roving-sin-tabindex",
-    file: "src/components/controls/DropdownMenu.vue",
+    // El roving vive en el composable compartido (lo usan DropdownMenu y Dropdown).
+    file: "src/composables/useMenuNavigation.ts",
     expect: "la fila activa es la única parada de tabulación del menú",
-    find: `  const position = enabledItemIndices.value.indexOf(index);
-  return position >= 0 && position === effectiveActiveRow.value ? 0 : -1;`,
-    replace: `  return -1;`,
+    find: `    return position >= 0 && position === effectiveActiveRow.value ? 0 : -1;`,
+    replace: `    return -1;`,
   },
   {
     id: "dropdown-menu-posicion-sin-fallback",
@@ -2265,20 +2261,6 @@ const MUTATIONS = [
 }`,
   },
   {
-    id: "popover-escape-sin-devolver-foco",
-    file: "src/components/overlay/Popover.vue",
-    expect: "Escape devuelve el foco al trigger",
-    find: `  if (e.key === "Escape" && isOpen.value) {
-    isOpen.value = false;
-    emit("close");
-    restoreFocus();
-  }`,
-    replace: `  if (e.key === "Escape" && isOpen.value) {
-    isOpen.value = false;
-    emit("close");
-  }`,
-  },
-  {
     id: "popover-foco-roba-el-click-afuera",
     file: "src/components/overlay/Popover.vue",
     expect: "un click afuera sobre otro control no le roba el foco",
@@ -2972,6 +2954,166 @@ const MUTATIONS = [
     expect: "el custom element expone reset()",
     find: `const reset = () => textareaRef.value?.reset();`,
     replace: `const reset = () => { void textareaRef; };`,
+  },
+
+  // ── Overlays: pila compartida, submenús anidados, posición y a11y ──────────
+  {
+    id: "overlay-escape-cierra-todos",
+    file: "src/composables/useOverlayStack.ts",
+    test: "src/components/overlay/overlayStack.test.ts",
+    expect: "Escape cierra sólo el overlay de arriba (no el menú y el submenú a la vez)",
+    find: `  stack.entries[stack.entries.length - 1]?.close();`,
+    replace: `  for (const entry of [...stack.entries]) entry.close();`,
+  },
+  {
+    id: "overlay-sin-scroll-lock",
+    file: "src/composables/useOverlayStack.ts",
+    test: "src/components/overlay/overlayStack.test.ts",
+    expect: "el bloqueo del scroll del body se pide a la pila (coordinado entre overlays)",
+    find: `  if (handle.lockScroll) lockScroll(stack);`,
+    replace: `  void handle.lockScroll;`,
+  },
+  {
+    id: "modal-escape-fuera-de-la-pila",
+    file: "src/components/overlay/Modal.vue",
+    expect: "Escape cierra el modal abierto (vía pila compartida)",
+    find: `  isOpen.value = true;
+  claimOverlay();`,
+    replace: `  isOpen.value = true;`,
+  },
+  {
+    id: "sideover-sin-scroll-lock",
+    file: "src/components/overlay/SideOver.vue",
+    expect: "el SideOver bloquea el scroll del body mientras está abierto",
+    find: `overlayId = registerOverlay({ close, lockScroll: true });`,
+    replace: `overlayId = registerOverlay({ close });`,
+  },
+  {
+    id: "popover-panel-sin-nombre",
+    file: "src/components/overlay/Popover.vue",
+    expect: "un panel menu/dialog toma su nombre accesible del trigger",
+    find: `      :aria-label="panelLabel || undefined"\n`,
+    replace: ``,
+  },
+  {
+    id: "popover-nombre-en-cualquier-rol",
+    file: "src/components/overlay/Popover.vue",
+    expect: "sólo menu/dialog reciben nombre del trigger (el listbox del combobox no)",
+    find: `  panelLabel.value = NAMED_ROLES[props.role] ? triggerLabel(toggleElement()) : "";`,
+    replace: `  panelLabel.value = triggerLabel(toggleElement());`,
+  },
+  {
+    id: "popover-sin-flip-horizontal",
+    file: "src/components/overlay/Popover.vue",
+    expect: "sin espacio a la derecha el panel se voltea a la izquierda",
+    find: `    if (pos === "right" && room.right < pw && room.left >= pw) pos = "left";`,
+    replace: `    /* mutado: sin flip */`,
+  },
+  {
+    id: "popover-sin-clamp-horizontal",
+    file: "src/components/overlay/Popover.vue",
+    expect: "el panel clampea al borde del viewport (nunca genera scroll horizontal)",
+    find: `    if (pw > 0) left = clampToViewport(left, pw, vw);`,
+    replace: `    /* mutado: sin clamp */`,
+  },
+  {
+    id: "popover-sin-fallback-por-viewport",
+    file: "src/components/overlay/Popover.vue",
+    expect: "un panel que se sale del viewport pasa a fixed (para voltearse/clampearse)",
+    find: `  if (!isClippedByAncestor(panel, anchor, box) && !overflowsViewport(box)) return;`,
+    replace: `  if (!isClippedByAncestor(panel, anchor, box)) return;`,
+  },
+  {
+    id: "popover-timers-sin-limpiar",
+    file: "src/components/overlay/Popover.vue",
+    expect: "desmontar cancela los timers de hover (no abre un overlay desconectado)",
+    find: `onUnmounted(() => {
+  clearHoverTimers();`,
+    replace: `onUnmounted(() => {`,
+  },
+  {
+    id: "popover-registry-sin-limpiar",
+    file: "src/components/overlay/Popover.vue",
+    expect: "desmontar saca el popover del registry global de hover",
+    find: `  unregisterHover();
+  releaseOverlay();`,
+    replace: `  releaseOverlay();`,
+  },
+  {
+    id: "dropdown-items-sin-menuitem",
+    file: "src/components/overlay/Dropdown.vue",
+    expect: "una fila con href es menuitem del menú de items",
+    find: `          :role="isMenu ? 'menuitem' : undefined"
+          :aria-disabled="isMenu && item.disabled ? 'true' : undefined"`,
+    replace: `          :aria-disabled="isMenu && item.disabled ? 'true' : undefined"`,
+  },
+  {
+    id: "menu-roving-sin-tabindex",
+    file: "src/composables/useMenuNavigation.ts",
+    test: "src/components/overlay/Dropdown.test.ts",
+    expect: "la fila activa es la única parada de tabulación del menú",
+    find: `    return position >= 0 && position === effectiveActiveRow.value ? 0 : -1;`,
+    replace: `    return -1;`,
+  },
+  {
+    id: "dropdown-items-sin-teclado",
+    file: "src/components/overlay/Dropdown.vue",
+    expect: "el menú de items responde a flechas/Home/End/typeahead",
+    find: `  enabled: () => isMenu.value,`,
+    replace: `  enabled: () => false,`,
+  },
+  {
+    id: "dropdown-submenu-sin-deteccion-light-dom",
+    file: "src/utils/dropdownNesting.ts",
+    test: "src/components/customElements/ce-real.test.ts",
+    expect: "un cu-dropdown-menu dentro de otro se detecta como submenú al montar",
+    find: `    if (NESTED_HOST_TAGS[node.tagName]) return { nested: !inToggleSlot, inMenu: true };`,
+    replace: `    if (NESTED_HOST_TAGS[node.tagName]) return { nested: false, inMenu: false };`,
+  },
+  {
+    id: "flat-tree-sin-slot-host",
+    file: "src/utils/flatTree.ts",
+    test: "src/components/customElements/ce-real.test.ts",
+    expect: "el recorrido de ancestros cruza slots y shadow roots (submenú en CE)",
+    find: `  const slotted = (el as Element & { assignedSlot?: Element | null }).assignedSlot;
+  if (slotted) return slotted;
+  if (el.parentElement) return el.parentElement;
+  const root = el.getRootNode() as ShadowRoot | Document;
+  return "host" in root ? (root.host as Element) : null;`,
+    replace: `  return el.parentElement;`,
+  },
+  {
+    id: "dropdown-menu-submenu-con-toggle-propio",
+    file: "src/components/controls/DropdownMenu.vue",
+    test: "src/components/customElements/ce-real.test.ts",
+    expect: "un submenú lo dibuja el motor como fila de menú (sin Button suelto)",
+    find: `    <template v-if="!nested" #toggle="{ toggle, isOpen }">`,
+    replace: `    <template #toggle="{ toggle, isOpen }">`,
+  },
+  {
+    id: "button-variant-sin-fallback",
+    file: "src/components/buttons/Button.vue",
+    expect: "una variante inválida cae a ghost en vez de quedar sin estilos",
+    find: `const safeVariant = computed(() => (isVariantFull(props.variant) ? props.variant : 'ghost'))`,
+    replace: `const safeVariant = computed(() => props.variant)`,
+  },
+  {
+    id: "dropdown-chevron-sin-aria-hidden",
+    file: "src/components/overlay/Dropdown.vue",
+    expect: "el chevron del submenú es decorativo",
+    find: `            class="cu-dropdown-menu-item-chevron"
+            aria-hidden="true"
+            focusable="false"`,
+    replace: `            class="cu-dropdown-menu-item-chevron"`,
+  },
+  {
+    id: "navbar-list-chevron-sin-aria-hidden",
+    file: "src/components/navigation/NavbarList.vue",
+    expect: "el chevron del trigger compacto es decorativo",
+    find: `              class="cu-navbar-compact-chevron"
+              aria-hidden="true"
+              focusable="false"`,
+    replace: `              class="cu-navbar-compact-chevron"`,
   },
 ];
 

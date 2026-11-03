@@ -77,6 +77,9 @@ Menú desplegable con items declarativos (label, ícono, color, divisor, link). 
 
 `position` (`bottom` default, `top`) y `align` (`start` default, `center`, `end`) eligen dónde se abre el panel y cómo queda alineado con el toggle; `offset` (default `4`) es la separación en píxeles y `fixed` usa `position: fixed`. Un valor fuera del set cae a `bottom` / `start` (y `text-align` a `left`): sin ese fallback el panel quedaba en el flujo, sin pegarse al trigger.
 
+Contra el viewport el panel se **voltea** al lado opuesto si no entra y se **clampea** al borde: no
+genera scroll horizontal ni coordenadas negativas.
+
 ```html
 <cu-dropdown-menu label="bottom / start" position="bottom" align="start"></cu-dropdown-menu>
 <cu-dropdown-menu label="bottom / center" position="bottom" align="center"></cu-dropdown-menu>
@@ -174,9 +177,28 @@ El slot por defecto rellena el panel y sólo se usa cuando `items` está vacío.
 
 <!-- demo:dropdown-menu-contenido-libre -->
 
+## Submenús anidados
+
+Un `<cu-dropdown-menu>` dentro del panel de otro es un **submenú**: su trigger se dibuja como fila
+del menú padre (`role="menuitem"`, `aria-haspopup` y `aria-expanded`) y su panel abre en cascada a
+la derecha manteniendo el padre abierto. La detección cruza el shadow root del wrapper, así que el
+markup anidado funciona sin configuración.
+
+```html
+<cu-dropdown-menu label="Acciones">
+  <cu-dropdown-menu id="ddSubmenu" label="Más"></cu-dropdown-menu>
+</cu-dropdown-menu>
+
+<script>
+  document.getElementById("ddSubmenu").items = [
+    { label: "Compartir", onClick: () => console.log("compartir") },
+  ];
+</script>
+```
+
 ## Interacción
 
-`open` y `close` son los dos CustomEvents propios, y `open()`, `close()`, `toggle()` e `isOpen()` gobiernan el panel por código. El panel se anuncia como `role="menu"`; al cerrarse con `Escape` (o al elegir un item), el foco vuelve al trigger. Con `items` vacío el panel muestra el slot por defecto; las entradas nulas o que no son objetos se ignoran (no rompen el menú).
+`open` y `close` son los dos CustomEvents propios, y `open()`, `close()`, `toggle()` e `isOpen()` gobiernan el panel por código. El panel se anuncia como `role="menu"`; al cerrarse con `Escape` (o al elegir un item), el foco vuelve al trigger. `Escape` cierra sólo el menú **de arriba** (la pila de overlays es compartida con `cu-modal`, `cu-side-over` y los submenús: un menú con un submenú abierto cierra el submenú y deja el menú). Con `items` vacío el panel muestra el slot por defecto; las entradas nulas o que no son objetos se ignoran (no rompen el menú).
 
 ```html
 <cu-dropdown-menu id="ddAPI" label="Dropdown"></cu-dropdown-menu>
@@ -210,7 +232,7 @@ trigger) y adentro se navega con el teclado.
 | Letras | Typeahead: enfoca la fila cuyo label empieza con lo tipeado |
 | <kbd>Enter</kbd> / <kbd>Espacio</kbd> | Activa la fila enfocada (acción o link) |
 | <kbd>Tab</kbd> | Cierra el menú y sigue el orden de tabulación |
-| <kbd>Escape</kbd> | Cierra el menú y devuelve el foco al trigger |
+| <kbd>Escape</kbd> | Cierra el menú (sólo si es el overlay de arriba) y devuelve el foco al trigger |
 
 Un trigger propio (slot `toggle`) es responsabilidad del consumidor: el wrapper publica
 `aria-haspopup` y `aria-expanded` en el elemento con `slot="toggle"`, pero el manejo de teclado del
@@ -219,6 +241,8 @@ menú sigue funcionando una vez abierto.
 ## Accesibilidad
 
 - El trigger lleva `aria-haspopup="menu"`, `aria-expanded` y `aria-controls` con el `id` del panel.
+- El panel toma su **nombre accesible del trigger** (`aria-label`): un `role="menu"` sin nombre se
+  anunciaba como "menú" a secas. Un submenú anidado es `menuitem` con `aria-haspopup`/`aria-expanded`.
 - El panel es `role="menu"` y cada fila es `role="menuitem"`. Un item con `selected: true` se
   anuncia como `menuitemcheckbox` marcado (`aria-checked="true"`); el check de lucide es decorativo.
 - Los divisores (`divider`) se anuncian como separador, y un item `disabled` se anuncia

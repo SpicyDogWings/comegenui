@@ -10,6 +10,10 @@ El click afuera se mide sobre clicks de puntero: un `click` sintético que reemi
 wrapper de `<cu-card>` reemite el click de su contenido) no cierra el panel. Si no, el mismo click
 que abre un control lo cerraría.
 
+`Escape` lo atiende la **pila compartida de overlays** (la misma de `Modal` y `SideOver`) y sólo
+sobre el panel de arriba: con un menú y su submenú abiertos, una pulsación cierra el submenú y deja
+el menú abierto. Al cerrar, el foco vuelve al trigger.
+
 ## Uso en Vue
 
 ```vue
@@ -34,6 +38,11 @@ El slot `toggle` recibe `toggle` e `isOpen`; el slot `default` es el contenido d
 
 `position` acepta `bottom` (**default**), `top`, `left` y `right`; `align` acepta `start`
 (**default**), `center` y `end`. `offset` es la separación en px entre el ancla y el panel.
+
+El panel se **voltea** al lado opuesto cuando no entra en el lado pedido (`right` → `left`,
+`bottom` → `top`) y se **clampea** al borde del viewport: un `right` en el borde derecho no genera
+scroll horizontal y un `left` sin espacio no queda en coordenadas negativas. El cálculo se rehace en
+cada scroll y resize.
 
 ```vue
 <script setup lang="ts">
@@ -133,6 +142,11 @@ import Popover from "@/components/overlay/Popover.vue";
 `panel-width` fija el ancho del panel (default: el 100% del ancla), `role` el rol ARIA y
 `panel-class` una clase extra (string, array u objeto).
 
+Con `role="menu"`, `dialog` o `alertdialog` el panel toma su **nombre accesible del trigger**
+(`aria-label`, `title`, `label` del custom element o su texto): el rol exige nombre y el panel no
+tiene un título propio, así que sin esto un lector de pantalla anunciaba "menú" a secas. Los roles
+que no lo exigen (`listbox` del combobox, `tooltip`) no se tocan.
+
 ```vue
 <script setup lang="ts">
 import Button from "@/components/buttons/Button.vue";
@@ -174,9 +188,10 @@ import Popover from "@/components/overlay/Popover.vue";
 
 Sin `fixed`, el panel es `position: absolute` y lo recorta cualquier ancestro con `overflow`
 distinto de `visible` (una card, una tabla, un contenedor con `overflow: hidden`). Para que eso no
-esconda el panel, al abrir se mide: si se sale del área visible de un ancestro que recorta, pasa a
-`position: fixed` contra el viewport (con el ancho del ancla) y se recalcula en scroll y resize, como
-`fixed`. Si el panel entra completo, se queda en `absolute`.
+esconda el panel, al abrir se mide: si se sale del área visible de un ancestro que recorta —o del
+viewport, que en `absolute` generaría scroll horizontal— pasa a `position: fixed` contra el viewport
+(con el ancho ya medido) y se recalcula en scroll y resize, como `fixed`. Ahí se aplica el
+volteo/clamp. Si el panel entra completo, se queda en `absolute`.
 
 > **Límite:** un ancestro con `transform`, `filter`, `perspective`, `backdrop-filter`, `contain`
 > (`paint`/`layout`/`strict`/`content`) o `will-change` de esos ejes ancla a sus descendientes
