@@ -16,6 +16,7 @@ import ColorPickerCe from "@/components/customElements/form/ColorPicker.ce.vue";
 import TextareaCe from "@/components/customElements/form/Textarea.ce.vue";
 import SelectCe from "@/components/customElements/form/Select.ce.vue";
 import CommandPaletteCe from "@/components/customElements/overlay/CommandPalette.ce.vue";
+import ModalCe from "@/components/customElements/overlay/Modal.ce.vue";
 import SideOverCe from "@/components/customElements/overlay/SideOver.ce.vue";
 import TooltipCe from "@/components/customElements/overlay/Tooltip.ce.vue";
 import MarkdownCe from "@/components/customElements/markdown/Markdown.ce.vue";
@@ -1013,5 +1014,87 @@ describe("AdvancedTable.ce (cu-table)", () => {
     expect(emits).not.toContain("row-click");
     expect(emits).not.toContain("row-dblclick");
     expect(emits).not.toContain("cell-click");
+  });
+});
+
+// Ruta real del bundle: con shadow root no hay `$slots` en el CE, así que el wrapper
+// mira la luz del host para decidir si reenvía `footer` (si lo reenvía vacío, pisa el
+// pie por defecto de `Modal.vue` y el modal queda sin botones).
+defineComegenElement("cu-modal-test", ModalCe);
+
+type ModalTestElement = HTMLElement & {
+  open: () => void;
+  close: () => void;
+  isOpen: () => boolean;
+};
+
+function mountModalElement(html = "", attrs: Record<string, string> = {}) {
+  const el = document.createElement("cu-modal-test") as ModalTestElement;
+  el.innerHTML = html;
+  for (const [name, value] of Object.entries(attrs)) el.setAttribute(name, value);
+  document.body.appendChild(el);
+  return el;
+}
+
+describe("Modal.ce", () => {
+  it("sin footer propio muestra el pie por defecto (persistent: Cancelar/Aceptar)", async () => {
+    const el = mountModalElement("<p>Contenido</p>", { title: "Editar", persistent: "" });
+    await flushPromises();
+    el.open();
+    await flushPromises();
+    await flushPromises();
+
+    expect(el.shadowRoot!.querySelector('slot[name="footer"]')).toBeNull();
+    const buttons = [...el.shadowRoot!.querySelectorAll(".cu-modal-footer button")];
+    expect(buttons.map((b) => b.textContent?.trim())).toEqual(["Cancelar", "Aceptar"]);
+    el.remove();
+  });
+
+  it("con footer del host lo proyecta y no agrega los botones por defecto", async () => {
+    const el = mountModalElement(
+      '<p>Contenido</p><div slot="footer"><button id="pie">Guardar</button></div>',
+      { title: "Editar" },
+    );
+    await flushPromises();
+    el.open();
+    await flushPromises();
+    await flushPromises();
+
+    expect(el.shadowRoot!.querySelector(".cu-modal-footer-default")).toBeNull();
+    const outlet = el.shadowRoot!.querySelector('slot[name="footer"]') as HTMLSlotElement;
+    expect(outlet).not.toBeNull();
+    const assigned = outlet.assignedElements();
+    expect(assigned).toHaveLength(1);
+    expect((assigned[0] as HTMLElement).querySelector("#pie")).not.toBeNull();
+    el.remove();
+  });
+
+  it("detecta el footer agregado después del mount", async () => {
+    const el = mountModalElement("<p>Contenido</p>", { title: "Tardío" });
+    await flushPromises();
+    expect(el.shadowRoot!.querySelector(".cu-modal-footer-default")).not.toBeNull();
+
+    const footer = document.createElement("div");
+    footer.setAttribute("slot", "footer");
+    footer.innerHTML = '<button id="pie">Guardar</button>';
+    el.appendChild(footer);
+    await flushPromises();
+    await flushPromises();
+
+    expect(el.shadowRoot!.querySelector(".cu-modal-footer-default")).toBeNull();
+    el.remove();
+  });
+
+  it("el `[autofocus]` del contenido sloteado recibe el foco al abrir", async () => {
+    const el = mountModalElement('<input id="af" autofocus><button id="otro">otro</button>', {
+      title: "Buscar",
+    });
+    await flushPromises();
+    el.open();
+    await flushPromises();
+    await flushPromises();
+
+    expect(document.activeElement).toBe(el.querySelector("#af"));
+    el.remove();
   });
 });

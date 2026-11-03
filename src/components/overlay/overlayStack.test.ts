@@ -125,7 +125,7 @@ describe("Pila de overlays — scroll lock coordinado", () => {
     await flushPromises();
     expect(document.body.style.overflow).toBe("hidden");
 
-    // Un modal arriba no pide el lock: no debe soltarlo al cerrarse.
+    // El modal también pide el lock: cerrarlo no debe soltar el del SideOver.
     const modal = await openModal();
     overlayVm(modal).close();
     await flushPromises();

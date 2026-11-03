@@ -2,8 +2,8 @@
 
 # `Modal`
 
-Modal/diálogo con backdrop, animación, `color`, `size`/`height` y slots `icon`/`default`/`footer`.
-Distingue el inicio del cierre (`close`) del final de la animación (`closed`).
+Modal/diálogo con backdrop, `color`, `size`/`height` y slots `icon`/`default`/`footer`.
+Distingue el inicio del cierre (`close`) del cierre ya aplicado (`closed`).
 
 ## Uso en Vue
 
@@ -36,7 +36,8 @@ El modal no se monta ni se desmonta: se abre y se cierra con `open()`/`close()` 
 
 ## Colores
 
-`color` tiñe el título y el acento de la cabecera (`--cu-color-{color}`).
+`color` tiñe el título con la variante legible del color (`--cu-color-{color}-text`), pensada para
+texto sobre la superficie: la base del color no alcanza el contraste mínimo como texto.
 
 ```vue
 <Modal color="primary" title="primary">...</Modal>
@@ -132,8 +133,10 @@ const modal = ref<InstanceType<typeof Modal> | null>(null);
 
 ## Interacción
 
-`opened` avisa al abrir; al cerrar se emiten `close` (arranca el cierre) y `closed` (terminó la
-animación). `accept` y `cancel` sólo salen de los botones del footer por defecto.
+`opened` avisa al abrir; al cerrar se emiten `close` (arranca el cierre) y `closed` (el modal ya no
+está visible). No hay animación de salida, así que ambos salen en el mismo tick: `closed` es el
+punto para lo que deba correr con el modal cerrado. `accept` y `cancel` sólo salen de los botones
+del footer por defecto.
 
 ```vue
 <script setup lang="ts">
@@ -209,17 +212,20 @@ function cleanUp() {
 ## Accesibilidad y foco
 
 El diálogo se anuncia con `role="dialog"` y `aria-modal="true"`. Con `title`, el nombre accesible
-sale de ese título (`aria-labelledby`); sin `title` se usa `aria-label` (por defecto «Diálogo», o el
-que pongas en el host). Un `aria-label` explícito siempre gana.
+sale de ese título (`aria-labelledby`) y `aria-label` no se usa; sin `title` se usa `aria-label` (el
+que pases al componente, o «Diálogo»).
 
-Al abrir, el foco entra al diálogo (primer control, o el `[autofocus]` del contenido) y queda
-atrapado: `Tab` cicla entre los controles del modal y `Shift+Tab` retrocede, sin escaparse al resto
-de la página. Al cerrar —con el botón, el backdrop o `Escape`— el foco vuelve al elemento que abrió
-el modal.
+Al abrir, el foco entra al diálogo: el `[autofocus]` del contenido si hay y, si no, el primer
+control. Queda atrapado: `Tab` cicla entre los controles del modal y `Shift+Tab` retrocede, sin
+escaparse al resto de la página. Al cerrar —con el botón, el backdrop, `Escape` o desmontando el
+componente— el foco vuelve al elemento que abrió el modal. Un click que arranca dentro del panel y
+suelta en el backdrop (p. ej. al seleccionar texto) no cierra el modal.
 
-`Escape` cierra el modal **sólo si es el overlay de arriba**: si encima hay un `SideOver` o un menú
-abierto, esa pulsación cierra ese overlay y el modal sigue abierto. La pila de overlays (`Escape` +
-bloqueo del scroll) es compartida por `Modal`, `SideOver` y `Popover`/`Dropdown`.
+`Escape` y la trampa de `Tab` los atiende **sólo el overlay de arriba**: si encima hay un `SideOver`
+o un menú abierto, la pulsación actúa sobre ese overlay y el modal sigue abierto y sin robar el
+foco. La pila de overlays (`Escape` + bloqueo del scroll del body) es compartida por `Modal`,
+`SideOver` y `Popover`/`Dropdown`: mientras el modal está abierto la página de atrás no scrollea, y
+el bloqueo se suelta cuando se cierra el último overlay que lo pidió.
 
 ```vue
 <template>

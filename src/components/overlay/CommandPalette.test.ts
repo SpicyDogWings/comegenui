@@ -420,8 +420,10 @@ describe("CommandPalette — nombre accesible del diálogo", () => {
     await flushPromises();
 
     const dialog = w.find("[role=dialog]");
-    expect(dialog.attributes("aria-labelledby")).toBe("modal-title");
-    expect(dialog.find(".cu-modal-title").text()).toBe("Comandos");
+    const title = dialog.find(".cu-modal-title");
+    // El id lo genera el Modal: se resuelve contra el título de ESTA instancia.
+    expect(dialog.attributes("aria-labelledby")).toBe((title.element as HTMLElement).id);
+    expect(title.text()).toBe("Comandos");
   });
 });
 

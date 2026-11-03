@@ -1,7 +1,8 @@
 <script setup lang="ts">
-import { computed, nextTick, onBeforeUnmount, ref, useAttrs, useSlots, watch, type PropType } from "vue";
+import { computed, nextTick, onBeforeUnmount, ref, useAttrs, useId, useSlots, watch, type PropType } from "vue";
 import { isModalSize } from '@/utils/validators'
 import {
+  isTopmostOverlay,
   registerOverlay,
   unregisterOverlay,
   type OverlayId,
@@ -53,6 +54,13 @@ const backdropRef = ref<HTMLElement | null>(null);
 /** Elemento que tenía el foco al abrir: se le devuelve al cerrar. */
 const trigger = ref<HTMLElement | null>(null);
 
+// Un modal no se monta ni se desmonta: dos instancias conviven en la página, así que
+// los ids del título y la descripción no pueden ser fijos (`modal-title` duplicado
+// haría que `aria-labelledby` apunte al título de otro modal).
+const uid = useId();
+const titleId = `${uid}-title`;
+const descriptionId = `${uid}-description`;
+
 const hasFooter = computed(() => !!slots.footer?.());
 
 // Nombre accesible: con `title` manda `aria-labelledby`; sin él (p. ej.
@@ -63,7 +71,9 @@ const dialogLabel = computed(() =>
 );
 
 const colorStyles = computed(() => ({
-  '--modal-color': `var(--cu-color-${props.color})`,
+  // `-text` es la variante legible del color para texto sobre la superficie: la base
+  // queda en 1.85:1 (`warning`, tema claro) porque está pensada para fondos.
+  '--modal-color': `var(--cu-color-${props.color}-text)`,
 }));
 
 const FOCUSABLE_SELECTOR = [
@@ -146,7 +156,12 @@ function focusFirst() {
   const focusables = dialogFocusables();
   const active = deepActiveElement();
   if (active && (focusables.includes(active as HTMLElement) || root.contains(active))) return;
-  const autofocus = root.querySelector('[autofocus]') as HTMLElement | null;
+  // `querySelector` desde el shadow root no cruza el slot: en el custom element el
+  // contenido vive en la luz del host, así que el `[autofocus]` se busca en la lista
+  // que ya recorrió los slots (y los shadow roots anidados).
+  const autofocus =
+    focusables.find((el) => el.hasAttribute('autofocus')) ??
+    (root.querySelector('[autofocus]') as HTMLElement | null);
   (autofocus ?? focusables[0] ?? root).focus();
 }
 
@@ -165,9 +180,13 @@ function restoreFocus() {
  * Trampa de foco: Tab/Shift+Tab ciclan dentro del diálogo. Se escucha en
  * `document` (keydown es `composed`) para cubrir también el foco que quedó
  * fuera —body, la barra del navegador— y el contenido sloteado en el shadow.
+ * Sólo atiende el overlay de arriba: con un `SideOver`, otro modal o un menú
+ * encima, la trampa del que está arriba manda (si no, `Tab` desde ese overlay
+ * caía en este modal, que está tapado).
  */
 function handleKeydown(event: KeyboardEvent) {
   if (!isOpen.value || event.key !== 'Tab') return;
+  if (!overlayId || !isTopmostOverlay(overlayId)) return;
   const focusables = dialogFocusables();
   const root = backdropRef.value;
   if (!focusables.length) {
@@ -206,6 +225,9 @@ function claimOverlay() {
     close: () => {
       if (!props.persistent) close();
     },
+    // El modal tapa la página: la rueda sobre el backdrop no debe scrollear el body.
+    // El lock es de la pila, así que un `SideOver` abierto encima no se lo devuelve.
+    lockScroll: true,
   });
 }
 
@@ -241,8 +263,22 @@ function handleAccept() {
   close();
 }
 
+/**
+ * Un click que empieza dentro del panel (seleccionar texto, arrastrar) termina con
+ * `target` en el backdrop —el ancestro común de mousedown/mouseup—, así que mirar
+ * sólo el `target` cerraba el modal y se perdía lo escrito. Se exige que la presión
+ * haya empezado en el backdrop.
+ */
+let pressedOnBackdrop = false;
+
+function handleBackdropMouseDown(event: MouseEvent) {
+  pressedOnBackdrop = event.target === event.currentTarget;
+}
+
 function handleBackdropClick(event: MouseEvent) {
-  if (!props.persistent && event.target === event.currentTarget) {
+  const startedOnBackdrop = pressedOnBackdrop;
+  pressedOnBackdrop = false;
+  if (!props.persistent && startedOnBackdrop && event.target === event.currentTarget) {
     close();
   }
 }
@@ -265,6 +301,9 @@ watch(isOpen, (newVal) => {
 onBeforeUnmount(() => {
   releaseOverlay();
   document.removeEventListener("keydown", handleKeydown);
+  // Un consumidor con `v-if` desmonta el modal abierto: el foco del panel muere con
+  // él, así que se devuelve al trigger igual que en un cierre normal.
+  restoreFocus();
 });
 
 defineExpose({
@@ -280,14 +319,15 @@ defineExpose({
   <div
     ref="backdropRef"
     v-show="isOpen"
+    @mousedown="handleBackdropMouseDown"
     @click="handleBackdropClick"
     tabindex="-1"
     role="dialog"
     class="cu-modal-backdrop"
     aria-modal="true"
-    :aria-labelledby="title ? 'modal-title' : undefined"
+    :aria-labelledby="title ? titleId : undefined"
     :aria-label="dialogLabel"
-    :aria-describedby="description ? 'modal-description' : undefined"
+    :aria-describedby="description ? descriptionId : undefined"
   >
     <div
       class="cu-modal"
@@ -300,7 +340,7 @@ defineExpose({
           <div v-if="title" class="cu-modal-title-row">
             <slot name="icon" />
             <h2
-              id="modal-title"
+              :id="titleId"
               class="cu-modal-title"
             >
               {{ title }}
@@ -308,7 +348,7 @@ defineExpose({
           </div>
           <p
             v-if="description"
-            id="modal-description"
+            :id="descriptionId"
             class="cu-modal-description"
           >
             {{ description }}
