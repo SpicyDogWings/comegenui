@@ -47,6 +47,13 @@ function themeSurface(css: string): string {
   return match[1].trim()
 }
 
+/** `--cu-border-color`, `-strong` o `-focus` del bloque de un tema. */
+function borderToken(css: string, suffix: string): string {
+  const match = new RegExp(`--cu-border-color${suffix}:\\s*([^;]+);`).exec(css)
+  if (!match?.[1]) throw new Error(`falta --cu-border-color${suffix}`)
+  return match[1].trim()
+}
+
 /** Un par texto/fondo que un componente pinta realmente. */
 interface Pair {
   label: string
@@ -169,6 +176,71 @@ describe('contraste de tokens en los 15 temas', () => {
         expect(relativeLuminance(solid), `${theme.name}/${color}`).toBeGreaterThanOrEqual(relativeLuminance(surface))
       }
     }
+  })
+})
+
+describe('bordes y anillo de foco: no textuales ≥ 3:1 (WCAG 1.4.11)', () => {
+  const ROOT = resolve(import.meta.dirname, '../../..')
+  const ACCENT_OUTLINE = /outline\s*:[^;{}]*var\(--cu-color-(?:primary|secondary|neutral|success|warning|danger)\)/
+
+  it('--cu-border-color / -strong / -focus llegan a 3:1 contra la superficie en los 15 temas', () => {
+    const failures: string[] = []
+
+    for (const theme of THEMES) {
+      const surface = themeSurface(theme.css)
+      for (const suffix of ['', '-strong', '-focus'] as const) {
+        const value = borderToken(theme.css, suffix)
+        const ratio = contrastRatio(value, surface)
+        if (ratio + 1e-9 < MIN_BORDER_CONTRAST) {
+          failures.push(
+            `${theme.name} --cu-border-color${suffix}: ${ratio.toFixed(2)} < ${MIN_BORDER_CONTRAST} (${value} sobre ${surface})`,
+          )
+        }
+      }
+    }
+
+    expect(failures).toEqual([])
+  })
+
+  it('el borde normal y el foco son colores opacos (hex): no dependen de `opacity`', () => {
+    for (const theme of THEMES) {
+      for (const suffix of ['', '-focus'] as const) {
+        expect(borderToken(theme.css, suffix), `${theme.name}${suffix}`).toMatch(/^#[0-9a-f]{6}$/i)
+      }
+    }
+  })
+
+  it('`-strong` sigue siendo más marcado que el borde normal', () => {
+    const failures: string[] = []
+    for (const theme of THEMES) {
+      const surface = themeSurface(theme.css)
+      const normal = contrastRatio(borderToken(theme.css, ''), surface)
+      const strong = contrastRatio(borderToken(theme.css, '-strong'), surface)
+      if (strong + 1e-9 < normal) {
+        failures.push(`${theme.name}: strong ${strong.toFixed(2)} < normal ${normal.toFixed(2)}`)
+      }
+    }
+    expect(failures).toEqual([])
+  })
+
+  it('el borde del checkbox desmarcado usa `--cu-border-color` (el token con piso 3:1)', () => {
+    const checkbox = readFileSync(resolve(ROOT, 'src/components/form/Checkbox.vue'), 'utf8')
+    const boxRule = /\.cu-checkbox-box\s*\{([^}]*)\}/.exec(checkbox)?.[1] ?? ''
+    expect(boxRule).toContain('var(--cu-border-color)')
+  })
+
+  it('ningún `:focus-visible`/`:focus-within` pinta el outline con un acento crudo', () => {
+    const files = globSync('src/components/**/*.vue', {
+      cwd: ROOT,
+      ignore: ['**/legacy/**', '**/archived/**'],
+    })
+    const offenders = files.filter((file) =>
+      ACCENT_OUTLINE.test(readFileSync(resolve(ROOT, file), 'utf8')),
+    )
+    // Un acento (`--cu-color-primary`) no tiene piso de contraste como borde:
+    // en nord-polar-night queda en 1.69:1. El foco usa `--cu-border-color-focus`
+    // o un `-text` (4.5:1 garantizado).
+    expect(offenders).toEqual([])
   })
 })
 

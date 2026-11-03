@@ -2614,6 +2614,46 @@ const MUTATIONS = [
     find: `const safeSize = computed(() => (isSizeSm(props.size) ? props.size : 'md'));`,
     replace: `const safeSize = computed(() => props.size);`,
   },
+  {
+    id: "ce-attr-boolean-sin-castear",
+    file: "src/utils/comegen-element.ts",
+    test: "src/utils/comegen-element.test.ts",
+    expect: "`disabled=\"false\"` no deshabilita y `model-value=\"false\"` no marca el checkbox",
+    find: `  if (types.boolean) return value.trim().toLowerCase() !== 'false'`,
+    replace: `  if (types.boolean) return value`,
+  },
+  {
+    id: "ce-attr-number-sin-castear",
+    file: "src/utils/comegen-element.ts",
+    test: "src/utils/comegen-element.test.ts",
+    expect: "`count=\"7\"` llega como número, no como string",
+    find: `  if (types.number && !types.string) {`,
+    replace: `  if (types.number && false) {`,
+  },
+  {
+    id: "tokens-borde-sin-piso",
+    file: "src/plugins/cu-tokens/css.ts",
+    test: "src/plugins/cu-tokens/contrast.test.ts",
+    expect: "el borde normal (checkbox desmarcado) no baja de 3:1",
+    find: '    --cu-border-color: ${ensureContrast(colors.default || DEFAULT_COLORS.default, colors.surface, MIN_BORDER_CONTRAST)};',
+    replace: '    --cu-border-color: ${colors.default || DEFAULT_COLORS.default};',
+  },
+  {
+    id: "tokens-foco-sin-piso",
+    file: "src/plugins/cu-tokens/css.ts",
+    test: "src/plugins/cu-tokens/contrast.test.ts",
+    expect: "el anillo de foco no baja de 3:1 (nord-snow-storm)",
+    find: '    --cu-border-color-focus: ${ensureContrast(colors.focus || DEFAULT_COLORS.focus, colors.surface, MIN_BORDER_CONTRAST)};',
+    replace: '    --cu-border-color-focus: ${colors.focus || DEFAULT_COLORS.focus};',
+  },
+  {
+    id: "foco-acento-crudo",
+    file: "src/components/overlay/SideOver.vue",
+    test: "src/plugins/cu-tokens/contrast.test.ts",
+    expect: "ningún outline de :focus-visible usa un acento crudo (1.69:1)",
+    find: `  outline: 2px solid var(--cu-border-color-focus);`,
+    replace: `  outline: 2px solid var(--cu-color-primary);`,
+  },
 ];
 
 export { MUTATIONS };

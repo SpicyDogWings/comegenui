@@ -2,6 +2,7 @@ import { afterEach, describe, expect, it, vi } from 'vitest'
 import { defineComponent, h, nextTick } from 'vue'
 import { defineComegenElement, type ComegenMeta } from '@/utils/comegen-element'
 import Button from '@/components/buttons/Button.vue'
+import CheckboxCe from '@/components/customElements/form/Checkbox.ce.vue'
 
 const Stub = defineComponent({ render: () => h('div', 'comégen') })
 
@@ -270,5 +271,183 @@ describe('defineComegenElement — forwarding de atributos del host', () => {
     expect(root?.getAttribute('aria-describedby')).toBe('fwd-help')
     expect(root?.getAttribute('data-testid')).toBe('real')
     expect(root?.hasAttribute('arialabelledby')).toBe(false)
+  })
+})
+
+/**
+ * Props Boolean/Number del host. Un atributo es siempre un string: si el CE lo
+ * pasa crudo, `disabled="false"` deshabilita (string truthy) y `get()` devuelve
+ * el string `"false"` en vez del boolean. El casteo sigue la regla de HTML/Vue:
+ * atributo Boolean presente = `true` (incluido `""`), con `"false"` explícito
+ * → `false`; Number se parsea; String se queda string.
+ */
+const PropProbe = defineComponent({
+  props: {
+    checked: { type: Boolean, default: false },
+    disabled: { type: Boolean, default: false },
+    modelValue: { type: Boolean, default: false },
+    count: { type: Number, default: 0 },
+    mixed: { type: [String, Number], default: '' },
+    label: { type: String, default: '' },
+  },
+  render() {
+    return h('span', {
+      class: 'prop-probe',
+      'data-checked': String(this.checked),
+      'data-disabled': String(this.disabled),
+      'data-model': String(this.modelValue),
+      'data-count': String(this.count),
+      'data-count-type': typeof this.count,
+      'data-mixed': `${typeof this.mixed}:${this.mixed}`,
+      'data-label': `${typeof this.label}:${this.label}`,
+    })
+  },
+})
+
+/** El CE expone las props declaradas como propiedades JS (contrato de Vue). */
+interface PropProbeHost extends HTMLElement {
+  checked: boolean
+  disabled: boolean
+  modelValue: boolean
+  count: number
+  mixed: string | number
+  label: string
+}
+
+async function mountPropProbe(tag: string, attrs: Record<string, string> = {}) {
+  defineComegenElement(tag, PropProbe)
+  const host = document.createElement(tag) as PropProbeHost
+  for (const [name, value] of Object.entries(attrs)) host.setAttribute(name, value)
+  document.body.appendChild(host)
+  await nextTick()
+  await nextTick()
+  const root = host.shadowRoot?.querySelector('.prop-probe')
+  expect(root).toBeTruthy()
+  // El selector es fijo: el nodo raíz es el `span` que renderiza `PropProbe`.
+  const node = root as HTMLElement
+  return { host, node }
+}
+
+describe('defineComegenElement — props Boolean y Number', () => {
+  it('castea Boolean: `"false"` → false, `"true"`/vacío → true', async () => {
+    const { host, node } = await mountPropProbe('cu-test-prop-bool', {
+      checked: 'false',
+      disabled: 'true',
+      'model-value': '',
+    })
+
+    expect(host.checked).toBe(false)
+    expect(host.disabled).toBe(true)
+    expect(host.modelValue).toBe(true)
+    expect(node.getAttribute('data-checked')).toBe('false')
+    expect(node.getAttribute('data-disabled')).toBe('true')
+    expect(node.getAttribute('data-model')).toBe('true')
+  })
+
+  it('`disabled="false"` no deshabilita y `model-value="true"` es boolean', async () => {
+    const { host, node } = await mountPropProbe('cu-test-prop-false', {
+      disabled: 'false',
+      'model-value': 'true',
+    })
+
+    expect(host.disabled).toBe(false)
+    expect(node.getAttribute('data-disabled')).toBe('false')
+    expect(host.modelValue).toBe(true)
+    expect(node.getAttribute('data-model')).toBe('true')
+  })
+
+  it('castea Number y no toca String ni las uniones String/Number', async () => {
+    const { host, node } = await mountPropProbe('cu-test-prop-number', {
+      count: '7',
+      mixed: '5',
+      label: '7',
+    })
+
+    expect(host.count).toBe(7)
+    expect(node.getAttribute('data-count-type')).toBe('number')
+    // Un `[String, Number]` no se adivina: `"5"` sigue siendo el string `"5"`.
+    expect(node.getAttribute('data-mixed')).toBe('string:5')
+    expect(node.getAttribute('data-label')).toBe('string:7')
+
+    // Cambio dinámico: acá no corre la normalización de props del mount, sólo
+    // el bridge de atributos → el casteo tiene que salir de nuestro mapa.
+    host.setAttribute('count', '12')
+    await nextTick()
+    expect(host.count).toBe(12)
+    expect(node.getAttribute('data-count-type')).toBe('number')
+  })
+
+  it('propiedad JS y atributo quedan sincronizados en ambos sentidos', async () => {
+    const { host, node } = await mountPropProbe('cu-test-prop-sync')
+
+    host.checked = true
+    await nextTick()
+    expect(host.getAttribute('checked')).toBe('')
+    expect(node.getAttribute('data-checked')).toBe('true')
+
+    host.checked = false
+    await nextTick()
+    expect(host.hasAttribute('checked')).toBe(false)
+    expect(node.getAttribute('data-checked')).toBe('false')
+
+    host.setAttribute('checked', 'false')
+    await nextTick()
+    expect(host.checked).toBe(false)
+    expect(node.getAttribute('data-checked')).toBe('false')
+
+    host.setAttribute('checked', 'true')
+    await nextTick()
+    expect(host.checked).toBe(true)
+
+    host.removeAttribute('checked')
+    await nextTick()
+    expect(host.checked).toBe(false)
+    expect(node.getAttribute('data-checked')).toBe('false')
+  })
+})
+
+/** El CE real: el bug reportado se veía en `get()` y en el `disabled` interno. */
+interface CheckboxHost extends HTMLElement {
+  get(): boolean
+}
+
+async function mountCheckboxProbe(tag: string, attrs: Record<string, string>) {
+  defineComegenElement(tag, CheckboxCe)
+  const host = document.createElement(tag) as CheckboxHost
+  for (const [name, value] of Object.entries(attrs)) host.setAttribute(name, value)
+  document.body.appendChild(host)
+  await nextTick()
+  await nextTick()
+  const input = host.shadowRoot?.querySelector('input[type="checkbox"]')
+  expect(input).toBeTruthy()
+  // El selector fija el nodo: el checkbox interno que renderiza `Checkbox`.
+  return { host, input: input as HTMLInputElement }
+}
+
+describe('defineComegenElement — cu-checkbox real', () => {
+  it('`model-value="false"` no queda marcado: get() devuelve el boolean false', async () => {
+    const { host } = await mountCheckboxProbe('cu-test-checkbox-false', { 'model-value': 'false' })
+
+    expect(host.get()).toBe(false)
+    expect(typeof host.get()).toBe('boolean')
+    expect(host.shadowRoot?.querySelector('.cu-checkbox-box--checked')).toBeNull()
+  })
+
+  it('`model-value="true"` deja get() en boolean true y el box marcado', async () => {
+    const { host } = await mountCheckboxProbe('cu-test-checkbox-true', { 'model-value': 'true' })
+
+    expect(host.get()).toBe(true)
+    expect(typeof host.get()).toBe('boolean')
+    expect(host.shadowRoot?.querySelector('.cu-checkbox-box--checked')).not.toBeNull()
+  })
+
+  it('`disabled="false"` no deshabilita el input interno', async () => {
+    const { input } = await mountCheckboxProbe('cu-test-checkbox-enabled', { disabled: 'false' })
+    expect(input.disabled).toBe(false)
+
+    const { input: disabledInput } = await mountCheckboxProbe('cu-test-checkbox-disabled', {
+      disabled: '',
+    })
+    expect(disabledInput.disabled).toBe(true)
   })
 })

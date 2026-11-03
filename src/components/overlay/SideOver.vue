@@ -391,7 +391,7 @@ const panelStyle = computed(() => {
 }
 .cu-sideover-close:hover { background-color: var(--cu-color-neutral-subtle-hover); }
 .cu-sideover-close:focus-visible {
-  outline: 2px solid var(--cu-color-primary);
+  outline: 2px solid var(--cu-border-color-focus);
   outline-offset: 2px;
 }
 

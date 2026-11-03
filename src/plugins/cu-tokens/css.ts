@@ -208,9 +208,14 @@ export function colorsBlock(colors: any, themeName: string, opacities: Record<st
     --cu-code-faded: ${code.faded};
     /* per-theme shadow (color + opacidad 1-100) + border colors */
     --cu-shadow-color: ${shadowRgba};
-    --cu-border-color: ${colors.default || '#d1d5db'};
-    --cu-border-color-strong: ${colors.strong || '#6b7280'};
-    --cu-border-color-focus: ${colors.focus || '#1774A4'};`
+    /* No textuales (WCAG 1.4.11): el borde identifica al control (checkbox
+       desmarcado, card, separador) y el anillo de foco reemplaza al cursor.
+       Ambos se ajustan contra la superficie hasta 3:1 — se corrige el color
+       del token, no una opacity. strong conserva un piso mayor (4.5:1)
+       para seguir siendo más marcado que el borde normal. */
+    --cu-border-color: ${ensureContrast(colors.default || DEFAULT_COLORS.default, colors.surface, MIN_BORDER_CONTRAST)};
+    --cu-border-color-strong: ${ensureContrast(colors.strong || DEFAULT_COLORS.strong, colors.surface, MIN_TEXT_CONTRAST)};
+    --cu-border-color-focus: ${ensureContrast(colors.focus || DEFAULT_COLORS.focus, colors.surface, MIN_BORDER_CONTRAST)};`
 }
 
 function shadowVar(name: string, value: string, color?: string) {

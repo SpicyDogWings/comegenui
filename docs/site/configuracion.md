@@ -52,6 +52,25 @@ Compartidos: tipografía (`--cu-font-*`, `--cu-line-height-*`), espaciado (`--cu
 (`--cu-radius*`), bordes (`--cu-border-*`), sombras (`--cu-shadow-*`) y alpha de estado
 (`--cu-alpha-*`). El esquema de código usa `--cu-code-bg`, `--cu-code-text` y `--cu-code-faded`.
 
+### Bordes y foco
+
+Los bordes son elementos **no textuales**: WCAG 1.4.11 pide 3:1 contra lo que tienen al lado,
+porque el borde es lo que identifica al control (el cuadrado del checkbox desmarcado, el contorno
+de una card, un separador). Un anillo de foco reemplaza al cursor, así que corre la misma regla.
+El generador deriva los tres tokens desde los colores del tema, ajustando el color (no `opacity`):
+
+| Token | Sale de | Piso de contraste |
+|---|---|---|
+| `--cu-border-color` | `default` | ≥ 3:1 contra `--cu-color-surface` |
+| `--cu-border-color-strong` | `strong` | ≥ 4.5:1, y nunca más tenue que el normal |
+| `--cu-border-color-focus` | `focus` | ≥ 3:1 contra `--cu-color-surface` |
+
+El `outline` de `:focus-visible` usa **`--cu-border-color-focus`** (o un `-text`, que ya está
+medido a 4.5:1): el color de acento crudo (`--cu-color-primary`) no tiene piso como borde y puede
+quedar por debajo de 3:1 — en `nord-polar-night`, 1.69:1. Si cambiás `surface`, `default`,
+`strong` o `focus` en `comegen.config.json`, los tokens derivados se recalculan solos; el config no
+necesita declarar los valores ajustados.
+
 ### Alpha de estado
 
 El tono de los estados atenuados es un token, no un valor de cada componente: así un campo
