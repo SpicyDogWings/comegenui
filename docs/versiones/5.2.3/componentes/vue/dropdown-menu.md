@@ -67,7 +67,7 @@ const items = ref([
 
 ## Posicionamiento
 
-`position` (`bottom` default, además `top`, `left` y `right`) y `align` (`start` default, `center`, `end`) eligen dónde se abre el panel y cómo queda alineado con el toggle; `offset` (default `4`) es la separación en píxeles y `fixed` usa `position: fixed`.
+`position` (`bottom` default, además `top`, `left` y `right`) y `align` (`start` default, `center`, `end`) eligen dónde se abre el panel y cómo queda alineado con el toggle; `offset` (default `4`) es la separación en píxeles y `fixed` usa `position: fixed`. Un valor fuera del set cae a `bottom` / `start` (y `textAlign` a `left`): sin ese fallback el panel quedaba en el flujo, sin pegarse al trigger.
 
 ```vue
 <DropdownMenu label="bottom / start" position="bottom" align="start" :items="items" />
@@ -132,13 +132,15 @@ const items = ref([
 
 ## Slots
 
-El slot `toggle` reemplaza el botón del trigger (scoped: `toggle` e `isOpen`); el slot por defecto rellena el panel y sólo se usa cuando `items` está vacío.
+El slot `toggle` reemplaza el botón del trigger (scoped: `toggle`, `isOpen` y `aria`, con
+`aria-haspopup`, `aria-expanded` y `aria-controls` listos para `v-bind`); el slot por defecto rellena
+el panel y sólo se usa cuando `items` está vacío.
 
 ```vue
 <template>
   <DropdownMenu color="primary">
-    <template #toggle="{ toggle, isOpen }">
-      <Button :color="isOpen ? 'danger' : 'primary'" variant="solid" @click="toggle">
+    <template #toggle="{ toggle, isOpen, aria }">
+      <Button :color="isOpen ? 'danger' : 'primary'" variant="solid" v-bind="aria" @click="toggle">
         {{ isOpen ? 'Cerrar menú' : 'Menú custom' }}
       </Button>
     </template>
@@ -155,7 +157,7 @@ El slot `toggle` reemplaza el botón del trigger (scoped: `toggle` e `isOpen`); 
 
 ## Interacción
 
-`open` y `close` son los dos emits propios, y `open()`, `close()`, `toggle()` e `isOpen()` se llaman por `ref`. El panel se anuncia como `role="menu"`; al cerrarse con `Escape` (o al elegir un item), el foco vuelve al trigger.
+`open` y `close` son los dos emits propios, y `open()`, `close()`, `toggle()` e `isOpen()` se llaman por `ref`. El panel se anuncia como `role="menu"`; al cerrarse con `Escape` (o al elegir un item), el foco vuelve al trigger. Con `items` vacío el panel muestra el slot por defecto; las entradas nulas o que no son objetos se ignoran (no rompen el menú).
 
 ```vue
 <script setup lang="ts">
@@ -187,6 +189,36 @@ function controlar() {
 </template>
 ```
 
+
+## Teclado
+
+El trigger por defecto es un `<Button>`: <kbd>Enter</kbd> y <kbd>Espacio</kbd> abren el menú, y
+<kbd>Flecha abajo</kbd> / <kbd>Flecha arriba</kbd> lo abren con la primera / última fila enfocada.
+Las filas son `menuitem` y **no** son paradas de tabulación: el menú es una sola parada (el
+trigger) y adentro se navega con el teclado.
+
+| Tecla | Acción |
+|-------|--------|
+| <kbd>Flecha abajo</kbd> / <kbd>Flecha arriba</kbd> | Fila siguiente / anterior, salteando deshabilitadas, con vuelta al extremo |
+| <kbd>Home</kbd> / <kbd>End</kbd> | Primera / última fila habilitada |
+| Letras | Typeahead: enfoca la fila cuyo label empieza con lo tipeado |
+| <kbd>Enter</kbd> / <kbd>Espacio</kbd> | Activa la fila enfocada (acción o link) |
+| <kbd>Tab</kbd> | Cierra el menú y sigue el orden de tabulación |
+| <kbd>Escape</kbd> | Cierra el menú y devuelve el foco al trigger |
+
+Con un trigger propio (slot `toggle`) el manejo de teclado del menú abre igual, pero la apertura
+inicial con flechas depende de tu trigger: aplicá `v-bind="aria"` y llamá a `toggle` desde tu
+control.
+
+## Accesibilidad
+
+- El trigger lleva `aria-haspopup="menu"`, `aria-expanded` y `aria-controls` con el `id` del panel.
+- El panel es `role="menu"` y cada fila es `role="menuitem"`. Un item con `selected: true` se
+  anuncia como `menuitemcheckbox` marcado (`aria-checked="true"`); el check de lucide es decorativo.
+- Los divisores (`divider`) se anuncian como separador, y un item `disabled` se anuncia
+  deshabilitado: no recibe foco ni dispara `onClick`.
+- El chevron del trigger es decorativo (`aria-hidden`).
+
 ## Props
 
 <!--@include: ../../partials/dropdown-menu/props-vue.md-->
@@ -206,7 +238,9 @@ Cada item del array `items` puede tener:
 | `divider` | `boolean` | `false` | Si es `true`, renderiza una línea divisoria en vez de un item |
 | `href` | `string` | — | Convierte el item en un link (`<a>`) |
 | `target` | `string` | `"_self"` | Target del link cuando hay `href` |
-| `selected` | `boolean` | `false` | Muestra el check de lucide al final del item (estado de selección) |
+| `selected` | `boolean` | `false` | Muestra el check de lucide al final del item (estado de selección). Con `true` la fila se anuncia como `menuitemcheckbox` marcado |
+
+Las entradas nulas o que no son objetos se ignoran: el menú sigue renderizando el resto.
 
 ## Emits
 

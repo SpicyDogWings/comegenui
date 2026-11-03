@@ -779,6 +779,98 @@ const MUTATIONS = [
     replace: `            :selected="false"`,
   },
   {
+    id: "dropdown-menu-trigger-sin-aria",
+    file: "src/components/controls/DropdownMenu.vue",
+    expect: "el trigger anuncia aria-haspopup/aria-controls del panel",
+    find: `  'aria-haspopup': 'menu',
+  'aria-expanded': isOpen.value ? 'true' : 'false',
+  'aria-controls': panelId,`,
+    replace: `  'aria-expanded': isOpen.value ? 'true' : 'false',`,
+  },
+  {
+    id: "dropdown-menu-filas-sin-menuitem",
+    file: "src/components/controls/DropdownMenu.vue",
+    expect: "cada fila del panel es role=menuitem",
+    find: `            :role="item.selected ? 'menuitemcheckbox' : 'menuitem'"
+`,
+    replace: ``,
+  },
+  {
+    id: "dropdown-menu-selected-sin-estado",
+    file: "src/components/controls/DropdownMenu.vue",
+    expect: "un item selected se anuncia como menuitemcheckbox marcado",
+    find: `            :aria-checked="item.selected ? 'true' : undefined"
+`,
+    replace: ``,
+  },
+  {
+    id: "dropdown-menu-flechas-no-mueven",
+    file: "src/components/controls/DropdownMenu.vue",
+    expect: "las flechas mueven el foco entre las filas",
+    find: `function focusRow(rows: HTMLElement[], index: number) {
+  const position = (index + rows.length) % rows.length;`,
+    replace: `function focusRow(rows: HTMLElement[], index: number) {
+  if (rows.length >= 0) return;
+  const position = (index + rows.length) % rows.length;`,
+  },
+  {
+    id: "dropdown-menu-typeahead-sin-buscar",
+    file: "src/components/controls/DropdownMenu.vue",
+    expect: "tipear una letra enfoca la fila que empieza con ella",
+    find: `    searchByPrefix(e.key, rows, current);`,
+    replace: `    void e.key;`,
+  },
+  {
+    id: "dropdown-menu-tab-no-cierra",
+    file: "src/components/controls/DropdownMenu.vue",
+    expect: "Tab saca el foco del menú y lo cierra",
+    find: `    tabLeaving = true;
+    return;`,
+    replace: `    tabLeaving = false;
+    return;`,
+  },
+  {
+    id: "dropdown-menu-items-sin-filtro",
+    file: "src/components/controls/DropdownMenu.vue",
+    expect: "las entradas nulas de items se ignoran sin romper el menú",
+    find: `  (Array.isArray(props.items) ? props.items : []).filter(
+    (item): item is DropdownItem => !!item && typeof item === "object",
+  ),`,
+    replace: `  Array.isArray(props.items) ? props.items : [],`,
+  },
+  {
+    id: "dropdown-menu-roving-sin-tabindex",
+    file: "src/components/controls/DropdownMenu.vue",
+    expect: "la fila activa es la única parada de tabulación del menú",
+    find: `  const position = enabledItemIndices.value.indexOf(index);
+  return position >= 0 && position === effectiveActiveRow.value ? 0 : -1;`,
+    replace: `  return -1;`,
+  },
+  {
+    id: "dropdown-menu-posicion-sin-fallback",
+    file: "src/components/controls/DropdownMenu.vue",
+    expect: "un position fuera del set cae a bottom",
+    find: `const safePosition = computed(() => (isPosition(props.position) ? props.position : "bottom"));`,
+    replace: `const safePosition = computed(() => props.position);`,
+  },
+  {
+    id: "dropdown-menu-ce-items-sin-guarda",
+    file: "src/components/customElements/controls/DropdownMenu.ce.vue",
+    test: "src/components/customElements/ce-real.test.ts",
+    expect: "un items que no es array no rompe el custom element",
+    find: `  (Array.isArray(props.items) ? props.items : [])
+    .filter((item: any) => !!item && typeof item === "object")`,
+    replace: `  (props.items || [])`,
+  },
+  {
+    id: "dropdown-menu-ce-toggle-sin-aria",
+    file: "src/components/customElements/controls/DropdownMenu.ce.vue",
+    test: "src/components/customElements/ce-real.test.ts",
+    expect: "el trigger del light DOM recibe aria-expanded al abrir/cerrar",
+    find: `watch(menuOpen, syncToggleAria);`,
+    replace: ``,
+  },
+  {
     id: "pagination-pagesize-no-reset",
     file: "src/components/controls/Pagination.vue",
     expect: "cambiar el tamaño de página resetea a la página 1",
@@ -1522,7 +1614,7 @@ const MUTATIONS = [
     id: "dropdown-menu-text-align-solo-text-align",
     file: "src/components/controls/DropdownMenu.vue",
     expect: "textAlign alinea los items del panel (justify-content, no sólo text-align)",
-    find: `const itemStyle = computed(() => textAlignStyle(props.textAlign));`,
+    find: `const itemStyle = computed(() => textAlignStyle(safeTextAlign.value));`,
     replace: `const itemStyle = computed(() => ({ textAlign: props.textAlign }));`,
   },
   {

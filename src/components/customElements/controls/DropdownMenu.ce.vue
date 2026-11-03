@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import { ref, computed, getCurrentInstance, onMounted, onBeforeUnmount, type PropType } from 'vue';
+import { ref, computed, watch, getCurrentInstance, onMounted, onBeforeUnmount, type PropType } from 'vue';
 import { isAlign, isColor, isPositionVertical, isTextAlign, isVariantFull } from '@/utils/validators'
 import DropdownMenu from "../../controls/DropdownMenu.vue";
 
@@ -54,14 +54,21 @@ const props = defineProps({
   items: { type: Array, required: false, default: () => [] },
 });
 
+// `items` es una propiedad JS (no un atributo): puede llegar `null`, un string o una
+// lista con entradas nulas desde datos de la app. `.map` sobre eso rompía el computed
+// y el menú entero dejaba de renderizar (trigger incluido).
 const resolvedItems = computed(() =>
-  (props.items || []).map((item: any) => ({
-    ...item,
-    color: item.color || undefined,
-  })),
+  (Array.isArray(props.items) ? props.items : [])
+    .filter((item: any) => !!item && typeof item === "object")
+    .map((item: any) => ({
+      ...item,
+      color: item.color || undefined,
+    })),
 );
 
 const dropdownRef = ref<InstanceType<typeof DropdownMenu> | null>(null);
+// Estado del menú para publicarlo en el trigger del light DOM.
+const menuOpen = computed(() => dropdownRef.value?.isOpen() ?? false);
 
 // El slot `toggle` es light DOM. Solo lo reenviamos a DropdownMenu si el host
 // trae contenido con slot="toggle"; si no, un slot provisto pero vacío pisaría
@@ -93,13 +100,29 @@ function ceEmit(event: string, payload?: unknown) {
 
 const hasToggleSlot = ref(hasToggleContent());
 
+// El trigger provisto por el usuario vive en el light DOM: el wrapper le publica el
+// estado del menú (`aria-haspopup`/`aria-expanded`), que es lo que un botón genérico
+// no puede saber. `aria-controls` no se replica: su id vive en el shadow root y un
+// IDREF no cruza la frontera (el panel queda sin referencia por id, como en el resto
+// de los CE con panel).
+function syncToggleAria() {
+  for (const el of hostElement()?.querySelectorAll<HTMLElement>('[slot="toggle"]') ?? []) {
+    el.setAttribute("aria-haspopup", "menu");
+    el.setAttribute("aria-expanded", dropdownRef.value?.isOpen() ? "true" : "false");
+  }
+}
+
+watch(menuOpen, syncToggleAria);
+
 let observer: MutationObserver | null = null;
 onMounted(() => {
   hasToggleSlot.value = hasToggleContent();
+  syncToggleAria();
   const host = hostElement();
   if (host && typeof MutationObserver !== "undefined") {
     observer = new MutationObserver(() => {
       hasToggleSlot.value = hasToggleContent();
+      syncToggleAria();
     });
     observer.observe(host, { childList: true, attributes: true, attributeFilter: ["slot"] });
   }
