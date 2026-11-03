@@ -184,6 +184,13 @@ function toggleFaq() {
 </template>
 ```
 
+## Accesibilidad
+
+- El trigger es un `<button>` nativo: `Enter` y `Espacio` alternan el estado, y con `prefers-reduced-motion: reduce` la altura y el chevron no animan.
+- El botón expone `aria-expanded` (`"true"`/`"false"`) y `aria-controls` apuntando al `id` del contenido. El `id` sale de `useId()`, así que dos instancias montadas en la misma app no lo comparten.
+- El chevron es decorativo (`aria-hidden="true"`, `focusable="false"`) y no aparece en el árbol accesible.
+- Con `disabled`, el botón lleva el `disabled` nativo: sale del orden de tabulación y los lectores de pantalla lo anuncian como deshabilitado. El contenido ya abierto sigue visible y `close()` sigue funcionando desde código.
+
 ## Props
 
 <!--@include: ../../partials/collapse/props-vue.md-->

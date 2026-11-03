@@ -294,6 +294,37 @@ const MUTATIONS = [
     replace: `      :disabled="false"`,
   },
   {
+    id: "collapse-aria-expanded-fijo",
+    file: "src/components/overlay/Collapse.vue",
+    expect: "aria-expanded refleja el estado abierto/cerrado",
+    find: `      :aria-expanded="isOpen ? 'true' : 'false'"`,
+    replace: `      :aria-expanded="'false'"`,
+  },
+  {
+    id: "collapse-aria-controls-sin-id",
+    file: "src/components/overlay/Collapse.vue",
+    expect: "aria-controls apunta al id del contenido",
+    find: `      :aria-controls="contentId"`,
+    replace: `      aria-controls="cu-collapse-content"`,
+  },
+  {
+    id: "collapse-chevron-expuesto",
+    file: "src/components/overlay/Collapse.vue",
+    expect: "el chevron es decorativo y no entra al árbol accesible",
+    find: `        aria-hidden="true"
+        focusable="false"
+      />`,
+    replace: `      />`,
+  },
+  {
+    id: "collapse-reduced-motion-sin-guard",
+    file: "src/components/overlay/Collapse.vue",
+    expect: "con prefers-reduced-motion no manipula la altura inline",
+    find: `function onEnter(el: Element) {
+  if (reducedMotion()) return`,
+    replace: `function onEnter(el: Element) {`,
+  },
+  {
     id: "side-over-persistent-ignored",
     file: "src/components/overlay/SideOver.vue",
     expect: "persistent no se cierra por backdrop ni Escape",

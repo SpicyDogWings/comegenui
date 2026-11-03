@@ -180,6 +180,13 @@ Los collapses se pueden anidar para construir árboles de menú:
 
 <!-- demo:collapse-completo -->
 
+## Accesibilidad
+
+- El trigger es un `<button>` nativo: `Enter` y `Espacio` alternan el estado, y con `prefers-reduced-motion: reduce` la altura y el chevron no animan.
+- El botón expone `aria-expanded` (`"true"`/`"false"`) y `aria-controls` apuntando al `id` del contenido. El `id` se genera por instancia y vive en el mismo árbol que el botón (light DOM en Vue, shadow root en el Custom Element), así que el `aria-controls` siempre resuelve.
+- El chevron es decorativo (`aria-hidden="true"`, `focusable="false"`) y no aparece en el árbol accesible.
+- Con `disabled`, el botón lleva el `disabled` nativo: sale del orden de tabulación y los lectores de pantalla lo anuncian como deshabilitado. El contenido ya abierto sigue visible y `close()` sigue funcionando desde código.
+
 ## Atributos
 
 <!--@include: ../partials/collapse/props-vanilla.md-->

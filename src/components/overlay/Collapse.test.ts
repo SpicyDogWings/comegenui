@@ -3,7 +3,8 @@
 // Sección colapsable con trigger (botón + chevron). Contenido oculto por
 // defecto; `default-open` lo muestra al inicio. Emite `toggle` con boolean y
 // expone open/close/toggle/isOpen. Aserciones escritas a mano desde la prosa.
-import { describe, it, expect } from "vitest";
+import { describe, it, expect, vi } from "vitest";
+import { h, nextTick } from "vue";
 import { flushPromises, mount } from "@vue/test-utils";
 import Collapse from "./Collapse.vue";
 
@@ -156,5 +157,115 @@ describe("Collapse — ícono saneado", () => {
     expect(w.html()).not.toContain("onerror");
     expect(w.html()).not.toContain("<script");
     expect(probe.__xss).toBeUndefined();
+  });
+});
+
+describe("Collapse — accesibilidad del disclosure", () => {
+  it("expone aria-expanded en el trigger y refleja el estado", async () => {
+    const w = mount(Collapse, { props: { label: "L" } });
+
+    expect(w.find(".cu-collapse-trigger").attributes("aria-expanded")).toBe("false");
+
+    vm(w).open();
+    await flushPromises();
+    expect(w.find(".cu-collapse-trigger").attributes("aria-expanded")).toBe("true");
+
+    vm(w).close();
+    await flushPromises();
+    expect(w.find(".cu-collapse-trigger").attributes("aria-expanded")).toBe("false");
+  });
+
+  it("aria-controls apunta al id del contenido", () => {
+    const w = mount(Collapse, { props: { label: "L" } });
+    const id = content(w).attributes("id");
+
+    expect(id).toBeTruthy();
+    expect(w.find(".cu-collapse-trigger").attributes("aria-controls")).toBe(id);
+  });
+
+  it("dos instancias no comparten el id del contenido", () => {
+    const w = mount({
+      render: () => h("div", [h(Collapse, { label: "A" }), h(Collapse, { label: "B" })]),
+    });
+    const ids = w.findAll(".cu-collapse-content").map((c) => c.attributes("id"));
+    const triggers = w.findAll(".cu-collapse-trigger");
+
+    expect(ids[0]).toBeTruthy();
+    expect(ids[1]).toBeTruthy();
+    expect(ids[0]).not.toBe(ids[1]);
+    expect(triggers[0]?.attributes("aria-controls")).toBe(ids[0]);
+    expect(triggers[1]?.attributes("aria-controls")).toBe(ids[1]);
+  });
+
+  it("el chevron es decorativo y no entra al árbol accesible", () => {
+    const w = mount(Collapse, { props: { label: "L" } });
+    const chevron = w.find(".cu-collapse-chevron");
+
+    expect(chevron.attributes("aria-hidden")).toBe("true");
+    expect(chevron.attributes("focusable")).toBe("false");
+  });
+});
+
+describe("Collapse — prefers-reduced-motion", () => {
+  const withReducedMotion = () => {
+    const original = window.matchMedia;
+    window.matchMedia = ((query: string) => ({
+      matches: query.includes("prefers-reduced-motion"),
+      media: query,
+      onchange: null,
+      addListener: () => {},
+      removeListener: () => {},
+      addEventListener: () => {},
+      removeEventListener: () => {},
+      dispatchEvent: () => false,
+    })) as unknown as typeof window.matchMedia;
+    return () => {
+      window.matchMedia = original;
+    };
+  };
+
+  it("no manipula la altura inline (no anima) y muestra el contenido igual", async () => {
+    const restore = withReducedMotion();
+    vi.useFakeTimers();
+    try {
+      // `@vue/test-utils` stubea `Transition` por defecto; sin el stub corren los
+      // hooks de altura, que son justo los que deben quedar inertes.
+      const w = mount(Collapse, {
+        props: { label: "L", defaultOpen: true },
+        global: { stubs: { transition: false } },
+      });
+      const el = content(w).element as HTMLElement;
+
+      vm(w).close();
+      await nextTick();
+      await vi.advanceTimersByTimeAsync(400);
+      expect(el.getAttribute("style") ?? "").not.toContain("height");
+
+      const styles: (string | null)[] = [];
+      const observer = new MutationObserver((records) => {
+        for (const record of records) styles.push(record.oldValue);
+      });
+      observer.observe(el, {
+        attributes: true,
+        attributeFilter: ["style"],
+        attributeOldValue: true,
+      });
+
+      vm(w).open();
+      await nextTick();
+      await vi.advanceTimersByTimeAsync(400);
+      for (const record of observer.takeRecords()) styles.push(record.oldValue);
+      observer.disconnect();
+      styles.push(el.getAttribute("style"));
+
+      expect(vm(w).isOpen()).toBe(true);
+      // La altura nunca pasa por un valor inline intermedio (height: 0): con la
+      // transición CSS desactivada, el contenido aparece de una y puede crecer.
+      expect(styles.some((style) => (style ?? "").includes("height"))).toBe(false);
+      expect(el.getAttribute("style") ?? "").not.toContain("display: none");
+    } finally {
+      vi.useRealTimers();
+      restore();
+    }
   });
 });
