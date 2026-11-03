@@ -355,9 +355,17 @@ const rootClasses = computed(() => [
   cursor: not-allowed;
 }
 
-/* icon-only */
-.cu-button--icon-only {
+/* icon-only: cuadrado. El `:not(.cu-button--link)` sube la especificidad para
+   ganarle al padding de `.cu-button--sm/lg` (que tienen la misma o más clase);
+   antes el cuadrado sólo salía en `md` (sm 32×24, lg 64×48). En `link` no
+   aplica: el link no lleva padding. */
+.cu-button--icon-only:not(.cu-button--link) {
   padding: var(--cu-space-sm);
+}
+
+/* `lg` mantiene la escala: 16 px de padding por lado (48×48 con un ícono de 16). */
+.cu-button--lg.cu-button--icon-only:not(.cu-button--link) {
+  padding: var(--cu-space-lg);
 }
 
 /* loading spinner */

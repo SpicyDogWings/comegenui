@@ -90,6 +90,23 @@ describe("Skeleton — líneas de texto", () => {
     expect(w.find(".cu-skeleton-bar").classes()).not.toContain("cu-skeleton-bar--short");
   });
 
+  it("recorta `lines` al tope de 100 barras", () => {
+    const w = mount(Skeleton, { props: { shape: "text", lines: 20000 } });
+    expect(w.findAll(".cu-skeleton-bar")).toHaveLength(100);
+  });
+
+  it("el tope no toca los valores válidos (100 sigue siendo 100)", () => {
+    const w = mount(Skeleton, { props: { shape: "text", lines: 100 } });
+    expect(w.findAll(".cu-skeleton-bar")).toHaveLength(100);
+  });
+
+  it("`lines` por debajo de 1 renderiza una barra", () => {
+    for (const lines of [0, -5]) {
+      const w = mount(Skeleton, { props: { shape: "text", lines } });
+      expect(w.findAll(".cu-skeleton-bar")).toHaveLength(1);
+    }
+  });
+
   it("en rect y circle `lines` se ignora", () => {
     for (const shape of ["rect", "circle"] as const) {
       const w = mount(Skeleton, { props: { shape, lines: 4 } });

@@ -230,9 +230,18 @@ const MUTATIONS = [
     file: "src/components/information/Skeleton.vue",
     expect: "con shape=text renderiza N barras (lines)",
     find: `const barCount = computed(() =>
-  resolvedShape.value === "text" ? Math.max(1, Math.floor(props.lines) || 1) : 1,
+  resolvedShape.value === "text"
+    ? Math.min(MAX_LINES, Math.max(1, Math.floor(props.lines) || 1))
+    : 1,
 );`,
     replace: `const barCount = computed(() => 1);`,
+  },
+  {
+    id: "skeleton-lines-sin-tope",
+    file: "src/components/information/Skeleton.vue",
+    expect: "recorta `lines` al tope de 100 barras",
+    find: `    ? Math.min(MAX_LINES, Math.max(1, Math.floor(props.lines) || 1))`,
+    replace: `    ? Math.max(1, Math.floor(props.lines) || 1)`,
   },
   {
     id: "skeleton-radius-default-mal",
@@ -1336,6 +1345,20 @@ const MUTATIONS = [
     expect: "click alterna el tema claro/oscuro",
     find: `  store.toggleLightDark()`,
     replace: `  /* mutado */`,
+  },
+  {
+    id: "floating-button-posicion-sin-vars",
+    file: "src/components/buttons/FloatingButton.vue",
+    expect: "la posición del FAB sale de --cu-fab-bottom/right con el spacing del tema",
+    find: `  bottom: 'calc(var(--cu-fab-bottom, var(--cu-space-lg)) + env(safe-area-inset-bottom, 0px))',`,
+    replace: `  bottom: 'var(--cu-space-lg)',`,
+  },
+  {
+    id: "floating-button-sin-zona-segura",
+    file: "src/components/buttons/FloatingButton.vue",
+    expect: "el margen derecho suma la zona segura de iOS (env)",
+    find: `  right: 'calc(var(--cu-fab-right, var(--cu-space-lg)) + env(safe-area-inset-right, 0px))',`,
+    replace: `  right: 'var(--cu-fab-right, var(--cu-space-lg))',`,
   },
   {
     id: "floating-button-variant-fija",

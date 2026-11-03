@@ -50,9 +50,9 @@ cada `shape` usa su default; pasarlos pisa ese default sin tocar el resto de la 
 
 ## Líneas de texto
 
-Con `shape="text"`, `lines` indica cuántas barras se apilan (default `1`). La **última** queda al
-60 % del ancho, como el final de un párrafo; con una sola línea no se acorta. En `rect` y `circle`
-`lines` se ignora.
+Con `shape="text"`, `lines` indica cuántas barras se apilan (default `1`; rango útil **1–100**,
+los valores mayores se recortan a 100). La **última** queda al 60 % del ancho, como el final de un
+párrafo; con una sola línea no se acorta. En `rect` y `circle` `lines` se ignora.
 
 ```html
 <cu-skeleton shape="text" lines="3"></cu-skeleton>

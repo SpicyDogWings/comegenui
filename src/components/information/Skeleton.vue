@@ -67,8 +67,14 @@ const resolvedColor = computed(() => (isColor(props.color) ? props.color : "neut
 
 const resolvedRadius = computed(() => props.radius || shapeDefaults.value.radius);
 
+// Tope de barras: `lines` puede venir de datos (o de un atributo del CE) y un
+// valor absurdo crea miles de nodos y cuelga la página (20 000 barras ≈ 150 ms).
+const MAX_LINES = 100;
+
 const barCount = computed(() =>
-  resolvedShape.value === "text" ? Math.max(1, Math.floor(props.lines) || 1) : 1,
+  resolvedShape.value === "text"
+    ? Math.min(MAX_LINES, Math.max(1, Math.floor(props.lines) || 1))
+    : 1,
 );
 
 const skeletonStyles = computed(() => ({
