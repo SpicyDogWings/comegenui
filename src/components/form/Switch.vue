@@ -37,7 +37,10 @@ const props = defineProps({
   },
 });
 
-const emit = defineEmits(["change"]);
+const emit = defineEmits<{
+  /** Valor nuevo, tanto al click como en `set()`/`reset()` (no el `Event` nativo). */
+  (e: "change", value: boolean): void;
+}>();
 const inputRef = useTemplateRef("input");
 const { focused: inputFocus } = useFocus(inputRef);
 

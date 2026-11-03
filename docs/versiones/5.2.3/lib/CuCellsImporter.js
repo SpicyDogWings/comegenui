@@ -38,6 +38,45 @@ function attachMeta(ctor, meta) {
 function camelize$1(name) {
 	return name.replace(/-(\w)/g, (_, char) => char ? char.toUpperCase() : "");
 }
+/** `Boolean`, `{ type: Boolean }` o `{ type: [String, Boolean] }` → tipos efectivos. */
+function typesOf(option) {
+	let raw = option;
+	if (typeof option === "object" && option !== null && !Array.isArray(option) && "type" in option) raw = option.type;
+	const list = Array.isArray(raw) ? raw : [raw];
+	return {
+		boolean: list.includes(Boolean),
+		number: list.includes(Number),
+		string: list.includes(String)
+	};
+}
+/** Tipos declarados por prop, en camelCase (cacheado por definición). */
+var PROP_TYPES = /* @__PURE__ */ new WeakMap();
+function propTypes(def) {
+	const cached = PROP_TYPES.get(def);
+	if (cached) return cached;
+	const map = /* @__PURE__ */ new Map();
+	const props = def.props;
+	if (props && !Array.isArray(props)) for (const [key, option] of Object.entries(props)) map.set(camelize$1(key), typesOf(option));
+	PROP_TYPES.set(def, map);
+	return map;
+}
+/**
+* Atributo del host → valor de la prop. Un atributo llega siempre como string:
+* `_setProp` con el string crudo dejaba `disabled="false"` deshabilitado (el
+* string es truthy) y `model-value="false"` marcado. Se castea con la misma
+* regla que HTML/Vue: un atributo Boolean presente es `true`, salvo el texto
+* explícito `"false"` (y `""`/`"true"` → `true`); Number se parsea. Sin tipos
+* declarados (`props: ['value']`) no se adivina: el valor queda string.
+*/
+function castPropValue(value, types) {
+	if (!types) return value;
+	if (types.boolean) return value.trim().toLowerCase() !== "false";
+	if (types.number && !types.string) {
+		const parsed = parseFloat(value);
+		if (!Number.isNaN(parsed)) return parsed;
+	}
+	return value;
+}
 /** Props declaradas por el componente, en camelCase (cacheado por definición). */
 var PROP_KEYS = /* @__PURE__ */ new WeakMap();
 function declaredProps(def) {
@@ -120,12 +159,7 @@ function makeElement(component, meta) {
 		_applyProp(propKey, value, camelKey) {
 			const self = this;
 			if (value !== null) {
-				let parsed = value;
-				if (self._numberProps?.[camelKey]) {
-					const n = parseFloat(value);
-					if (!Number.isNaN(n)) parsed = n;
-				}
-				self._setProp(propKey, parsed, false, true);
+				self._setProp(propKey, castPropValue(value, propTypes(self._def).get(camelKey)), false, true);
 				return;
 			}
 			if (!Object.prototype.hasOwnProperty.call(self._props, propKey)) return;
@@ -702,7 +736,7 @@ var _hoisted_1$25 = {
 	class: "cu-alert-header"
 };
 var _hoisted_2$16 = { class: "cu-alert-title" };
-var _hoisted_3$13 = {
+var _hoisted_3$12 = {
 	key: 0,
 	class: "cu-alert-title-text"
 };
@@ -823,7 +857,7 @@ var Alert_default = /*#__PURE__*/ _plugin_vue_export_helper_default(/* @__PURE__
 					ref: iconWrap,
 					class: "cu-alert-icon-detect"
 				}, [renderSlot(_ctx.$slots, "icon", {}, void 0, true)], 512),
-				props.title || hasIcon.value ? (openBlock(), createElementBlock("div", _hoisted_1$25, [createElementVNode("div", _hoisted_2$16, [renderSlot(_ctx.$slots, "icon", {}, void 0, true), props.title ? (openBlock(), createElementBlock("span", _hoisted_3$13, toDisplayString(props.title), 1)) : createCommentVNode("v-if", true)]), props.close ? (openBlock(), createElementBlock("button", {
+				props.title || hasIcon.value ? (openBlock(), createElementBlock("div", _hoisted_1$25, [createElementVNode("div", _hoisted_2$16, [renderSlot(_ctx.$slots, "icon", {}, void 0, true), props.title ? (openBlock(), createElementBlock("span", _hoisted_3$12, toDisplayString(props.title), 1)) : createCommentVNode("v-if", true)]), props.close ? (openBlock(), createElementBlock("button", {
 					key: 0,
 					onClick: close,
 					class: "cu-alert-close",
@@ -922,7 +956,7 @@ function formatFileSize(bytes) {
 //#region src/components/form/FileInput.vue?vue&type=script&setup=true&lang.ts
 var _hoisted_1$24 = { class: "cu-file-input-wrap" };
 var _hoisted_2$15 = ["accept"];
-var _hoisted_3$12 = ["aria-label", "disabled"];
+var _hoisted_3$11 = ["aria-label", "disabled"];
 var _hoisted_4$10 = {
 	key: 0,
 	xmlns: "http://www.w3.org/2000/svg",
@@ -1161,7 +1195,7 @@ var FileInput_default = /*#__PURE__*/ _plugin_vue_export_helper_default(/* @__PU
 					key: 2,
 					innerHTML: unref(getFileIconSvg)(value.value, 16),
 					class: "cu-file-input-icon"
-				}, null, 8, _hoisted_6$7))], 10, _hoisted_3$12),
+				}, null, 8, _hoisted_6$7))], 10, _hoisted_3$11),
 				value.value ? (openBlock(), createElementBlock("div", _hoisted_7$6, [createElementVNode("a", {
 					href: props.disabled ? void 0 : fileUrl.value,
 					target: "_blank",
@@ -1207,7 +1241,7 @@ var FileInput_default = /*#__PURE__*/ _plugin_vue_export_helper_default(/* @__PU
 //#region src/components/FileList.vue?vue&type=script&setup=true&lang.ts
 var _hoisted_1$23 = ["onClick"];
 var _hoisted_2$14 = ["innerHTML"];
-var _hoisted_3$11 = ["onClick"];
+var _hoisted_3$10 = ["onClick"];
 var _hoisted_4$9 = { class: "cu-file-list-size" };
 //#endregion
 //#region src/components/FileList.vue
@@ -1272,7 +1306,7 @@ var FileList_default = /*#__PURE__*/ _plugin_vue_export_helper_default(/* @__PUR
 						type: "button",
 						class: "cu-file-list-name",
 						onClick: withModifiers(($event) => emit("select", i), ["stop"])
-					}, toDisplayString(file.name), 9, _hoisted_3$11),
+					}, toDisplayString(file.name), 9, _hoisted_3$10),
 					createElementVNode("span", _hoisted_4$9, toDisplayString(unref(formatFileSize)(file.size)), 1),
 					!props.disabled ? (openBlock(), createBlock(Button_default, {
 						key: 0,
@@ -1312,7 +1346,7 @@ var _hoisted_2$13 = [
 	"multiple",
 	"webkitdirectory"
 ];
-var _hoisted_3$10 = ["aria-label", "disabled"];
+var _hoisted_3$9 = ["aria-label", "disabled"];
 var _hoisted_4$8 = {
 	key: 0,
 	xmlns: "http://www.w3.org/2000/svg",
@@ -1634,7 +1668,7 @@ var FileInputZone_default = /*#__PURE__*/ _plugin_vue_export_helper_default(/* @
 					class: "cu-file-zone-trigger",
 					"aria-label": triggerLabel.value,
 					disabled: props.disabled || props.readOnly
-				}, null, 8, _hoisted_3$10),
+				}, null, 8, _hoisted_3$9),
 				fileList.value.length === 0 ? (openBlock(), createElementBlock("svg", _hoisted_4$8, [..._cache[0] || (_cache[0] = [
 					createElementVNode("path", { d: "M12 3v12" }, null, -1),
 					createElementVNode("path", { d: "m17 8-5-5-5 5" }, null, -1),
@@ -4072,7 +4106,7 @@ var LucideChevronRight_default = /* @__PURE__ */ defineComponent({
 //#region src/components/overlay/Collapse.vue?vue&type=script&setup=true&lang.ts
 var _hoisted_1$21 = { class: "cu-collapse" };
 var _hoisted_2$12 = ["innerHTML"];
-var _hoisted_3$9 = { class: "cu-collapse-text" };
+var _hoisted_3$8 = { class: "cu-collapse-text" };
 var _hoisted_4$7 = { class: "cu-collapse-label" };
 var _hoisted_5$6 = {
 	key: 0,
@@ -4201,7 +4235,7 @@ var Collapse_default = /*#__PURE__*/ _plugin_vue_export_helper_default(/* @__PUR
 						class: "cu-collapse-icon",
 						innerHTML: safeIcon.value
 					}, null, 8, _hoisted_2$12)) : createCommentVNode("v-if", true),
-					createElementVNode("span", _hoisted_3$9, [createElementVNode("span", _hoisted_4$7, toDisplayString(props.label), 1), props.description ? (openBlock(), createElementBlock("p", _hoisted_5$6, toDisplayString(props.description), 1)) : createCommentVNode("v-if", true)])
+					createElementVNode("span", _hoisted_3$8, [createElementVNode("span", _hoisted_4$7, toDisplayString(props.label), 1), props.description ? (openBlock(), createElementBlock("p", _hoisted_5$6, toDisplayString(props.description), 1)) : createCommentVNode("v-if", true)])
 				]),
 				_: 1
 			}, 8, ["color", "disabled"]), createVNode(Transition, {
@@ -4264,7 +4298,7 @@ var Loader_default = /*#__PURE__*/ _plugin_vue_export_helper_default(/* @__PURE_
 //#region src/components/data/Table.vue?vue&type=script&setup=true&lang.ts
 var _hoisted_1$19 = { class: "cu-table-scroll" };
 var _hoisted_2$11 = { class: "cu-table-element" };
-var _hoisted_3$8 = { class: "cu-table-th-content" };
+var _hoisted_3$7 = { class: "cu-table-th-content" };
 var _hoisted_4$6 = ["innerHTML"];
 var _hoisted_5$5 = { key: 0 };
 var _hoisted_6$5 = ["colspan"];
@@ -4413,7 +4447,7 @@ var Table_default = /*#__PURE__*/ _plugin_vue_export_helper_default(/* @__PURE__
 						column: col,
 						color: props.color,
 						variant: props.variant
-					}, () => [createElementVNode("span", _hoisted_3$8, toDisplayString(col.label ?? col.key), 1)], true)], 16);
+					}, () => [createElementVNode("span", _hoisted_3$7, toDisplayString(col.label ?? col.key), 1)], true)], 16);
 				}), 128))])]),
 				createElementVNode("tbody", { class: normalizeClass({ "cu-table-loading": props.loading }) }, [(openBlock(true), createElementBlock(Fragment, null, renderList(props.data, (row, rowIndex) => {
 					return openBlock(), createElementBlock("tr", {
@@ -4906,7 +4940,7 @@ var Popover_default = /*#__PURE__*/ _plugin_vue_export_helper_default(/* @__PURE
 //#region src/components/overlay/Dropdown.vue?vue&type=script&setup=true&lang.ts
 var _hoisted_1$17 = ["onClick"];
 var _hoisted_2$10 = ["innerHTML"];
-var _hoisted_3$7 = { class: "cu-dropdown-menu-item-label" };
+var _hoisted_3$6 = { class: "cu-dropdown-menu-item-label" };
 var _hoisted_4$5 = {
 	key: 0,
 	class: "cu-dropdown-menu-divider"
@@ -5133,7 +5167,7 @@ var Dropdown_default = /*#__PURE__*/ _plugin_vue_export_helper_default(/* @__PUR
 						class: "cu-dropdown-menu-item-icon",
 						innerHTML: sanitizeIcon(__props.icon)
 					}, null, 8, _hoisted_2$10)) : createCommentVNode("v-if", true),
-					createElementVNode("span", _hoisted_3$7, toDisplayString(__props.label || "Submenú"), 1),
+					createElementVNode("span", _hoisted_3$6, toDisplayString(__props.label || "Submenú"), 1),
 					createVNode(LucideChevronRight_default, {
 						width: 14,
 						height: 14,
@@ -5229,7 +5263,7 @@ var LucideCheck_default = /* @__PURE__ */ defineComponent({
 //#region src/components/controls/MenuOption.vue?vue&type=script&setup=true&lang.ts
 var _hoisted_1$16 = { class: "cu-menu-option-main" };
 var _hoisted_2$9 = ["innerHTML"];
-var _hoisted_3$6 = { key: 1 };
+var _hoisted_3$5 = { key: 1 };
 //#endregion
 //#region src/components/controls/MenuOption.vue
 var MenuOption_default = /*#__PURE__*/ _plugin_vue_export_helper_default(/* @__PURE__ */ defineComponent({
@@ -5308,7 +5342,7 @@ var MenuOption_default = /*#__PURE__*/ _plugin_vue_export_helper_default(/* @__P
 					key: 0,
 					innerHTML: safeIcon.value,
 					class: normalizeClass(props.iconClass)
-				}, null, 10, _hoisted_2$9)) : createCommentVNode("v-if", true), props.label ? (openBlock(), createElementBlock("span", _hoisted_3$6, toDisplayString(props.label), 1)) : createCommentVNode("v-if", true)]), props.selected ? (openBlock(), createBlock(LucideCheck_default, {
+				}, null, 10, _hoisted_2$9)) : createCommentVNode("v-if", true), props.label ? (openBlock(), createElementBlock("span", _hoisted_3$5, toDisplayString(props.label), 1)) : createCommentVNode("v-if", true)]), props.selected ? (openBlock(), createBlock(LucideCheck_default, {
 					key: 0,
 					class: "cu-menu-option-check",
 					"aria-hidden": "true"
@@ -5801,7 +5835,7 @@ var _hoisted_1$14 = {
 	class: "cu-pagination"
 };
 var _hoisted_2$7 = { class: "cu-pagination-info" };
-var _hoisted_3$5 = { class: "cu-pagination-controls" };
+var _hoisted_3$4 = { class: "cu-pagination-controls" };
 var _hoisted_4$4 = {
 	key: 0,
 	class: "cu-pagination-page-size"
@@ -5928,7 +5962,7 @@ var Pagination_default = /*#__PURE__*/ _plugin_vue_export_helper_default(/* @__P
 			return pages;
 		});
 		return (_ctx, _cache) => {
-			return __props.totalPages > 1 || __props.showPageSize ? (openBlock(), createElementBlock("div", _hoisted_1$14, [createElementVNode("span", _hoisted_2$7, " Mostrando " + toDisplayString(startItem.value) + " - " + toDisplayString(endItem.value) + " de " + toDisplayString(__props.totalItems), 1), createElementVNode("div", _hoisted_3$5, [__props.showPageSize ? (openBlock(), createElementBlock("div", _hoisted_4$4, [_cache[3] || (_cache[3] = createElementVNode("span", { class: "cu-pagination-label" }, "Por página:", -1)), createVNode(Select_default, {
+			return __props.totalPages > 1 || __props.showPageSize ? (openBlock(), createElementBlock("div", _hoisted_1$14, [createElementVNode("span", _hoisted_2$7, " Mostrando " + toDisplayString(startItem.value) + " - " + toDisplayString(endItem.value) + " de " + toDisplayString(__props.totalItems), 1), createElementVNode("div", _hoisted_3$4, [__props.showPageSize ? (openBlock(), createElementBlock("div", _hoisted_4$4, [_cache[3] || (_cache[3] = createElementVNode("span", { class: "cu-pagination-label" }, "Por página:", -1)), createVNode(Select_default, {
 				"model-value": pageSizeValue.value,
 				options: pageSizeOptionsFormatted.value,
 				color: props.color,
@@ -7509,7 +7543,7 @@ function useDateRange(options = {}) {
 //#region src/components/controls/Calendar.vue?vue&type=script&setup=true&lang.ts
 var _hoisted_1$8 = ["aria-label"];
 var _hoisted_2$5 = { class: "cu-calendar-header" };
-var _hoisted_3$4 = {
+var _hoisted_3$3 = {
 	class: "cu-calendar-weekdays",
 	role: "row"
 };
@@ -8050,7 +8084,7 @@ var Calendar_default = /*#__PURE__*/ _plugin_vue_export_helper_default(/* @__PUR
 					"disabled"
 				])]),
 				createCommentVNode(" Días de la semana "),
-				createElementVNode("div", _hoisted_3$4, [(openBlock(true), createElementBlock(Fragment, null, renderList(weekdayLabels.value, (label, i) => {
+				createElementVNode("div", _hoisted_3$3, [(openBlock(true), createElementBlock(Fragment, null, renderList(weekdayLabels.value, (label, i) => {
 					return openBlock(), createElementBlock("span", {
 						key: i,
 						class: "cu-calendar-weekday",
@@ -8463,7 +8497,7 @@ var Label_default = /*#__PURE__*/ _plugin_vue_export_helper_default(/* @__PURE__
 //#region src/components/form/DatePicker.vue?vue&type=script&setup=true&lang.ts
 var _hoisted_1$5 = { class: "cu-date-picker" };
 var _hoisted_2$3 = { class: "cu-date-picker-label" };
-var _hoisted_3$3 = { class: "cu-date-picker-panel" };
+var _hoisted_3$2 = { class: "cu-date-picker-panel" };
 var _hoisted_4$2 = {
 	key: 3,
 	class: "cu-date-picker-footer"
@@ -8986,7 +9020,7 @@ var DatePicker_default = /*#__PURE__*/ _plugin_vue_export_helper_default(/* @__P
 					"aria-label",
 					"onClick"
 				])]),
-				default: withCtx(() => [createElementVNode("div", _hoisted_3$3, [!isRange.value ? (openBlock(), createBlock(Calendar_default, {
+				default: withCtx(() => [createElementVNode("div", _hoisted_3$2, [!isRange.value ? (openBlock(), createBlock(Calendar_default, {
 					key: 0,
 					"model-value": selectedValue.value,
 					min: __props.min,
@@ -9139,9 +9173,12 @@ var DatePicker_default = /*#__PURE__*/ _plugin_vue_export_helper_default(/* @__P
 }), [["styles", ["\n.cu-date-picker[data-v-48f559d9] {\n  width: 100%;\n  outline: none;\n  display: flex;\n  flex-direction: column;\n  gap: var(--cu-space-sm);\n}\n.cu-date-picker[data-v-48f559d9] .cu-dropdown {\n  width: 100%;\n}\n.cu-date-picker-toggle[data-v-48f559d9] {\n  width: 100%;\n  justify-content: space-between;\n  gap: var(--cu-space-md);\n  box-sizing: border-box;\n}\n.cu-date-picker-icon[data-v-48f559d9] {\n  flex-shrink: 0;\n}\n.cu-date-picker-label[data-v-48f559d9] {\n  flex: 1;\n  white-space: nowrap;\n  overflow: hidden;\n  text-overflow: ellipsis;\n  min-width: 0;\n  text-align: left;\n}\n.cu-date-picker-chevron[data-v-48f559d9] {\n  transition: transform 200ms ease;\n  flex-shrink: 0;\n}\n.cu-date-picker-panel[data-v-48f559d9] {\n  display: flex;\n  flex-direction: column;\n  gap: var(--cu-space-sm);\n}\n.cu-date-picker-footer[data-v-48f559d9] {\n  display: flex;\n  justify-content: space-between;\n  gap: var(--cu-space-sm);\n  border-top: var(--cu-border-thin) solid var(--cu-border-color);\n  padding-top: var(--cu-space-sm);\n}\n.cu-date-picker-footer-btn[data-v-48f559d9] {\n  font-size: var(--cu-font-size-xs);\n}\n"]], ["__scopeId", "data-v-48f559d9"]]);
 //#endregion
 //#region src/components/form/Switch.vue?vue&type=script&setup=true&lang.ts
-var _hoisted_1$4 = ["aria-checked"];
-var _hoisted_2$2 = ["checked", "disabled"];
-var _hoisted_3$2 = {
+var _hoisted_1$4 = [
+	"aria-checked",
+	"checked",
+	"disabled"
+];
+var _hoisted_2$2 = {
 	key: 0,
 	class: "cu-switch-label"
 };
@@ -9153,7 +9190,8 @@ var Switch_default = /*#__PURE__*/ _plugin_vue_export_helper_default(/* @__PURE_
 		color: {
 			type: String,
 			required: false,
-			default: "neutral"
+			default: "neutral",
+			validator: isColor
 		},
 		size: {
 			type: String,
@@ -9191,10 +9229,12 @@ var Switch_default = /*#__PURE__*/ _plugin_vue_export_helper_default(/* @__PURE_
 		const props = __props;
 		const emit = __emit;
 		const { focused: inputFocus } = useFocus(useTemplateRef("input"));
+		const safeColor = computed(() => isColor(props.color) ? props.color : "neutral");
+		const safeSize = computed(() => isSizeSm(props.size) ? props.size : "md");
 		const switchStyles = computed(() => ({
-			"--switch-bg": `var(--cu-color-${props.color})`,
-			"--switch-hover": `var(--cu-color-${props.color}-hover)`,
-			"--switch-active": `var(--cu-color-${props.color}-active)`
+			"--switch-bg": `var(--cu-color-${safeColor.value}-solid)`,
+			"--switch-hover": `var(--cu-color-${safeColor.value}-solid-hover)`,
+			"--switch-active": `var(--cu-color-${safeColor.value}-solid-active)`
 		}));
 		const toggle = (next) => {
 			if (props.disabled) return;
@@ -9227,26 +9267,29 @@ var Switch_default = /*#__PURE__*/ _plugin_vue_export_helper_default(/* @__PURE_
 		});
 		return (_ctx, _cache) => {
 			return openBlock(), createElementBlock("label", { class: normalizeClass(["cu-switch", [
-				`cu-switch--${props.size}`,
+				`cu-switch--${safeSize.value}`,
 				`cu-switch--label-${props.labelPosition}`,
 				{ "cu-switch--disabled": props.disabled }
 			]]) }, [createElementVNode("span", {
 				class: normalizeClass(["cu-switch-track", { "cu-switch--checked": checked.value }]),
-				style: normalizeStyle(switchStyles.value),
-				role: "switch",
-				"aria-checked": checked.value
-			}, [_cache[0] || (_cache[0] = createElementVNode("span", { class: "cu-switch-thumb" }, null, -1)), createElementVNode("input", {
-				ref: "input",
-				type: "checkbox",
-				checked: checked.value,
-				disabled: props.disabled,
-				tabindex: "-1",
-				class: "cu-switch-input",
-				onChange: onInput
-			}, null, 40, _hoisted_2$2)], 14, _hoisted_1$4), props.label || $slots.default ? (openBlock(), createElementBlock("span", _hoisted_3$2, [renderSlot(_ctx.$slots, "default", {}, () => [createTextVNode(toDisplayString(props.label), 1)])])) : createCommentVNode("v-if", true)], 2);
+				style: normalizeStyle(switchStyles.value)
+			}, [
+				_cache[0] || (_cache[0] = createElementVNode("span", { class: "cu-switch-thumb" }, null, -1)),
+				createCommentVNode(" El control accesible es el input nativo: `role=\"switch\"` acá (no en el\n           track) deja un solo nodo en el árbol de accesibilidad, con el estado\n           checked/disabled nativo y una parada de tab real. "),
+				createElementVNode("input", {
+					ref: "input",
+					type: "checkbox",
+					role: "switch",
+					"aria-checked": !!checked.value,
+					checked: checked.value,
+					disabled: props.disabled,
+					class: "cu-switch-input",
+					onChange: onInput
+				}, null, 40, _hoisted_1$4)
+			], 6), props.label || $slots.default ? (openBlock(), createElementBlock("span", _hoisted_2$2, [renderSlot(_ctx.$slots, "default", {}, () => [createTextVNode(toDisplayString(props.label), 1)])])) : createCommentVNode("v-if", true)], 2);
 		};
 	}
-}), [["styles", ["\n/* label nativo (misma implementación que Checkbox): el click en el label\n   activa el input anidado y su change alterna */\n.cu-switch {\n  position: relative;\n  display: inline-flex;\n  align-items: center;\n  gap: var(--cu-space-sm);\n  vertical-align: middle;\n  cursor: pointer;\n}\n\n/* `labelPosition`: el track va primero en el DOM y el label después. Con\n   `row-reverse` el label queda a la izquierda sin cambiar el markup: el <label>\n   nativo sigue envolviendo a los dos y el click en la etiqueta alterna igual.\n   El `gap` se mantiene entre ambos y el label conserva su ancho intrínseco. */\n.cu-switch--label-end {\n  flex-direction: row;\n}\n.cu-switch--label-start {\n  flex-direction: row-reverse;\n}\n.cu-switch-track {\n  position: relative;\n  display: inline-flex;\n  align-items: center;\n  border-radius: var(--cu-radius-full);\n  transition: all 150ms ease;\n  box-sizing: border-box;\n}\n.cu-switch--md .cu-switch-track {\n  width: var(--cu-space-3xl);\n  height: var(--cu-space-2xl);\n}\n.cu-switch--sm .cu-switch-track {\n  width: var(--cu-space-2xl);\n  height: var(--cu-space-xl);\n}\n.cu-switch-track.cu-switch--checked {\n  background-color: var(--switch-bg);\n}\n.cu-switch-track:not(.cu-switch--checked) {\n  background-color: var(--cu-color-neutral-soft);\n}\n\n/* Encendido: el track es sólido, así que el hover/active son las variantes sólidas\n   del color (un poco más oscuro / claro), no las `ghost` translúcidas. */\n.cu-switch-track.cu-switch--checked:hover {\n  background-color: var(--switch-hover);\n}\n.cu-switch-track.cu-switch--checked:active {\n  background-color: var(--switch-active);\n}\n.cu-switch-track:not(.cu-switch--checked):hover {\n  background-color: var(--cu-color-neutral-ghost-hover);\n}\n.cu-switch--disabled {\n  cursor: not-allowed;\n}\n.cu-switch--disabled .cu-switch-track {\n  opacity: var(--cu-alpha-disabled, 0.7);\n  pointer-events: none;\n}\n.cu-switch--disabled .cu-switch-label {\n  opacity: var(--cu-alpha-disabled, 0.7);\n}\n.cu-switch-thumb {\n  position: absolute;\n  border-radius: var(--cu-radius-full);\n  background-color: var(--cu-color-surface);\n  box-shadow: var(--cu-shadow-sm);\n  transition: all 150ms ease;\n}\n.cu-switch--md .cu-switch-thumb {\n  width: var(--cu-space-xl);\n  height: var(--cu-space-xl);\n  top: var(--cu-space-xs);\n  left: var(--cu-space-xs);\n}\n.cu-switch--sm .cu-switch-thumb {\n  width: var(--cu-space-lg);\n  height: var(--cu-space-lg);\n  top: calc((var(--cu-space-xl) - var(--cu-space-lg)) / 2);\n  left: calc((var(--cu-space-xl) - var(--cu-space-lg)) / 2);\n}\n.cu-switch--md .cu-switch-track.cu-switch--checked .cu-switch-thumb {\n  transform: translateX(16px);\n}\n.cu-switch--sm .cu-switch-track.cu-switch--checked .cu-switch-thumb {\n  transform: translateX(8px);\n}\n.cu-switch-input {\n  position: absolute;\n  opacity: 0;\n  width: 0;\n  height: 0;\n}\n.cu-switch-label {\n  font-family: var(--cu-font-sans);\n  color: var(--cu-color-neutral);\n}\n.cu-switch--md .cu-switch-label {\n  font-size: var(--cu-font-size-sm);\n}\n.cu-switch--sm .cu-switch-label {\n  font-size: var(--cu-font-size-xs);\n}\n"]]]);
+}), [["styles", ["\n/* label nativo (misma implementación que Checkbox): el click en el label\n   activa el input anidado y su change alterna */\n.cu-switch {\n  position: relative;\n  display: inline-flex;\n  align-items: center;\n  gap: var(--cu-space-sm);\n  vertical-align: middle;\n  cursor: pointer;\n}\n\n/* `labelPosition`: el track va primero en el DOM y el label después. Con\n   `row-reverse` el label queda a la izquierda sin cambiar el markup: el <label>\n   nativo sigue envolviendo a los dos y el click en la etiqueta alterna igual.\n   El `gap` se mantiene entre ambos y el label conserva su ancho intrínseco. */\n.cu-switch--label-end {\n  flex-direction: row;\n}\n.cu-switch--label-start {\n  flex-direction: row-reverse;\n}\n.cu-switch-track {\n  position: relative;\n  display: inline-flex;\n  align-items: center;\n  border-radius: var(--cu-radius-full);\n  /* Sin `all`: el anillo de foco no se anima desde los valores iniciales. */\n  transition: background-color 150ms ease, border-color 150ms ease;\n  box-sizing: border-box;\n}\n.cu-switch--md .cu-switch-track {\n  width: var(--cu-space-3xl);\n  height: var(--cu-space-2xl);\n}\n.cu-switch--sm .cu-switch-track {\n  width: var(--cu-space-2xl);\n  height: var(--cu-space-xl);\n}\n.cu-switch-track.cu-switch--checked {\n  background-color: var(--switch-bg);\n}\n.cu-switch-track:not(.cu-switch--checked) {\n  background-color: var(--cu-color-neutral-soft);\n}\n\n/* Encendido: el track es sólido, así que el hover/active son las variantes sólidas\n   del color (un poco más oscuro / claro), no las `ghost` translúcidas. */\n.cu-switch-track.cu-switch--checked:hover {\n  background-color: var(--switch-hover);\n}\n.cu-switch-track.cu-switch--checked:active {\n  background-color: var(--switch-active);\n}\n.cu-switch-track:not(.cu-switch--checked):hover {\n  background-color: var(--cu-color-neutral-ghost-hover);\n}\n.cu-switch--disabled {\n  cursor: not-allowed;\n}\n.cu-switch--disabled .cu-switch-track {\n  opacity: var(--cu-alpha-disabled, 0.7);\n  pointer-events: none;\n}\n.cu-switch--disabled .cu-switch-label {\n  opacity: var(--cu-alpha-disabled, 0.7);\n}\n\n/* Anillo de foco sobre el track visible (el input es transparente). */\n.cu-switch-track:focus-within {\n  outline: var(--cu-border-medium) solid var(--cu-border-color-focus);\n  outline-offset: var(--cu-space-2xs);\n}\n.cu-switch-thumb {\n  position: absolute;\n  border-radius: var(--cu-radius-full);\n  background-color: var(--cu-color-surface);\n  box-shadow: var(--cu-shadow-sm);\n  transition: all 150ms ease;\n}\n.cu-switch--md .cu-switch-thumb {\n  width: var(--cu-space-xl);\n  height: var(--cu-space-xl);\n  top: var(--cu-space-xs);\n  left: var(--cu-space-xs);\n}\n.cu-switch--sm .cu-switch-thumb {\n  width: var(--cu-space-lg);\n  height: var(--cu-space-lg);\n  top: calc((var(--cu-space-xl) - var(--cu-space-lg)) / 2);\n  left: calc((var(--cu-space-xl) - var(--cu-space-lg)) / 2);\n}\n.cu-switch--md .cu-switch-track.cu-switch--checked .cu-switch-thumb {\n  transform: translateX(16px);\n}\n.cu-switch--sm .cu-switch-track.cu-switch--checked .cu-switch-thumb {\n  transform: translateX(8px);\n}\n\n/* El input nativo cubre el track: recibe el click, el foco del teclado (Space\n   alterna) y el anillo de `:focus-within`. Sin `tabindex=\"-1\"` ni tamaño 0. */\n.cu-switch-input {\n  position: absolute;\n  inset: 0;\n  width: 100%;\n  height: 100%;\n  margin: 0;\n  opacity: 0;\n  cursor: inherit;\n  box-sizing: border-box;\n}\n.cu-switch-label {\n  font-family: var(--cu-font-sans);\n  color: var(--cu-color-neutral);\n}\n.cu-switch--md .cu-switch-label {\n  font-size: var(--cu-font-size-sm);\n}\n.cu-switch--sm .cu-switch-label {\n  font-size: var(--cu-font-size-xs);\n}\n"]]]);
 //#endregion
 //#region src/components/data/EditableTableCell.vue?vue&type=script&setup=true&lang.ts
 var _hoisted_1$3 = [

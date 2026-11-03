@@ -54,10 +54,18 @@ En Vue es `v-model` y maneja los dos modos solo: sin `v-model` (o con `:model-va
 > `cu-checkbox`, `cu-color-picker`, `cu-file-input` y `cu-file-input-zone`. Los
 > seleccionadores con estado propio (calendario, dropdown, tabs) también.
 
-## 3. Booleanos por presencia
+## 3. Booleanos y números en atributos
 
-`disabled` (presente) = `true`; ausente = `false`. No existe `disabled="false"` como
-"apagado" desde HTML —para apagarlo, sacá el atributo (por propiedad, `el.disabled = false` sí funciona).
+El CE castea cada atributo según el tipo declarado de la prop, con la regla de HTML/Vue:
+
+- **Boolean**: presente = `true` (`disabled`, `disabled=""`, `disabled="true"`); `disabled="false"`
+  lo deja **apagado** (`false`). Antes el string se pasaba crudo y `disabled="false"` deshabilitaba.
+- **Number**: se parsea (`count="7"` → `7`, también con `type: [Number]` en la declaración).
+- Sin tipo declarado (`props: ['value']`) no se adivina: el valor queda string.
+
+Lo mismo aplica a los props con forma de atributo que esperan un valor (`model-value="false"` deja
+el checkbox/switch apagado y `get()` devuelve `false`, no `"false"`). Por propiedad JS podés pasar
+el valor tipado directamente.
 
 ## 4. Eventos: nativos vs propios
 

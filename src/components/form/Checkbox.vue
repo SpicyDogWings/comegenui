@@ -28,7 +28,10 @@ const props = defineProps({
   },
 });
 
-const emit = defineEmits(["change"]);
+const emit = defineEmits<{
+  /** Valor nuevo, tanto al click como en `set()`/`reset()` (no el `Event` nativo). */
+  (e: "change", value: boolean): void;
+}>();
 const inputRef = ref<HTMLInputElement | null>(null);
 
 // Igual que Button/Tabs: una prop fuera del set no puede dejar el control
