@@ -362,9 +362,11 @@ defineExpose({ get, set, reset, focus, trigger });
   background-color: var(--input-ghost-hover);
 }
 
+/* Anillo de foco de todo el campo: borde y sombra comparten el token de foco
+   para que se lea como un solo anillo (nunca dos colores distintos). */
 .cu-file-input:focus-within {
-  border-color: var(--input-bg);
-  box-shadow: 0 0 0 var(--cu-border-thin) var(--input-bg);
+  border-color: var(--cu-border-color-focus);
+  box-shadow: 0 0 0 var(--cu-border-thin) var(--cu-border-color-focus);
 }
 
 /* Control de selección: botón real, sin estilos propios; el foco se ve en el campo. */

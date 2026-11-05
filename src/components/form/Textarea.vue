@@ -131,8 +131,9 @@ defineExpose({ get, set, reset, focus });
   color: var(--cu-color-neutral-text-muted);
 }
 
+/* Anillo de foco: token con piso 3:1 contra `surface`. */
 .cu-textarea:focus {
-  box-shadow: 0 0 0 var(--cu-border-thin) var(--btn-subtle-border);
+  box-shadow: 0 0 0 var(--cu-border-thin) var(--cu-border-color-focus);
 }
 
 .cu-textarea--no-resize {

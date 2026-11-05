@@ -181,7 +181,31 @@ describe('contraste de tokens en los 15 temas', () => {
 
 describe('bordes y anillo de foco: no textuales ≥ 3:1 (WCAG 1.4.11)', () => {
   const ROOT = resolve(import.meta.dirname, '../../..')
-  const ACCENT_OUTLINE = /outline\s*:[^;{}]*var\(--cu-color-(?:primary|secondary|neutral|success|warning|danger)\)/
+
+  /** Selector de un estado de foco: `:focus`, `:focus-visible` o `:focus-within`. */
+  const FOCUS_SELECTOR = /:focus(?:-visible|-within)?(?![-\w])/
+  /** Color de acento crudo: no tiene piso de contraste como borde. */
+  const ACCENT_COLOR = /var\(--cu-color-(?:primary|secondary|neutral|success|warning|danger)\)/
+  /** Declaraciones que pintan el anillo (`outline`, `box-shadow`, `border-color`). */
+  const RING_DECLARATION = /(?:outline|box-shadow|border-color)\s*:([^;{}]*)/g
+
+  /** Reglas de los bloques `<style>` de un `.vue` (ignora `<script>` y `<template>`). */
+  function styleRules(source: string) {
+    const styles = [...source.matchAll(/<style[^>]*>([\s\S]*?)<\/style>/g)]
+      .map((block) => block[1] ?? '')
+      .join('\n')
+    return [...styles.matchAll(/([^{}]+)\{([^{}]*)\}/g)].map((rule) => ({
+      selector: (rule[1] ?? '').replace(/\s+/g, ' ').trim(),
+      body: rule[2] ?? '',
+    }))
+  }
+
+  /** Valores que realmente dibujan algo: `outline: none` de un trigger no es anillo. */
+  function ringDeclarations(body: string) {
+    return [...body.matchAll(RING_DECLARATION)]
+      .map((declaration) => (declaration[1] ?? '').trim())
+      .filter((value) => value !== '' && !/^(?:none|0|transparent)$/i.test(value))
+  }
 
   it('--cu-border-color / -strong / -focus llegan a 3:1 contra la superficie en los 15 temas', () => {
     const failures: string[] = []
@@ -229,18 +253,57 @@ describe('bordes y anillo de foco: no textuales ≥ 3:1 (WCAG 1.4.11)', () => {
     expect(boxRule).toContain('var(--cu-border-color)')
   })
 
-  it('ningún `:focus-visible`/`:focus-within` pinta el outline con un acento crudo', () => {
-    const files = globSync('src/components/**/*.vue', {
+  it('ninguna regla de foco pinta el anillo con un acento crudo (componentes y páginas)', () => {
+    const files = globSync(['src/components/**/*.vue', 'src/pages/**/*.vue'], {
       cwd: ROOT,
       ignore: ['**/legacy/**', '**/archived/**'],
     })
-    const offenders = files.filter((file) =>
-      ACCENT_OUTLINE.test(readFileSync(resolve(ROOT, file), 'utf8')),
-    )
+    const offenders: string[] = []
+
+    for (const file of files) {
+      for (const rule of styleRules(readFileSync(resolve(ROOT, file), 'utf8'))) {
+        if (!FOCUS_SELECTOR.test(rule.selector)) continue
+        if (ringDeclarations(rule.body).some((value) => ACCENT_COLOR.test(value))) {
+          offenders.push(`${file} { ${rule.selector} }`)
+        }
+      }
+    }
+
     // Un acento (`--cu-color-primary`) no tiene piso de contraste como borde:
     // en nord-polar-night queda en 1.69:1. El foco usa `--cu-border-color-focus`
     // o un `-text` (4.5:1 garantizado).
     expect(offenders).toEqual([])
+  })
+
+  it('los campos y la lista de archivos dibujan el anillo con `--cu-border-color-focus`', () => {
+    const consumers = [
+      'src/components/form/Input.vue',
+      'src/components/form/Textarea.vue',
+      'src/components/form/Select.vue',
+      'src/components/form/FileInput.vue',
+      'src/components/form/FileInputZone.vue',
+      'src/components/FileList.vue',
+    ]
+    const failures: string[] = []
+
+    for (const file of consumers) {
+      const rings = styleRules(readFileSync(resolve(ROOT, file), 'utf8')).filter(
+        (rule) => FOCUS_SELECTOR.test(rule.selector) && ringDeclarations(rule.body).length > 0,
+      )
+      if (rings.length === 0) failures.push(`${file}: sin anillo de foco`)
+
+      for (const rule of rings) {
+        for (const declaration of ringDeclarations(rule.body)) {
+          if (!declaration.includes('var(--cu-border-color-focus)')) {
+            failures.push(`${file} { ${rule.selector} }: ${declaration}`)
+          }
+        }
+      }
+    }
+
+    // Un solo color de anillo por control: mezclar el token de foco con el borde
+    // de la variante dibuja dos anillos con colores distintos.
+    expect(failures).toEqual([])
   })
 })
 

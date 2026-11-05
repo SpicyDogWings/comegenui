@@ -131,8 +131,10 @@ const fileList = computed(() => {
   cursor: pointer;
 }
 
+/* Foco de teclado del nombre: token con piso 3:1 (currentColor hereda el color
+   del texto y puede quedar por debajo). */
 .cu-file-list-name:focus-visible {
-  outline: 2px solid currentColor;
+  outline: var(--cu-border-medium) solid var(--cu-border-color-focus);
   outline-offset: 2px;
   border-radius: var(--cu-radius);
 }
