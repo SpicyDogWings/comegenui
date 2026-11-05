@@ -610,8 +610,11 @@ const colorStyles = computed(() => ({
   '--cal-accent': `var(--cu-color-${props.color})`,
   '--cal-solid': `var(--cu-color-${props.color}-solid)`,
   '--cal-solid-hover': `var(--cu-color-${props.color}-solid-hover)`,
-  '--cal-solid-text': `var(--cu-color-surface)`,
+  '--cal-solid-text': `var(--cu-color-${props.color}-solid-text)`,
   '--cal-accent-text': `var(--cu-color-${props.color}-text)`,
+  '--cal-text-ghost': `var(--cu-color-${props.color}-text-on-ghost)`,
+  '--cal-text-soft': `var(--cu-color-${props.color}-text-on-soft)`,
+  '--cal-text-subtle': `var(--cu-color-${props.color}-text-on-subtle)`,
   '--cal-accent-border': `var(--cu-color-${props.color}-border)`,
   '--cal-soft': `var(--cu-color-${props.color}-soft)`,
   '--cal-soft-hover': `var(--cu-color-${props.color}-soft-hover)`,
@@ -789,11 +792,18 @@ const colorStyles = computed(() => ({
   font-weight: var(--cu-font-weight-semibold);
 }
 
+/* El hover pinta el tinte ghost: el acento usa el token medido contra ese tinte.
+   Sólo aplica al día "hoy" no seleccionado: sobre solid/soft manda la variante. */
+.cu-calendar-day.cu-calendar-day--today:not(.cu-calendar-day--selected):hover:not(:disabled) {
+  color: var(--cal-text-ghost);
+}
+
 /* Variantes del día seleccionado */
 .cu-calendar-day--selected.cu-calendar-day--solid {
   background: var(--cal-solid);
-  /* Solid mantiene el texto del tema sobre la variante de fondo ajustada. */
   color: var(--cal-solid-text);
+  /* Anillo interior: el relleno puede no llegar a 3:1 contra la superficie. */
+  box-shadow: inset 0 0 0 var(--cu-border-thin) var(--cal-accent-border);
 }
 .cu-calendar-day--selected.cu-calendar-day--solid:hover:not(:disabled) {
   background: var(--cal-solid-hover);
@@ -804,14 +814,14 @@ const colorStyles = computed(() => ({
 }
 .cu-calendar-day--selected.cu-calendar-day--soft {
   background: var(--cal-soft);
-  color: var(--cal-accent-text);
+  color: var(--cal-text-soft);
 }
 .cu-calendar-day--selected.cu-calendar-day--soft:hover:not(:disabled) {
   background: var(--cal-soft-hover);
 }
 .cu-calendar-day--selected.cu-calendar-day--subtle {
   background: var(--cal-subtle);
-  color: var(--cal-accent-text);
+  color: var(--cal-text-subtle);
   box-shadow: inset 0 0 0 var(--cu-border-thin) var(--cal-subtle-border);
 }
 
@@ -858,11 +868,13 @@ const colorStyles = computed(() => ({
   background: var(--cal-solid);
   color: var(--cal-solid-text);
   border-radius: var(--cu-radius-sm) 0 0 var(--cu-radius-sm);
+  box-shadow: inset 0 0 0 var(--cu-border-thin) var(--cal-accent-border);
 }
 .cu-calendar-day.cu-calendar-day--range-end {
   background: var(--cal-solid);
   color: var(--cal-solid-text);
   border-radius: 0 var(--cu-radius-sm) var(--cu-radius-sm) 0;
+  box-shadow: inset 0 0 0 var(--cu-border-thin) var(--cal-accent-border);
 }
 .cu-calendar-day--range-start.cu-calendar-day--range-end {
   border-radius: var(--cu-radius-sm);

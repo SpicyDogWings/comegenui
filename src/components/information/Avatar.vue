@@ -63,10 +63,10 @@ const resolvedColor = computed(() => {
 });
 
 const avatarStyles = computed(() => ({
-  // Fondo `-solid` + texto `surface`: el par que el generador de tokens ajusta a
-  // ≥ 4.5:1 en los 15 temas (blanco fijo sobre el color base quedaba en 1.15:1).
+  // Fondo `-solid` (el color del tema) + texto `-solid-text` (negro/blanco por
+  // máximo contraste): el generador garantiza ≥4.5:1 en los 15 temas.
   '--avatar-bg': `var(--cu-color-${resolvedColor.value}-solid, #4338ca)`,
-  '--avatar-fg': 'var(--cu-color-surface, #ffffff)',
+  '--avatar-fg': `var(--cu-color-${resolvedColor.value}-solid-text, #ffffff)`,
 }));
 
 const sizeClass = computed(() => `cu-avatar--${props.size}`);

@@ -86,9 +86,9 @@ un círculo vacío; cambiar `src` vuelve a intentar la carga.
 
 ## Accesibilidad
 
-- El fondo sale de `--cu-color-{color}-solid` y el texto de `--cu-color-surface`: ese par lo ajusta
-  el generador de tokens a **≥ 4.5:1** en los 15 temas. Un color fuera del set cae al que elige el
-  hash de las iniciales.
+- El fondo sale de `--cu-color-{color}-solid` y el texto de `--cu-color-{color}-solid-text` (el polo
+  negro/blanco de máximo contraste): el generador garantiza **≥ 4.5:1** en los 15 temas. Un color
+  fuera del set cae al que elige el hash de las iniciales.
 - Las iniciales largas se recortan dentro del círculo (`overflow: hidden`): no se derraman sobre
   el contenido de al lado.
 - La imagen usa `alt=""` (es decorativa). Si el avatar identifica a una persona y no hay un nombre

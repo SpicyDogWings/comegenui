@@ -1,5 +1,17 @@
 import { describe, it, expect } from 'vitest'
-import { colorsBlock, colorVar, generateThemeCSS, generateThemesCSS, resolveCodeScheme, resolveInk } from './css'
+import {
+  MIN_TEXT_CONTRAST,
+  SOFT_TINT_ALPHA,
+  SUBTLE_TINT_ALPHA,
+  colorVar,
+  colorsBlock,
+  compositeOver,
+  contrastRatio,
+  generateThemeCSS,
+  generateThemesCSS,
+  resolveCodeScheme,
+  resolveInk,
+} from './css'
 import { DEFAULTS, extractShared } from './defaults'
 import { stripShadowColor, parseShadow, composeShadow, normalizeShadow, normalizeShadowLength } from './shadow'
 
@@ -54,7 +66,13 @@ describe('colorsBlock', () => {
       '-solid',
       '-solid-hover',
       '-solid-active',
+      '-solid-text',
       '-text',
+      '-text-on-ghost',
+      '-text-on-soft',
+      '-text-on-subtle',
+      '-text-muted',
+      '-text-subtle',
       '-hover',
       '-active',
       '-ghost-hover',
@@ -71,6 +89,34 @@ describe('colorsBlock', () => {
     ]) {
       expect(css).toContain(`--cu-color-primary${variant}:`)
     }
+  })
+
+  it('solid conserva el color del tema y elige texto negro o blanco por contraste', () => {
+    // `warning` (#f59e0b) es un relleno claro: el texto debe ser negro. Antes el
+    // generador oscurecía el fondo y usaba el `surface` del tema.
+    const light = colorVar('primary', '#f59e0b', '#eeeeee', '#111111')
+    expect(light).toContain('--cu-color-primary-solid: #f59e0b;')
+    expect(light).toContain('--cu-color-primary-solid-text: #000000;')
+
+    // Un relleno oscuro elige blanco.
+    const dark = colorVar('primary', '#1a1a1a', '#eeeeee', '#111111')
+    expect(dark).toContain('--cu-color-primary-solid-text: #ffffff;')
+  })
+
+  it('el texto sobre tintes se mide contra el tinte de su variante', () => {
+    const value = (css: string, suffix: string) =>
+      new RegExp(`--cu-color-primary${suffix}:\\s*([^;]+);`).exec(css)?.[1]?.trim() ?? ''
+    const css = colorVar('primary', '#f59e0b', '#eeeeee', '#111111')
+    const tint = (alpha: number) => compositeOver('#f59e0b', '#eeeeee', alpha)
+
+    // `-text` se mide SÓLO contra la superficie (ghost/outlined/link)...
+    expect(contrastRatio(value(css, '-text'), '#eeeeee')).toBeGreaterThanOrEqual(MIN_TEXT_CONTRAST)
+    // ...y cada tinte tiene su token medido contra el peor tinte de su familia.
+    expect(contrastRatio(value(css, '-text-on-soft'), tint(SOFT_TINT_ALPHA))).toBeGreaterThanOrEqual(MIN_TEXT_CONTRAST)
+    expect(contrastRatio(value(css, '-text-on-subtle'), tint(SUBTLE_TINT_ALPHA))).toBeGreaterThanOrEqual(MIN_TEXT_CONTRAST)
+    // El texto sobre superficie no es el mismo que sobre el tinte: antes se
+    // usaba uno solo (el más corregido) para todos los casos.
+    expect(value(css, '-text-on-soft')).not.toBe(value(css, '-text'))
   })
 
   it('genera el esquema de código --cu-code-* (editor siempre oscuro, derivado del tema)', () => {
@@ -105,9 +151,21 @@ describe('generateThemesCSS / generateThemeCSS', () => {
     expect(darkBlock).toContain('--cu-code-text: #e5e5e5')
   })
 
-  it('generateThemeCSS emite el bloque completo de un tema', () => {
+  it('generateThemeCSS emite el bloque completo en `:root` y en `[data-theme]`', () => {
     const css = generateThemeCSS('light', { colors: COLORS }, shared, OPACITIES)
-    expect(css).toContain('[data-theme="light"]')
+    // El CSS exportado se pega en una app sin `data-theme`: `:root` aplica el tema.
+    const rootBlock = css.slice(css.indexOf(':root'), css.indexOf('[data-theme'))
+    const themeBlockStart = css.indexOf('[data-theme="light"]')
+    const themeBlock = css.slice(themeBlockStart)
+
+    expect(rootBlock).toContain('--cu-color-primary-solid-text:')
+    expect(rootBlock).toContain('--cu-color-surface: #eeeeee')
+    expect(rootBlock).toContain('--cu-font-sans:')
+    expect(themeBlock).toContain('--cu-color-primary-solid-text:')
+    expect(themeBlock).toContain('--cu-color-surface: #eeeeee')
+    expect(themeBlock).toContain('--cu-font-sans:')
+    // Mismo contenido: un solo tema, dos selectores equivalentes.
+    expect(themeBlock.replace('[data-theme="light"]', ':root')).toBe(rootBlock.trimEnd())
     expect(css).toContain('--cu-color-danger-code:')
     expect(css).toContain('--cu-code-faded:')
   })

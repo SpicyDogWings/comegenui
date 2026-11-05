@@ -113,15 +113,20 @@ describe("Alert — contenido", () => {
     expect(root(w).classes()).toContain("cu-alert--solid");
   });
 
-  it("solid usa -solid de fondo con el texto del tema; los tintes usan -text", () => {
+  it("solid usa -solid de fondo con el texto de máximo contraste; los tintes usan sus tokens", () => {
     const solid = mount(Alert, { props: { color: "warning", variant: "solid" } });
     const style = root(solid).attributes("style") ?? "";
     expect(style).toContain("--alert-solid: var(--cu-color-warning-solid)");
-    expect(style).toContain("--alert-solid-text: var(--cu-color-surface)");
+    expect(style).toContain("--alert-solid-text: var(--cu-color-warning-solid-text)");
     expect(style).not.toContain("--alert-on");
 
     const soft = mount(Alert, { props: { color: "warning", variant: "soft" } });
-    expect(root(soft).attributes("style")).toContain("--alert-text: var(--cu-color-warning-text)");
+    const softStyle = root(soft).attributes("style") ?? "";
+    expect(softStyle).toContain("--alert-text: var(--cu-color-warning-text)");
+    expect(softStyle).toContain("--alert-text-soft: var(--cu-color-warning-text-on-soft)");
+
+    const subtle = mount(Alert, { props: { color: "warning", variant: "subtle" } });
+    expect(root(subtle).attributes("style")).toContain("--alert-text-subtle: var(--cu-color-warning-text-on-subtle)");
 
     const outlined = mount(Alert, { props: { color: "warning", variant: "outlined" } });
     expect(root(outlined).attributes("style")).toContain("--alert-border: var(--cu-color-warning-border)");

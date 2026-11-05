@@ -515,10 +515,24 @@ const tableProps = computed(() => ({
 
 const tableStyles = computed(() => ({
   '--table-bg': `var(--cu-color-${props.color}-soft)`,
-  '--table-fg': `var(--cu-color-${props.color}-text)`,
+  '--table-fg': `var(--cu-color-${props.color}-text-on-soft)`,
   '--table-bg-hover': `var(--cu-color-${props.color}-soft-hover)`,
   '--table-bd': `var(--cu-color-${props.color}-subtle-border)`,
-}));
+}))
+
+/** Texto del botón de ordenar sobre el header: cada variante pinta un fondo
+ *  distinto y el token se elige contra ese fondo. */
+const headerButtonStyle = computed(() => {
+  const suffix = props.variant === 'solid'
+    ? 'solid-text'
+    : props.variant === 'soft'
+      ? 'text-on-soft'
+      : props.variant === 'subtle'
+        ? 'text-on-subtle'
+        : 'text'
+  const token = `var(--cu-color-${props.color}-${suffix})`
+  return { '--btn-text': token, '--btn-text-ghost': token }
+});
 
 const inputVariant = computed(() => props.variant === 'solid' ? 'soft' : props.variant);
 const paginationVariant = computed(() => props.variant === 'solid' ? 'soft' : props.variant);
@@ -647,7 +661,7 @@ defineExpose({
             <Button
               v-if="column.sortable"
               :color="props.color"
-              :style="props.variant === 'solid' ? { '--btn-text': 'var(--cu-color-surface)' } : {}"
+              :style="headerButtonStyle"
               variant="ghost"
               :aria-label="`Ordenar por ${column.label ?? column.key}`"
               @click.stop="handleSort(column.key)"

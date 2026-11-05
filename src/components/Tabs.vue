@@ -106,8 +106,10 @@ watch(activeKey, async (next, prev) => {
 
 const tabStyles = computed(() => ({
   '--tabs-solid': `var(--cu-color-${safeColor.value}-solid)`,
-  '--tabs-solid-text': `var(--cu-color-surface)`,
+  '--tabs-solid-text': `var(--cu-color-${safeColor.value}-solid-text)`,
+  '--tabs-border': `var(--cu-color-${safeColor.value}-border)`,
   '--tabs-text': `var(--cu-color-${safeColor.value}-text)`,
+  '--tabs-text-soft': `var(--cu-color-${safeColor.value}-text-on-soft)`,
   '--tabs-soft': `var(--cu-color-${safeColor.value}-soft)`,
   '--tabs-soft-hover': `var(--cu-color-${safeColor.value}-soft-hover)`,
   '--tabs-soft-active': `var(--cu-color-${safeColor.value}-soft-active)`,
@@ -350,13 +352,17 @@ defineExpose({ getActive, setActive, next, prev });
   border-radius: calc(var(--cu-radius-md) - var(--cu-space-2xs));
 }
 
+/* El hover pinta el tinte soft (25 %): su texto se mide contra ese tinte. */
 .cu-tabs--boxed .cu-tabs-tab:hover:not(:disabled) {
   background-color: var(--tabs-soft-hover);
+  color: var(--tabs-text-soft);
 }
 
 .cu-tabs--boxed .cu-tabs-tab.cu-tabs-tab--active {
   background-color: var(--tabs-solid);
   color: var(--tabs-solid-text);
+  /* Anillo interior: el relleno puede no llegar a 3:1 contra la superficie. */
+  box-shadow: inset 0 0 0 var(--cu-border-thin) var(--tabs-border);
 }
 
 .cu-tabs--boxed .cu-tabs-tab.cu-tabs-tab--active:hover:not(:disabled) {
@@ -378,11 +384,14 @@ defineExpose({ getActive, setActive, next, prev });
 
 .cu-tabs--soft .cu-tabs-tab:hover:not(:disabled) {
   background-color: var(--tabs-soft-hover);
+  color: var(--tabs-text-soft);
 }
 
 .cu-tabs--soft .cu-tabs-tab.cu-tabs-tab--active {
   background-color: var(--tabs-solid);
   color: var(--tabs-solid-text);
+  /* Anillo interior: el relleno puede no llegar a 3:1 contra la superficie. */
+  box-shadow: inset 0 0 0 var(--cu-border-thin) var(--tabs-border);
 }
 
 .cu-tabs--soft .cu-tabs-tab.cu-tabs-tab--active:hover:not(:disabled) {

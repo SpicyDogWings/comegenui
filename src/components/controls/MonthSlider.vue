@@ -206,8 +206,12 @@ const ariaYearNext = 'Ir al año siguiente'
 const colorStyles = computed(() => ({
   '--ms-accent-text': `var(--cu-color-${props.color}-text)`,
   '--ms-accent-border': `var(--cu-color-${props.color}-border)`,
+  '--ms-text-ghost': `var(--cu-color-${props.color}-text-on-ghost)`,
+  '--ms-text-soft': `var(--cu-color-${props.color}-text-on-soft)`,
+  '--ms-text-subtle': `var(--cu-color-${props.color}-text-on-subtle)`,
   '--ms-solid': `var(--cu-color-${props.color}-solid)`,
   '--ms-solid-hover': `var(--cu-color-${props.color}-solid-hover)`,
+  '--ms-solid-text': `var(--cu-color-${props.color}-solid-text)`,
   '--ms-soft': `var(--cu-color-${props.color}-soft)`,
   '--ms-soft-hover': `var(--cu-color-${props.color}-soft-hover)`,
   '--ms-subtle': `var(--cu-color-${props.color}-subtle)`,

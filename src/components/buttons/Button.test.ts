@@ -48,17 +48,18 @@ describe("Button — render y defaults", () => {
     expect(w.find("button").classes()).toContain("cu-button--icon-only");
   });
 
-  it("solid/none usan la variante -solid de fondo y el texto del tema", () => {
+  it("solid/none usan la variante -solid de fondo y el texto de máximo contraste", () => {
     const solid = mount(Button, { props: { color: "primary", variant: "solid" } });
     const style = solid.find("button").attributes("style") ?? "";
     expect(style).toContain("--btn-solid: var(--cu-color-primary-solid)");
     expect(style).toContain("--btn-solid-hover: var(--cu-color-primary-solid-hover)");
     expect(style).toContain("--btn-solid-active: var(--cu-color-primary-solid-active)");
-    expect(style).toContain("--btn-solid-text: var(--cu-color-surface)");
+    expect(style).toContain("--btn-solid-text: var(--cu-color-primary-solid-text)");
     expect(style).not.toContain("--btn-on");
 
     const ghost = mount(Button, { props: { color: "warning", variant: "ghost" } });
     expect(ghost.find("button").attributes("style")).toContain("--btn-text: var(--cu-color-warning-text)");
+    expect(ghost.find("button").attributes("style")).toContain("--btn-text-ghost: var(--cu-color-warning-text-on-ghost)");
 
     const outlined = mount(Button, { props: { color: "warning", variant: "outlined" } });
     expect(outlined.find("button").attributes("style")).toContain("--btn-border: var(--cu-color-warning-border)");
@@ -84,7 +85,7 @@ describe("Button — modo link", () => {
     expect(a.classes()).toContain("cu-button--lg");
     expect(a.classes()).toContain("cu-button-link");
     expect(a.attributes("style")).toContain("--btn-solid: var(--cu-color-primary-solid)");
-    expect(a.attributes("style")).toContain("--btn-solid-text: var(--cu-color-surface)");
+    expect(a.attributes("style")).toContain("--btn-solid-text: var(--cu-color-primary-solid-text)");
   });
 
   it("iconOnly también aplica en modo link", () => {

@@ -42,7 +42,8 @@ const safeSize = computed(() => (isSizeSm(props.size) ? props.size : 'md'));
 const checkboxStyles = computed(() => ({
   '--cb-bg': `var(--cu-color-${safeColor.value})`,
   '--cb-solid': `var(--cu-color-${safeColor.value}-solid)`,
-  '--cb-solid-text': `var(--cu-color-surface)`,
+  '--cb-solid-text': `var(--cu-color-${safeColor.value}-solid-text)`,
+  '--cb-border': `var(--cu-color-${safeColor.value}-border)`,
   '--cb-soft': `var(--cu-color-${safeColor.value}-soft)`,
   '--cb-ghost-hover': `var(--cu-color-${safeColor.value}-ghost-hover)`,
   '--cb-text': `var(--cu-color-${safeColor.value}-text)`,
@@ -181,7 +182,9 @@ defineExpose({
 
 .cu-checkbox-box--checked {
   background-color: var(--cb-solid);
-  border-color: var(--cb-solid);
+  /* `-border` (≥3:1 contra la superficie): el relleno por sí solo no siempre
+     alcanza ese piso (success/warning en temas claros). */
+  border-color: var(--cb-border);
 }
 
 .cu-checkbox:not(.cu-checkbox--disabled) .cu-checkbox-box:hover {

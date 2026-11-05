@@ -46,10 +46,11 @@ valor y el botón quedaba sin estilos (texto del tema sobre el fondo del contene
 `color` es un nombre semántico, no un hex: se resuelve con los tokens del tema activo
 (`--cu-color-{color}*`), así que el mismo nombre se ve distinto en cada tema.
 
-En `solid` y `none` el texto es siempre el del tema (`--cu-color-surface`) y el fondo es la
-variante `-solid`: el generador de tokens la ajusta (oscurece en temas claros, aclara en oscuros,
-sin cambiar el hue) hasta que ese texto alcanza 4.5:1. `-solid-hover` y `-solid-active` siguen la
-misma regla.
+En `solid` y `none` el fondo conserva el color del tema (`-solid`: no se oscurece ni aclara) y el
+texto es `-solid-text`: el polo (negro o blanco) con más contraste contra ese fondo y sus estados,
+siempre ≥ 4.5:1. `-solid-hover` y `-solid-active` se alejan del texto, así el par no pierde
+contraste en la interacción. Si el relleno queda a menos de 3:1 de la superficie, la variante
+dibuja el borde `-border` (≥ 3:1) para delimitar el botón.
 
 ```html
 <cu-button color="primary" variant="solid">primary</cu-button>

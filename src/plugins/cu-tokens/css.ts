@@ -18,31 +18,56 @@ export const MIN_SUBTLE_CONTRAST = 6
  * hacia el fondo hasta el punto más tenue que todavía alcanza `min`. Se ajusta
  * el color (no `opacity`), así el texto conserva el contraste real que mide
  * WCAG: una opacidad diluye el texto contra el fondo y no hay forma de auditarla.
+ * Si el texto de partida no llega a `min` sobre `bg` (posible con `-text`, que
+ * se mide sólo contra la superficie), se corrige antes de atenuarlo.
  */
 export function mutedTextColor(text: string, bg: string, min: number): string {
-  let best = text
+  const legible = ensureContrast(text, bg, min)
+  let best = legible
   for (let amount = 0.01; amount <= 1.0001; amount += 0.01) {
-    const candidate = toHex(mix(text, bg, amount))
+    const candidate = toHex(mix(legible, bg, amount))
     if (contrastRatio(candidate, bg) < min) break
     best = candidate
   }
   return best
 }
 
+/** Alfa del tinte más fuerte de cada variante tintada (su peor fondo real). */
+export const SOFT_TINT_ALPHA = 0.35
+export const SUBTLE_TINT_ALPHA = 0.3
+/** Tinte más fuerte de ghost (`ghost-active`, 20 %). */
+const GHOST_TINT_ALPHA = 0.2
+
 export function colorVar(name: string, value: string, surface: string, codeBg: string) {
-  // Solid/none: el texto es SIEMPRE el del tema (`surface`); el color de fondo
-  // se ajusta hasta que ese texto alcance 4.5:1.
-  const solid = solidColor(value, surface)
+  // Solid/none: el fondo conserva el color del tema y el texto se elige por
+  // máximo contraste (negro o blanco) contra el fondo y sus estados. El color
+  // base no se toca: si el fondo queda a menos de 3:1 de la superficie, el
+  // consumidor le dibuja el borde `-border` (que sí tiene piso 3:1).
+  const solid = toHex(value)
+  const solidText = solidTextColor(solid)
+  const solidHover = toHex(solidText === '#ffffff' ? darken(solid, 0.1) : lighten(solid, 0.1))
+  const solidActive = toHex(solidText === '#ffffff' ? darken(solid, 0.2) : lighten(solid, 0.2))
+  // Texto sobre superficie (ghost/outlined/link): medido SOLO contra `surface`.
   const text = textColor(value, surface)
+  // Tintes: cada familia de variantes tiene su token medido contra su propio
+  // tinte más fuerte. Un solo `-text` medido contra el tinte más oscuro
+  // sobre-corregía en temas oscuros (texto casi blanco donde no hacía falta).
+  const textGhost = ensureContrast(value, compositeOver(value, surface, GHOST_TINT_ALPHA), MIN_TEXT_CONTRAST)
+  const textSoft = ensureContrast(value, compositeOver(value, surface, SOFT_TINT_ALPHA), MIN_TEXT_CONTRAST)
+  const textSubtle = ensureContrast(value, compositeOver(value, surface, SUBTLE_TINT_ALPHA), MIN_TEXT_CONTRAST)
   // Atenuados: se miden contra el peor fondo real donde se pintan — el tinte
   // ghost-active (20 %): un ítem de menú presionado, el input soft (15 %) y la
   // superficie. Así el atenuado sigue viéndose atenuado sin bajar de 4.5:1.
-  const mutedBg = compositeOver(value, surface, 0.2)
+  const mutedBg = compositeOver(value, surface, GHOST_TINT_ALPHA)
   return `--cu-color-${name}: ${value};
     --cu-color-${name}-solid: ${solid};
-    --cu-color-${name}-solid-hover: ${solidStep(solid, surface, 0.1)};
-    --cu-color-${name}-solid-active: ${solidStep(solid, surface, 0.2)};
+    --cu-color-${name}-solid-hover: ${solidHover};
+    --cu-color-${name}-solid-active: ${solidActive};
+    --cu-color-${name}-solid-text: ${solidText};
     --cu-color-${name}-text: ${text};
+    --cu-color-${name}-text-on-ghost: ${textGhost};
+    --cu-color-${name}-text-on-soft: ${textSoft};
+    --cu-color-${name}-text-on-subtle: ${textSubtle};
     --cu-color-${name}-text-muted: ${mutedTextColor(text, mutedBg, MIN_TEXT_CONTRAST)};
     --cu-color-${name}-text-subtle: ${mutedTextColor(text, mutedBg, MIN_SUBTLE_CONTRAST)};
     --cu-color-${name}-hover: ${toHex(darken(value, 0.1))};
@@ -87,27 +112,18 @@ export function compositeOver(fg: string, bg: string, alpha: number): string {
 }
 
 /**
- * Fondo seguro para solid/none: el color base ajustado (oscurecido en temas
- * claros, aclarado en oscuros) en pasos de 1 % hasta que el texto del tema
- * (`surface`) alcance 4.5:1. `darken`/`lighten` de color2k trabajan en HSL, así
- * que hue y saturación se conservan.
+ * Texto de solid/none: el extremo de la escala (negro o blanco) con más
+ * contraste sobre el fondo sólido. Para cualquier color, uno de los dos supera
+ * 4.5:1 (el mínimo del máximo es 4.58:1), así que no hace falta ajustar el
+ * fondo — el color del tema se conserva tal cual.
  */
-export function solidColor(value: string, surface: string): string {
-  if (contrastRatio(value, surface) >= MIN_TEXT_CONTRAST) return toHex(value)
-  const towardLight = relLuma(surface) < 0.5
-  for (let amount = 0.01; amount <= 1.0001; amount += 0.01) {
-    const candidate = toHex(towardLight ? lighten(value, amount) : darken(value, amount))
-    if (contrastRatio(candidate, surface) >= MIN_TEXT_CONTRAST) return candidate
-  }
-  return towardLight ? '#ffffff' : '#000000'
+export function solidTextColor(solid: string): string {
+  return contrastRatio(solid, '#ffffff') >= contrastRatio(solid, '#000000') ? '#ffffff' : '#000000'
 }
 
-/** Hover/active de solid: se aleja del `surface` desde el fondo ya seguro. */
-function solidStep(solid: string, surface: string, amount: number): string {
-  return toHex(relLuma(surface) < 0.5 ? lighten(solid, amount) : darken(solid, amount))
-}
-
-/** Mezcla hacia blanco/negro hasta alcanzar `min` de contraste contra `bg`. */
+/**
+ * Mezcla hacia blanco/negro hasta alcanzar `min` de contraste contra `bg`.
+ */
 export function ensureContrast(color: string, bg: string, min: number): string {
   if (contrastRatio(color, bg) >= min) return toHex(color)
   const target = luma01(bg) < 0.5 ? '#ffffff' : '#000000'
@@ -120,12 +136,13 @@ export function ensureContrast(color: string, bg: string, min: number): string {
 }
 
 /**
- * Texto del color base sobre superficie o sobre sus tintes (soft/subtle/ghost).
- * El peor fondo es el tinte más fuerte (soft-active, 35%): está entre la
- * superficie y el color, o sea lo más cerca que puede quedar del texto.
+ * Texto del color base sobre superficie (ghost/outlined/link): se ajusta hasta
+ * 4.5:1 contra `surface` y nada más. Los textos sobre tintes tienen su propio
+ * token (`-text-on-soft`/`-text-on-subtle`): medir un único texto contra el
+ * tinte más oscuro sobre-corregía en los temas oscuros.
  */
 export function textColor(value: string, surface: string): string {
-  return ensureContrast(value, compositeOver(value, surface, 0.35), MIN_TEXT_CONTRAST)
+  return ensureContrast(value, surface, MIN_TEXT_CONTRAST)
 }
 
 /**
@@ -350,10 +367,13 @@ export function generateThemesCSS(themes: Record<string, any>, shared: any, opac
   return css
 }
 
-// Generate single theme CSS: [data-theme="{name}"] with all variables
+// Generate single theme CSS: :root + [data-theme="{name}"] with all variables.
+// `:root` permite pegar el CSS exportado en una app sin atributo `data-theme`;
+// el bloque `[data-theme]` mantiene el cambio de tema.
 export function generateThemeCSS(name: string, tokens: any, shared: any, opacities: Record<string, { shadow: number }>) {
   const merged = { ...shared, colors: tokens.colors }
-  return `[data-theme="${name}"] {\n${themeBlock(merged, name, opacities)}\n}`
+  const block = themeBlock(merged, name, opacities)
+  return `:root {\n${block}\n}\n\n[data-theme="${name}"] {\n${block}\n}`
 }
 
 export function inject(css: string) {
