@@ -57,6 +57,89 @@ describe("AdvancedTable (Vue)", () => {
   });
 });
 
+describe("AdvancedTable — botón de exportación", () => {
+  const exportButton = (w: VueWrapper) =>
+    w.find(".cu-advanced-table-export .cu-button");
+
+  it("sin `exportEnabled` no hay toolbar ni botón", () => {
+    const w = mount(AdvancedTable, { props: { columns, data } });
+    expect(w.find(".cu-advanced-table-toolbar").exists()).toBe(false);
+    expect(w.find(".cu-advanced-table-export").exists()).toBe(false);
+  });
+
+  it("sólo export: toolbar sin buscador y botón presente", () => {
+    const w = mount(AdvancedTable, {
+      props: { columns, data, exportEnabled: true },
+    });
+    expect(w.find(".cu-advanced-table-toolbar").exists()).toBe(true);
+    expect(w.find(".cu-advanced-table-search").exists()).toBe(false);
+    expect(exportButton(w).exists()).toBe(true);
+  });
+
+  it("con buscador y export, el botón va después del buscador en el DOM", () => {
+    const w = mount(AdvancedTable, {
+      props: { columns, data, searchEnabled: true, exportEnabled: true },
+    });
+    const toolbar = w.find(".cu-advanced-table-toolbar");
+    const children = Array.from(toolbar.element.children);
+    const searchIndex = children.indexOf(w.find(".cu-advanced-table-search").element);
+    const exportIndex = children.indexOf(w.find(".cu-advanced-table-export").element);
+    expect(searchIndex).toBeGreaterThanOrEqual(0);
+    expect(exportIndex).toBeGreaterThan(searchIndex);
+    expect(w.find(".cu-advanced-table-search input").exists()).toBe(true);
+  });
+
+  it("defaults: solid, tokens de success, label «Descargar Excel» y SVG fijo", () => {
+    const w = mount(AdvancedTable, {
+      props: { columns, data, exportEnabled: true },
+    });
+    const button = exportButton(w);
+    expect(button.classes()).toContain("cu-button--solid");
+    expect(button.attributes("style")).toContain("--btn-solid: var(--cu-color-success-solid)");
+    expect(button.text()).toBe("Descargar Excel");
+    const svg = button.find("svg");
+    expect(svg.exists()).toBe(true);
+    expect(svg.attributes("width")).toBe("1em");
+    expect(svg.attributes("height")).toBe("1em");
+    expect(svg.attributes("aria-hidden")).toBe("true");
+    expect(svg.find("rect").exists()).toBe(true);
+    expect(svg.findAll("line")).toHaveLength(4);
+    expect(button.attributes("aria-label")).toBeUndefined();
+  });
+
+  it("aplica label, color, variant y disabled de `exportButton`", () => {
+    const w = mount(AdvancedTable, {
+      props: {
+        columns,
+        data,
+        exportEnabled: true,
+        exportButton: {
+          label: "Exportar planilla",
+          color: "danger",
+          variant: "outlined",
+          disabled: true,
+        },
+      },
+    });
+    const button = exportButton(w);
+    expect(button.text()).toBe("Exportar planilla");
+    expect(button.classes()).toContain("cu-button--outlined");
+    expect(button.attributes("style")).toContain("--btn-border: var(--cu-color-danger-border)");
+    expect(button.attributes("disabled")).toBeDefined();
+  });
+
+  it("label vacío deja icon-only con nombre accesible «Descargar Excel»", () => {
+    const w = mount(AdvancedTable, {
+      props: { columns, data, exportEnabled: true, exportButton: { label: "" } },
+    });
+    const button = exportButton(w);
+    expect(button.classes()).toContain("cu-button--icon-only");
+    expect(button.attributes("aria-label")).toBe("Descargar Excel");
+    expect(button.text()).toBe("");
+    expect(button.find("svg").exists()).toBe(true);
+  });
+});
+
 describe("AdvancedTable — acciones condicionales (`actions` por fila, `disabled` y `hidden`)", () => {
   const rows = [
     { nombre: "Juan", premium: true },
@@ -254,6 +337,43 @@ describe("AdvancedTable.ce (cu-table vanilla)", () => {
 
     expect(el.shadowRoot.querySelector('slot[name="footer"]')).not.toBeNull();
     expect(el.shadowRoot.querySelector('slot[name="header-__actions__"]')).not.toBeNull();
+    el.remove();
+  });
+});
+
+describe("AdvancedTable.ce (cu-table vanilla) — exportación", () => {
+  const TAG = "cu-table-export-test";
+  if (!customElements.get(TAG)) {
+    customElements.define(TAG, defineCustomElement(AdvancedTableCe));
+  }
+
+  it("`exportEnabled` y `exportButton` (propiedades JS) se reflejan en el shadow root", async () => {
+    type ExportTableElement = HTMLElement & {
+      columns: typeof columns;
+      data: typeof data;
+      exportEnabled: boolean;
+      exportButton: Record<string, unknown>;
+    };
+    const el = document.createElement(TAG) as ExportTableElement;
+    el.columns = columns;
+    el.data = data;
+    el.exportEnabled = true;
+    el.exportButton = { label: "Bajar", color: "warning", variant: "soft", disabled: true };
+    document.body.appendChild(el);
+    await flushPromises();
+
+    expect(el.shadowRoot).not.toBeNull();
+    const root = el.shadowRoot!;
+    expect(root.querySelector(".cu-advanced-table-toolbar")).not.toBeNull();
+    expect(root.querySelector(".cu-advanced-table-search")).toBeNull();
+    const button = root.querySelector(
+      ".cu-advanced-table-export .cu-button",
+    ) as HTMLButtonElement | null;
+    expect(button).not.toBeNull();
+    expect(button!.textContent!.trim()).toBe("Bajar");
+    expect(button!.classList.contains("cu-button--soft")).toBe(true);
+    expect(button!.classList.contains("cu-button--disabled")).toBe(true);
+    expect(button!.disabled).toBe(true);
     el.remove();
   });
 });

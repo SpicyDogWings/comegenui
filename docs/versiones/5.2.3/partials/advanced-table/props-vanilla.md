@@ -13,6 +13,8 @@
 | `search-placeholder` | `string` | `"Buscar..."` | Placeholder del input de búsqueda (atributo HTML: `search-placeholder`) |
 | `search-fields` | `string[]` | `[]` | Columnas donde buscar (atributo HTML: `search-fields`). Vacío = todas |
 | `search-value` | `string` | `""` | Valor controlado del buscador (atributo HTML: `search-value`) |
+| `export-enabled` | `boolean` | `false` | Muestra el botón de exportación a Excel. Por ahora es sólo visual: no descarga nada (atributo HTML: `export-enabled`) |
+| `export-button` | `ExportButtonConfig \| null` | `{}` | Configuración visual del botón. Defaults: `label` «Descargar Excel», `color` `success`, `variant` `solid`, `disabled` `false`. Con `label: ""` queda sólo el ícono. Se asigna como propiedad JS |
 | `filters` | `Record<string, any>` | `{}` | Filtros por columna. Se asigna como propiedad JS |
 | `loading` | `boolean` | `false` | Muestra una barra de carga animada en el tope |
 | `actions` | `unknown[] \| ((row: Record<string, any>) => unknown[])` | `[]` | Acciones de fila (botón "..." al final de cada fila). Array estático o función por fila. Se asigna como propiedad JS |

@@ -1698,6 +1698,20 @@ const MUTATIONS = [
     replace: `  displayIndex;`,
   },
   {
+    id: "advanced-table-export-enabled-ignorado",
+    file: "src/components/data/AdvancedTable.vue",
+    expect: "`exportEnabled` solo (sin buscador) muestra la toolbar y el botón",
+    find: `props.searchEnabled || props.exportEnabled`,
+    replace: `props.searchEnabled`,
+  },
+  {
+    id: "advanced-table-export-default-soft",
+    file: "src/components/data/AdvancedTable.vue",
+    expect: "el variant por defecto del botón de exportación es `solid`",
+    find: `const exportVariant = computed<VariantFull>(() => exportConfig.value.variant ?? "solid");`,
+    replace: `const exportVariant = computed<VariantFull>(() => exportConfig.value.variant ?? "soft");`,
+  },
+  {
     id: "number-input-clamp-max-ignorado",
     file: "src/components/form/NumberInput.vue",
     expect: "confirmar por encima de max recorta al máximo",

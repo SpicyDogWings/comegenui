@@ -82,6 +82,14 @@ interface ButtonConfig {
   divider?: boolean; // Ítem divisor (solo en el dropdown de `actions`)
 }
 
+/** Configuración visual del botón de exportación de la tabla. */
+interface ExportButtonConfig {
+  label?: string;
+  color?: string;
+  variant?: string;
+  disabled?: boolean;
+}
+
 interface FooterCell {
   value: string;
   colspan?: number;
@@ -175,6 +183,18 @@ const props = defineProps({
   searchFields: { type: Array as () => string[], required: false, default: () => [] },
   /** Valor controlado del buscador (atributo HTML: `search-value`) */
   searchValue: { type: String, required: false, default: "" },
+  /** Muestra el botón de exportación a Excel. Por ahora es sólo visual: no descarga nada (atributo HTML: `export-enabled`) */
+  exportEnabled: { type: Boolean, required: false, default: false },
+  /**
+   * Configuración visual del botón de exportación. Defaults: `label` «Descargar Excel»,
+   * `color` `success`, `variant` `solid`, `disabled` `false`. Con `label: ""` queda
+   * sólo el ícono. Se asigna como propiedad JS
+   */
+  exportButton: {
+    type: Object as () => ExportButtonConfig | null,
+    required: false,
+    default: () => ({}),
+  },
   /** Filtros por columna. Se asigna como propiedad JS */
   filters: { type: Object as () => Record<string, any>, required: false, default: () => ({}) },
   /** Muestra una barra de carga animada en el tope */
@@ -227,6 +247,8 @@ defineExpose({
     :search-placeholder="props.searchPlaceholder"
     :search-fields="props.searchFields"
     :search-value="props.searchValue"
+    :export-enabled="props.exportEnabled"
+    :export-button="props.exportButton"
     :filters="props.filters"
     :loading="props.loading"
     :actions="props.actions"

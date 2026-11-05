@@ -303,6 +303,56 @@ tabla.data = [
 
 ---
 
+## Botón de exportación a Excel
+
+`export-enabled` agrega un botón de exportación a la toolbar. **Por ahora es sólo visual: no descarga el archivo ni emite eventos**; los datos de la tabla no se tocan. El ícono (`lucide-sheet`) se muestra siempre y el `gap` de `Button` separa ícono y label.
+
+`exportButton` define la presentación y se asigna como **propiedad JS** (no hay atributo para el objeto):
+
+| Campo | Tipo | Default | Descripción |
+| --- | --- | --- | --- |
+| `label` | `string` | `"Descargar Excel"` | Texto visible. Con `""` queda sólo el ícono (nombre accesible `"Descargar Excel"`) |
+| `color` | `Color` | `"success"` | Color semántico del botón |
+| `variant` | `VariantFull` | `"solid"` | Variante del botón |
+| `disabled` | `boolean` | `false` | Deshabilita el botón |
+
+El botón queda a la derecha del buscador. Si el buscador está apagado, se renderiza solo, alineado a la derecha.
+
+```html
+<cu-table id="tablaExport" search-enabled export-enabled pagination></cu-table>
+
+<script>
+  const tabla = document.getElementById("tablaExport");
+  tabla.columns = [{ key: "nombre", label: "Nombre" }];
+  tabla.data = [{ nombre: "Juan" }];
+  tabla.exportButton = { label: "Descargar Excel", color: "success", variant: "solid" };
+</script>
+```
+
+Para dejarlo sólo con el ícono: `tabla.exportButton = { label: "" }`.
+
+En Vue, `exportEnabled` habilita el botón y `exportButton` se pasa como prop:
+
+```vue
+<script setup lang="ts">
+import AdvancedTable from "@/components/data/AdvancedTable.vue";
+import { ref } from "vue";
+
+const columns = ref([{ key: "nombre", label: "Nombre" }]);
+const data = ref([{ nombre: "Juan" }]);
+</script>
+
+<template>
+  <AdvancedTable
+    :columns="columns"
+    :data="data"
+    search-enabled
+    export-enabled
+    :export-button="{ label: 'Descargar Excel', color: 'success', variant: 'solid' }"
+  />
+</template>
+```
+
 ## Filtros por columna
 
 Además del buscador, podés aplicar filtros exactos con la prop `filters`. Se combinan con la búsqueda (AND) y se aplican antes del ordenamiento:
