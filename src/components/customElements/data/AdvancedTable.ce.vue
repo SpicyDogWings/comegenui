@@ -1,6 +1,7 @@
 <script setup lang="ts">
 import { ref, computed, getCurrentInstance, onBeforeUnmount, onMounted, useSlots, type Component, type PropType } from "vue";
 import AdvancedTable from "../../data/AdvancedTable.vue";
+import type { SheetOptions, SheetPayload } from "@/utils/sheet";
 
 const instance = getCurrentInstance();
 
@@ -82,19 +83,20 @@ interface ButtonConfig {
   divider?: boolean; // Ítem divisor (solo en el dropdown de `actions`)
 }
 
-/** Configuración visual del botón de exportación de la tabla. */
-interface ExportButtonConfig {
+/** Configuración visual y de archivo del botón de exportación de la tabla. */
+interface ExportButtonConfig extends SheetOptions {
   label?: string;
   color?: string;
   variant?: string;
+  size?: "sm" | "md" | "lg";
   disabled?: boolean;
 }
 
 /** Alcance de la exportación: todas las filas o sólo lo que se está viendo. */
 type ExportScope = "all" | "visible";
 
-/** Opciones de `getExportData`/`exportToExcel`. `scope` default `all`. */
-interface ExportOptions {
+/** Opciones de `getExportData`/`exportToExcel`: `scope` + las del core de archivo. */
+interface ExportOptions extends SheetOptions {
   scope?: ExportScope;
 }
 
@@ -111,12 +113,12 @@ interface ExportData {
 }
 
 /** Resumen que viaja en el `detail` de `export-click`/`export-heavy`: no incluye los datos. */
-interface ExportPayload {
+interface ExportPayload extends SheetPayload {
   scope: ExportScope;
-  rowCount: number;
-  columnCount: number;
-  cellCount: number;
-  heavy: boolean;
+}
+
+interface ExportBeforeDownloadPayload extends ExportPayload {
+  cancel: () => void;
 }
 
 interface FooterCell {
