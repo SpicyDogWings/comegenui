@@ -33,9 +33,22 @@ tabla.actions = (row) => [
 ];
 ```
 
+Exportación (sólo visual: todavía no descarga el archivo):
+
+```html
+<cu-table id="tabla" search-enabled export-enabled></cu-table>
+
+<script>
+  tabla.exportButton = { label: 'Descargar Excel', color: 'success', variant: 'solid' };
+  // label: '' deja sólo el ícono; disabled: true lo deshabilita.
+</script>
+```
+
+En Vue: `<AdvancedTable export-enabled :export-button="{ label: 'Exportar' }" />`.
+
 ## Límites
 
-- Las props complejas van sólo por JS (`columns`, `data`, `filters`, `actions`, `footer`, `pageSizeOptions`, `rowDisabled`); la única excepción es `search-fields` (JSON string: `search-fields='["nombre","email"]'`).
+- Las props complejas van sólo por JS (`columns`, `data`, `filters`, `actions`, `footer`, `pageSizeOptions`, `rowDisabled`, `exportButton`); la única excepción es `search-fields` (JSON string: `search-fields='["nombre","email"]'`).
 - `row-click`, `row-dblclick` y `cell-click` están declarados y el CE los bridgea, pero nadie los dispara: usá el `click` nativo con `e.composedPath()` o resolvé con `buttons`/`badges`/`actions`.
 - No hay "lápiz": la celda editable se abre con click (doble click si `singleClick: false`); el estado inline sólo deja el editor siempre visible.
 - `inputType: 'switch'` es la excepción: siempre visible, sin pasar por `validator`/`regex`, y al alternarlo emite `edit-save` con `value` booleano.
@@ -69,6 +82,8 @@ tabla.actions = (row) => [
 | `search-placeholder` | `string` | `"Buscar..."` | Placeholder del input de búsqueda (atributo HTML: `search-placeholder`) |
 | `search-fields` | `string[]` | `[]` | Columnas donde buscar (atributo HTML: `search-fields`). Vacío = todas |
 | `search-value` | `string` | `""` | Valor controlado del buscador (atributo HTML: `search-value`) |
+| `export-enabled` | `boolean` | `false` | Muestra el botón de exportación a Excel. Por ahora es sólo visual: no descarga nada (atributo HTML: `export-enabled`) |
+| `export-button` | `ExportButtonConfig \| null` | `{}` | Configuración visual del botón de exportación. Defaults: `label` «Descargar Excel», `color` `success`, `variant` `solid`, `disabled` `false`. Con `label: ""` queda sólo el ícono. Se asigna como propiedad JS |
 | `filters` | `Record<string, any>` | `{}` | Filtros por columna. Se asigna como propiedad JS |
 | `loading` | `boolean` | `false` | Muestra una barra de carga animada en el tope |
 | `actions` | `ButtonConfig[] \| ((row: Record<string, any>) => ButtonConfig[])` | `[]` | Acciones de fila (botón "..." al final de cada fila). Array estático o función `(row) => acciones` para decidirlas por fila. Se asigna como propiedad JS |
@@ -133,6 +148,8 @@ Ninguno.
 | `searchPlaceholder` | `string` | `"Buscar..."` | — |
 | `searchFields` | `string[]` | `[]` | — |
 | `searchValue` | `string` | `""` | — |
+| `exportEnabled` | `boolean` | `false` | Muestra el botón de exportación a Excel. Por ahora es sólo visual: no descarga nada |
+| `exportButton` | `ExportButtonConfig \| null` | `{}` | Configuración visual del botón de exportación. Defaults: `label` «Descargar Excel», `color` `success`, `variant` `solid`, `disabled` `false`. Con `label: ""` queda sólo el ícono (nombre accesible «Descargar Excel») |
 | `filters` | `Record<string, any>` | `{}` | — |
 | `loading` | `boolean` | `false` | — |
 | `actions` | `ButtonConfig[] \| ((row: Record<string, any>) => ButtonConfig[])` | `[]` | — |

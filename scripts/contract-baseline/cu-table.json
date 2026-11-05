@@ -8,6 +8,8 @@
     "compact",
     "data",
     "empty",
+    "exportButton",
+    "exportEnabled",
     "filters",
     "footer",
     "inlineEditing",

@@ -6,6 +6,7 @@ import Pagination from "../controls/Pagination.vue";
 import Input from "../form/Input.vue";
 import EditableTableCell from "./EditableTableCell.vue";
 import Button from "../buttons/Button.vue";
+import LucideSheet from "../icons/LucideSheet.vue";
 import Badge from "../information/Badge.vue";
 import DropdownMenu from "../controls/DropdownMenu.vue";
 import { usePagination } from "../../composables/usePagination";
@@ -126,6 +127,14 @@ interface ButtonConfig {
   disabled?: boolean | ((row: Record<string, any>) => boolean);
   hidden?: (row: Record<string, any>) => boolean; // Oculta el botón/ítem en esa fila
   divider?: boolean; // Ítem divisor (solo en el dropdown de `actions`)
+}
+
+/** Configuración visual del botón de exportación de la tabla. */
+interface ExportButtonConfig {
+  label?: string;
+  color?: Color;
+  variant?: VariantFull;
+  disabled?: boolean;
 }
 
 interface AutocompleteItem {
@@ -257,6 +266,18 @@ const props = defineProps({
   searchPlaceholder: { type: String, required: false, default: "Buscar..." },
   searchFields: { type: Array as () => string[], required: false, default: () => [] },
   searchValue: { type: String, required: false, default: "" },
+  /** Muestra el botón de exportación a Excel. Por ahora es sólo visual: no descarga nada */
+  exportEnabled: { type: Boolean, required: false, default: false },
+  /**
+   * Configuración visual del botón de exportación. Defaults: `label` «Descargar Excel»,
+   * `color` `success`, `variant` `solid`, `disabled` `false`. Con `label: ""` queda
+   * sólo el ícono (nombre accesible «Descargar Excel»)
+   */
+  exportButton: {
+    type: Object as PropType<ExportButtonConfig | null>,
+    required: false,
+    default: () => ({}),
+  },
   tableMaxHeight: { type: String, required: false, default: "" },
   filters: { type: Object as () => Record<string, any>, required: false, default: () => ({}) },
   loading: { type: Boolean, required: false, default: false },
@@ -456,6 +477,16 @@ const tableStyles = computed(() => ({
 const inputVariant = computed(() => props.variant === 'solid' ? 'soft' : props.variant);
 const paginationVariant = computed(() => props.variant === 'solid' ? 'soft' : props.variant);
 
+// `exportButton` acepta `null`: se normaliza acá para que los defaults no dependan
+// de que el consumidor pase un objeto.
+const exportConfig = computed<ExportButtonConfig>(() => props.exportButton ?? {});
+const exportLabel = computed(() => exportConfig.value.label ?? "Descargar Excel");
+// `label: ""` es intencional: deja sólo el ícono y mueve el nombre a `aria-label`.
+const exportIconOnly = computed(() => exportConfig.value.label === "");
+const exportColor = computed<Color>(() => exportConfig.value.color ?? "success");
+const exportVariant = computed<VariantFull>(() => exportConfig.value.variant ?? "solid");
+const exportDisabled = computed(() => exportConfig.value.disabled ?? false);
+
 defineExpose({
   /** Actualiza una fila por índice con los campos indicados. */
   updateRow,
@@ -474,16 +505,34 @@ defineExpose({
 
 <template>
   <div class="cu-advanced-table" :style="tableStyles">
-    <div v-if="props.searchEnabled" class="cu-advanced-table-search">
-      <slot name="search" :query="searchQuery" :update="handleSearchUpdate">
-        <Input
-          :placeholder="props.searchPlaceholder"
-          :model-value="searchQuery"
-          @update:modelValue="handleSearchUpdate"
-          :color="props.color"
-          :variant="inputVariant"
-        />
-      </slot>
+    <div
+      v-if="props.searchEnabled || props.exportEnabled"
+      class="cu-advanced-table-toolbar"
+    >
+      <div v-if="props.searchEnabled" class="cu-advanced-table-search">
+        <slot name="search" :query="searchQuery" :update="handleSearchUpdate">
+          <Input
+            :placeholder="props.searchPlaceholder"
+            :model-value="searchQuery"
+            @update:modelValue="handleSearchUpdate"
+            :color="props.color"
+            :variant="inputVariant"
+          />
+        </slot>
+      </div>
+
+      <div v-if="props.exportEnabled" class="cu-advanced-table-export">
+        <Button
+          :color="exportColor"
+          :variant="exportVariant"
+          :disabled="exportDisabled"
+          :icon-only="exportIconOnly"
+          :aria-label="exportIconOnly ? 'Descargar Excel' : undefined"
+        >
+          <LucideSheet aria-hidden="true" focusable="false" />
+          <span v-if="!exportIconOnly">{{ exportLabel }}</span>
+        </Button>
+      </div>
     </div>
 
     <Table v-bind="tableProps">
@@ -637,8 +686,22 @@ defineExpose({
   max-width: 100%;
 }
 
-.cu-advanced-table-search {
+.cu-advanced-table-toolbar {
+  display: flex;
+  align-items: center;
+  gap: var(--cu-space-md);
   padding: var(--cu-space-md);
+}
+
+.cu-advanced-table-search {
+  flex: 1 1 auto;
+  min-width: 0;
+}
+
+/* Siempre a la derecha, incluso cuando no hay buscador. */
+.cu-advanced-table-export {
+  flex: 0 0 auto;
+  margin-left: auto;
 }
 
 .cu-advanced-table-cell-buttons {

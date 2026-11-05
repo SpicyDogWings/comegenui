@@ -51,7 +51,7 @@ Los valores de `shape` / `animation` / `color` / `radius` están en «Atributos�
 | `animation` | `"none" \| "pulse" \| "wave"` | `"pulse"` | `pulse` (opacidad), `wave` (barrido) o `none`; con `prefers-reduced-motion` no anima |
 | `shape` | `"text" \| "rect" \| "circle"` | `"rect"` | `rect` (bloque), `circle` (avatar) o `text` (líneas de texto) |
 | `lines` | `number` | `1` | Cantidad de barras con `shape="text"` (se ignora en `rect` y `circle`) |
-| `radius` | `"sm" \| "md" \| "lg" \| "none" \| "full"` | `""` | Radio de las esquinas; vacío = el default del `shape` (`rect` md, `circle` full, `text` sm) |
+| `radius` | `"none" \| "sm" \| "md" \| "lg" \| "full"` | `""` | Radio de las esquinas; vacío = el default del `shape` (`rect` md, `circle` full, `text` sm) |
 <!-- /@api:atributos -->
 
 ### Eventos
@@ -85,7 +85,7 @@ No expone métodos.
 | `animation` | `"none" \| "pulse" \| "wave"` | `"pulse"` | `pulse` (opacidad), `wave` (barrido) o `none`; con `prefers-reduced-motion` no anima |
 | `shape` | `"text" \| "rect" \| "circle"` | `"rect"` | `rect` (bloque), `circle` (avatar) o `text` (líneas de texto) |
 | `lines` | `number` | `1` | Cantidad de barras con `shape="text"` (se ignora en `rect` y `circle`) |
-| `radius` | `"sm" \| "md" \| "lg" \| "none" \| "full"` | `""` | Radio de las esquinas; vacío = el default del `shape` (`rect` md, `circle` full, `text` sm) |
+| `radius` | `"none" \| "sm" \| "md" \| "lg" \| "full"` | `""` | Radio de las esquinas; vacío = el default del `shape` (`rect` md, `circle` full, `text` sm) |
 <!-- /@api:props -->
 
 ### Emits
