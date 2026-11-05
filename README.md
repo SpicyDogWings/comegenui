@@ -113,6 +113,15 @@ cp -r skills/use-comegen <proyecto>/.opencode/skills/
 Cambiá `--branch main` por la rama o tag que quieras. Detalle y correspondencia con la versión de
 la lib: [`skills/use-comegen/SKILL.md`](./skills/use-comegen/SKILL.md).
 
+## Desarrollo
+
+- Las ramas de feature **no** corren `guard.sh --full`.
+- Verificación de rama: tests del archivo tocado, `node scripts/mutation-check.mjs --solo <ids>` y type-check.
+- El `guard.sh --full` lo corre **solo el agente de integración**, una vez, sobre el árbol unido antes del push.
+- No correr guards/mutaciones en paralelo. El hook `pre-commit` (`--fast`) se mantiene; no usar `--no-verify` sin autorización.
+
+Detalle completo: [`AGENTS.md`](./AGENTS.md#regla-dura-no-terminás-sin-veredicto-verde).
+
 ## Licencia
 
 [MIT](./LICENSE) © SpicyDogWings
