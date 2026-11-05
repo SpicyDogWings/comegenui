@@ -43,9 +43,9 @@ Los valores de `color` / `size` están en «Atributos» / «Props», abajo.
 | ------ | ------ | ------ | ------ |
 | `color` | `"primary" \| "secondary" \| "neutral" \| "success" \| "warning" \| "danger"` | `"neutral"` | Color semántico: `primary`, `neutral`, `success`, `warning`, `danger` |
 | `size` | `"sm" \| "md"` | `"md"` | Tamaño del switch: `sm`, `md` |
+| `label` | `string` | `""` | — |
 | `disabled` | `boolean` | `—` | Estado deshabilitado |
 | `model-value` | `boolean` | `false` | Estado del toggle. El CE sincroniza su estado; asigná `modelValue` sólo si querés controlarlo |
-| `label` | `string` | `""` | — |
 | `label-position` | `"start" \| "end"` | `"end"` | Posición de la etiqueta: `end` (derecha, default) o `start` (izquierda) |
 <!-- /@api:atributos -->
 
@@ -87,8 +87,8 @@ Los valores de `color` / `size` están en «Atributos» / «Props», abajo.
 | `modelValue` | `boolean` | `false` | — |
 | `color` | `"primary" \| "secondary" \| "neutral" \| "success" \| "warning" \| "danger"` | `"neutral"` | — |
 | `size` | `"sm" \| "md"` | `"md"` | — |
-| `disabled` | `boolean` | `false` | — |
 | `label` | `string` | `""` | — |
+| `disabled` | `boolean` | `false` | — |
 | `labelPosition` | `"start" \| "end"` | `"end"` | Lado del track en el que se muestra la etiqueta: `end` (derecha, default) o `start` (izquierda). |
 <!-- /@api:props -->
 

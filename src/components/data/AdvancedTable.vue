@@ -6,12 +6,19 @@ import Pagination from "../controls/Pagination.vue";
 import Input from "../form/Input.vue";
 import EditableTableCell from "./EditableTableCell.vue";
 import Button from "../buttons/Button.vue";
-import LucideSheet from "../icons/LucideSheet.vue";
+import ExportButton from "../buttons/ExportButton.vue";
 import Badge from "../information/Badge.vue";
 import DropdownMenu from "../controls/DropdownMenu.vue";
 import { usePagination } from "../../composables/usePagination";
 import { useSearch } from "../../composables/useSearch";
 import { useTableData } from "../../composables/useTableData";
+import {
+  downloadSheet,
+  getSheetPayload,
+  type SheetColumn,
+  type SheetOptions,
+  type SheetPayload,
+} from "../../utils/sheet";
 import DOMPurify from "dompurify";
 
 // `ButtonConfig.icon` puede ser un SVG/HTML del consumidor: se sanitiza antes
@@ -129,19 +136,20 @@ interface ButtonConfig {
   divider?: boolean; // Ítem divisor (solo en el dropdown de `actions`)
 }
 
-/** Configuración visual del botón de exportación de la tabla. */
-interface ExportButtonConfig {
+/** Configuración visual y de archivo del botón de exportación de la tabla. */
+interface ExportButtonConfig extends SheetOptions {
   label?: string;
   color?: Color;
   variant?: VariantFull;
+  size?: "sm" | "md" | "lg";
   disabled?: boolean;
 }
 
 /** Alcance de la exportación: todas las filas o sólo lo que se está viendo. */
 type ExportScope = "all" | "visible";
 
-/** Opciones de `getExportData`/`exportToExcel`. `scope` default `all`. */
-interface ExportOptions {
+/** Opciones de `getExportData`/`exportToExcel`: `scope` + las del core de archivo. */
+interface ExportOptions extends SheetOptions {
   scope?: ExportScope;
 }
 
@@ -158,12 +166,13 @@ interface ExportData {
 }
 
 /** Resumen que viaja en `export-click`/`export-heavy`: no incluye los datos. */
-interface ExportPayload {
+interface ExportPayload extends SheetPayload {
   scope: ExportScope;
-  rowCount: number;
-  columnCount: number;
-  cellCount: number;
-  heavy: boolean;
+}
+
+/** Payload de `before-download`: además del resumen, el cancelador sincrónico. */
+interface ExportBeforeDownloadPayload extends ExportPayload {
+  cancel: () => void;
 }
 
 interface AutocompleteItem {
@@ -302,13 +311,13 @@ const props = defineProps({
   searchPlaceholder: { type: String, required: false, default: "Buscar..." },
   searchFields: { type: Array as () => string[], required: false, default: () => [] },
   searchValue: { type: String, required: false, default: "" },
-  /** Muestra el botón de exportación a Excel. No descarga un archivo: emite `export-click` con el resumen de los datos */
+  /** Muestra el botón de exportación (XLSX/CSV). El botón descarga; `exportToExcel()` funciona aunque esté apagado */
   exportEnabled: { type: Boolean, required: false, default: false },
   /**
-   * Configuración visual del botón de exportación. Defaults: `label` «Descargar Excel»,
-   * `color` `success`, `variant` `solid`, `disabled` `false`. Con `label: ""` queda
-   * sólo el ícono (nombre accesible «Descargar Excel»). `disabled` sólo apaga el
-   * botón: `exportToExcel()` sigue disponible por método
+   * Configuración visual y de archivo del botón: `label` (default según `format`),
+   * `color` `success`, `variant` `solid`, `size` `md`, `disabled` `false`, más `format`,
+   * `filename`, `sheetName`, `delimiter`, `config` y `heavyThreshold`. Con `label: ""`
+   * queda sólo el ícono. `disabled` sólo apaga el botón: `exportToExcel()` sigue disponible
    */
   exportButton: {
     type: Object as PropType<ExportButtonConfig | null>,
@@ -354,9 +363,11 @@ const emit = defineEmits<{
   "edit-save": [payload: any]
   "edit-cancel": [payload: any]
   "edit-error": [payload: any]
-  /** Se emite al llamar `exportToExcel`, con el resumen (`scope`, filas, columnas, celdas y `heavy`). */
+  /** Se emite antes de generar el archivo; llamá `cancel()` para evitar la descarga. */
+  "before-download": [payload: ExportBeforeDownloadPayload]
+  /** Se emite al exportar, con el resumen (`scope`, archivo y conteos). */
   "export-click": [payload: ExportPayload]
-  /** Se emite además de `export-click` cuando la exportación llega a `EXPORT_HEAVY_CELLS` celdas o más. */
+  /** Se emite además de `export-click` cuando la exportación llega a `heavyThreshold` celdas o más (10 000 por defecto). */
   "export-heavy": [payload: ExportPayload]
 }>();
 
@@ -526,11 +537,14 @@ const paginationVariant = computed(() => props.variant === 'solid' ? 'soft' : pr
 // `exportButton` acepta `null`: se normaliza acá para que los defaults no dependan
 // de que el consumidor pase un objeto.
 const exportConfig = computed<ExportButtonConfig>(() => props.exportButton ?? {});
-const exportLabel = computed(() => exportConfig.value.label ?? "Descargar Excel");
-// `label: ""` es intencional: deja sólo el ícono y mueve el nombre a `aria-label`.
-const exportIconOnly = computed(() => exportConfig.value.label === "");
+const exportLabel = computed(
+  () =>
+    exportConfig.value.label ??
+    (exportConfig.value.format === "csv" ? "Descargar CSV" : "Descargar Excel"),
+);
 const exportColor = computed<Color>(() => exportConfig.value.color ?? "success");
 const exportVariant = computed<VariantFull>(() => exportConfig.value.variant ?? "solid");
+const exportSize = computed(() => exportConfig.value.size ?? "md");
 const exportDisabled = computed(() => exportConfig.value.disabled ?? false);
 
 // Columnas que entran en la exportación: fuera `__actions__` (columna sintética
@@ -539,6 +553,12 @@ const exportColumns = computed<ExportColumn[]>(() =>
   props.columns
     .filter((col) => col.key !== "__actions__" && col.exportable !== false)
     .map((col) => (col.label === undefined ? { key: col.key } : { key: col.key, label: col.label }))
+);
+
+// Columnas para el botón y el core de archivo: mismo filtro que la exportación,
+// con label legible para el encabezado.
+const exportSheetColumns = computed<SheetColumn[]>(() =>
+  exportColumns.value.map((col) => ({ key: col.key, label: col.label ?? col.key }))
 );
 
 /**
@@ -560,26 +580,41 @@ function getExportData(options: ExportOptions = {}): ExportData {
 }
 
 /**
- * Punto de entrada de la exportación (lo usa el botón y lo pueden llamar los
- * consumidores). Calcula `getExportData`, emite `export-click` siempre y
- * `export-heavy` si `cellCount >= EXPORT_HEAVY_CELLS`, y devuelve el payload.
- * **No genera ni descarga ningún archivo.**
+ * Exporta y descarga el archivo. No depende de que el botón esté visible:
+ * funciona con `exportEnabled: false` y sin instanciar `<ExportButton>`.
+ *
+ * Emite `before-download` (cancelable), `export-click` y `export-heavy`; recién
+ * después genera y descarga el archivo, salvo que un listener haya cancelado.
  */
 function exportToExcel(options: ExportOptions = {}): ExportPayload {
   const scope: ExportScope = options.scope ?? "all";
-  const { columns, rows } = getExportData({ scope });
-  const columnCount = columns.length;
-  const rowCount = rows.length;
-  const cellCount = rowCount * columnCount;
+  const { rows } = getExportData({ scope });
+  const sheetOptions: SheetOptions = {
+    format: options.format ?? exportConfig.value.format,
+    filename: options.filename ?? exportConfig.value.filename,
+    sheetName: options.sheetName ?? exportConfig.value.sheetName,
+    delimiter: options.delimiter ?? exportConfig.value.delimiter,
+    config: options.config ?? exportConfig.value.config,
+    heavyThreshold:
+      options.heavyThreshold ?? exportConfig.value.heavyThreshold ?? EXPORT_HEAVY_CELLS,
+  };
+
+  let cancelled = false;
+  // El resumen se calcula una vez y es el mismo que viaja en los eventos y en el
+  // retorno; la descarga sólo ocurre si ningún listener canceló.
   const payload: ExportPayload = {
     scope,
-    rowCount,
-    columnCount,
-    cellCount,
-    heavy: cellCount >= EXPORT_HEAVY_CELLS,
+    ...getSheetPayload(rows, exportSheetColumns.value, sheetOptions),
   };
+  emit("before-download", {
+    ...payload,
+    cancel: () => {
+      cancelled = true;
+    },
+  });
   emit("export-click", payload);
   if (payload.heavy) emit("export-heavy", payload);
+  if (!cancelled) downloadSheet(rows, exportSheetColumns.value, sheetOptions);
   return payload;
 }
 
@@ -598,7 +633,7 @@ defineExpose({
   pushData,
   /** Columnas exportables y valores crudos de las filas (`all` todas, `visible` la página/filtro actual). */
   getExportData,
-  /** Calcula los datos, emite `export-click`/`export-heavy` y devuelve el payload. No genera archivo. */
+  /** Exporta y descarga (xlsx/csv). Emite `before-download`/`export-click`/`export-heavy`; no depende del botón. */
   exportToExcel,
 });
 </script>
@@ -622,17 +657,23 @@ defineExpose({
       </div>
 
       <div v-if="props.exportEnabled" class="cu-advanced-table-export">
-        <Button
+        <ExportButton
+          :data="localData"
+          :columns="exportSheetColumns"
+          :format="exportConfig.format ?? 'xlsx'"
+          :filename="exportConfig.filename"
+          :sheet-name="exportConfig.sheetName"
+          :delimiter="exportConfig.delimiter"
+          :config="exportConfig.config"
+          :heavy-threshold="exportConfig.heavyThreshold"
+          :label="exportLabel"
           :color="exportColor"
           :variant="exportVariant"
+          :size="exportSize"
           :disabled="exportDisabled"
-          :icon-only="exportIconOnly"
-          :aria-label="exportIconOnly ? 'Descargar Excel' : undefined"
-          @click="exportToExcel({ scope: 'all' })"
-        >
-          <LucideSheet aria-hidden="true" focusable="false" />
-          <span v-if="!exportIconOnly">{{ exportLabel }}</span>
-        </Button>
+          manual
+          @trigger="exportToExcel({ scope: 'all' })"
+        />
       </div>
     </div>
 

@@ -304,18 +304,36 @@ tabla.data = [
 
 ---
 
-## Exportación a Excel
+## Exportación (XLSX y CSV)
 
-`export-enabled` agrega el botón de exportación a la toolbar y `exportToExcel({ scope })` es su punto de entrada. **Todavía no se genera ni descarga ningún archivo**: la tabla calcula los datos y emite eventos para que el consumidor decida qué hacer (crear el `.xlsx`, subirlo, etc.). El ícono (`lucide-sheet`) se muestra siempre y el `gap` de `Button` separa ícono y label.
+`export-enabled` agrega el botón a la toolbar y `exportToExcel({ scope })` es el punto de entrada:
+calcula los datos, despacha los eventos y **genera y descarga el archivo**. No depende del botón:
+con la toolbar apagada el método sigue exportando, así que sirve para exports programáticos.
 
-`exportButton` define la presentación y se asigna como **propiedad JS** (no hay atributo para el objeto):
+- Formato: `xlsx` (default) o `csv`; el nombre por defecto es `export-YYYY-MM-DD`.
+- `scope`: `"all"` (default) exporta todas las filas; `"visible"` sólo la página/filtros actuales.
+- `before-download` corre **antes** de generar el archivo y es cancelable con `e.detail.cancel()`:
+  si cancelás, no se descarga nada (los eventos de resumen igual salen).
+- `export-click` sale siempre y `export-heavy` además cuando la exportación llega al umbral de
+  celdas (`10 000` por defecto).
+- `getExportData()` no descarga: sirve para inspeccionar o reenviar los datos.
+
+`exportButton` define la presentación y las opciones del archivo y se asigna como **propiedad JS**
+(no hay atributo para el objeto):
 
 | Campo | Tipo | Default | Descripción |
 | --- | --- | --- | --- |
-| `label` | `string` | `"Descargar Excel"` | Texto visible. Con `""` queda sólo el ícono (nombre accesible `"Descargar Excel"`) |
+| `label` | `string` | `"Descargar Excel"` / `"Descargar CSV"` | Texto visible. Con `""` queda sólo el ícono (nombre accesible según formato) |
 | `color` | `Color` | `"success"` | Color semántico del botón |
 | `variant` | `VariantFull` | `"solid"` | Variante del botón |
+| `size` | `"sm" \| "md" \| "lg"` | `"md"` | Tamaño del botón |
 | `disabled` | `boolean` | `false` | Deshabilita **sólo el botón**: `exportToExcel()` sigue disponible por método |
+| `format` | `"xlsx" \| "csv"` | `"xlsx"` | Formato del archivo (también afecta el label por defecto) |
+| `filename` | `string` | `export-YYYY-MM-DD` | Nombre sin extensión |
+| `sheetName` | `string` | `"Datos"` | Nombre de la hoja en XLSX |
+| `delimiter` | `string` | `","` | Separador de CSV |
+| `heavyThreshold` | `number` | `10000` | Celdas desde las que la exportación es «pesada» y se emite `export-heavy` |
+| `config` | `WritingOptions` | — | Opciones de SheetJS (objeto; sólo por JS) |
 
 El botón queda a la derecha del buscador. Si el buscador está apagado, se renderiza solo, alineado a la derecha.
 
@@ -326,7 +344,7 @@ El botón queda a la derecha del buscador. Si el buscador está apagado, se rend
   const tabla = document.getElementById("tablaExport");
   tabla.columns = [{ key: "nombre", label: "Nombre" }];
   tabla.data = [{ nombre: "Juan" }];
-  tabla.exportButton = { label: "Descargar Excel", color: "success", variant: "solid" };
+  tabla.exportButton = { filename: "personas", color: "success", variant: "solid" };
 </script>
 ```
 
@@ -382,14 +400,18 @@ interface ExportData {
 
 ### `exportToExcel(options?)` y eventos
 
-`exportToExcel` es el punto de entrada del botón y de los consumidores. Calcula `getExportData`, **devuelve el payload** y despacha en el host:
+`exportToExcel` exporta y descarga. Acepta las mismas opciones del core (`scope`, `format`,
+`filename`, `sheetName`, `delimiter`, `config`, `heavyThreshold`) y despacha en el host:
 
-- `export-click` siempre, con el payload en `e.detail`;
-- `export-heavy` además si `cellCount >= EXPORT_HEAVY_CELLS` (10 000 celdas).
+- `before-download` antes del archivo, con `e.detail.cancel()` para cancelarlo;
+- `export-click` siempre;
+- `export-heavy` además si `cellCount >= heavyThreshold` (10 000 celdas por defecto).
 
 ```ts
 interface ExportPayload {
   scope: ExportScope;
+  format: "xlsx" | "csv";
+  fileName: string;          // con extensión
   rowCount: number;
   columnCount: number;
   cellCount: number;
@@ -397,52 +419,36 @@ interface ExportPayload {
 }
 ```
 
-El botón usa `exportToExcel({ scope: "all" })`. Recordá que **nada se descarga**: la generación del archivo queda del lado del consumidor.
+El botón usa `exportToExcel({ scope: "all" })` en modo manual: un click produce **una sola**
+descarga y un solo `export-click`. El orden es `before-download` → `export-click` →
+`export-heavy` → archivo.
 
-Ejemplo: interceptar una exportación pesada y avisar antes de procesarla.
+Ejemplo: cancelar una exportación pesada antes de generarla.
 
 ```html
 <cu-table id="tablaExport" export-enabled pagination></cu-table>
-<p id="avisoExport"></p>
 
 <script>
   const tabla = document.getElementById("tablaExport");
-  const aviso = document.getElementById("avisoExport");
   tabla.columns = [{ key: "nombre", label: "Nombre" }];
   tabla.data = [{ nombre: "Juan" }];
 
-  tabla.addEventListener("export-click", (e) => console.log("exportar", e.detail));
+  tabla.addEventListener("before-download", (e) => {
+    if (e.detail.heavy && !confirm("¿Exportar todo?")) e.detail.cancel();
+  });
+  tabla.addEventListener("export-click", (e) => console.log(e.detail.fileName));
   tabla.addEventListener("export-heavy", (e) => {
-    aviso.textContent = `La exportación tiene ${e.detail.rowCount} filas (${e.detail.cellCount} celdas).`;
+    alerta?.(`La exportación tiene ${e.detail.rowCount} filas (${e.detail.cellCount} celdas).`);
   });
 
-  // El scope `visible` sólo está disponible por método, no en el botón:
+  // El scope `visible` y el formato también se eligen por método:
   const visibles = tabla.getExportData({ scope: "visible" });
-  const payload = tabla.exportToExcel({ scope: "visible" });
+  const payload = tabla.exportToExcel({ scope: "visible", format: "csv" });
 </script>
 ```
 
-En Vue, `exportEnabled` habilita el botón y `exportButton` se pasa como prop:
-
-```vue
-<script setup lang="ts">
-import AdvancedTable from "@/components/data/AdvancedTable.vue";
-import { ref } from "vue";
-
-const columns = ref([{ key: "nombre", label: "Nombre" }]);
-const data = ref([{ nombre: "Juan" }]);
-</script>
-
-<template>
-  <AdvancedTable
-    :columns="columns"
-    :data="data"
-    search-enabled
-    export-enabled
-    :export-button="{ label: 'Descargar Excel', color: 'success', variant: 'solid' }"
-  />
-</template>
-```
+En Vue, `exportEnabled` habilita el botón y `exportButton` se pasa como prop (ver
+[ficha Vue](/componentes/vue/advanced-table#exportacion-xlsx-y-csv)).
 
 ## Filtros por columna
 
@@ -1165,7 +1171,7 @@ En variantes transparentes (`outlined`, `ghost`) se aplica `backdrop-filter: blu
 
 ## Métodos expuestos
 
-<!--@include: ../partials/advanced-table/metodos.md-->
+<!--@include: ../partials/advanced-table/metodos-vanilla.md-->
 
 ## Interfaces
 

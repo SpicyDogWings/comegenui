@@ -19,6 +19,7 @@ Los custom elements copian al control renderizado los atributos del host que no 
 | Button | [`cu-button`](./cu-button.md) | [Button](./vue/button.md) |
 | FloatingButton | [`cu-floating-button`](./cu-floating-button.md) | [FloatingButton](./vue/floating-button.md) |
 | CopyButton | — | [CopyButton](./vue/copy-button.md) |
+| ExportButton | [`cu-export-button`](./cu-export-button.md) | [ExportButton](./vue/export-button.md) |
 | ToggleColorSheme | — | [ToggleColorSheme](./vue/toggle-color-sheme.md) |
 
 ## Controles

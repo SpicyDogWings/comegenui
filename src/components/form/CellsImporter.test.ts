@@ -5,7 +5,13 @@ import { describe, it, expect, vi, beforeAll } from "vitest";
 import { flushPromises, mount } from "@vue/test-utils";
 import * as XLSX from "xlsx";
 import CellsImporter from "./CellsImporter.vue";
-import { parseCSV, parseFile, type CellParseResult } from "../../utils/cellsImporter";
+import {
+  buildTemplateCSV,
+  downloadTemplate,
+  parseCSV,
+  parseFile,
+  type CellParseResult,
+} from "../../utils/cellsImporter";
 
 // `parseFile` queda espiable para poder retener un parseo y resolverlo tarde.
 vi.mock("../../utils/cellsImporter", async (importOriginal) => {
@@ -275,5 +281,47 @@ describe("CellsImporter — plantilla con separador", () => {
     expect(parseCSV(text, ";")[0]).toEqual(["Nombre", "DNI", "Email"]);
     create.mockRestore();
     click.mockRestore();
+  });
+
+  it("la plantilla xlsx sale del mismo writer: hoja Template y encabezados", async () => {
+    const blobs: Blob[] = [];
+    const create = vi.spyOn(URL, "createObjectURL").mockImplementation((obj: Blob | MediaSource) => {
+      blobs.push(obj as Blob);
+      return "blob:plantilla";
+    });
+    const anchor: HTMLAnchorElement[] = [];
+    const clickSpy = vi.spyOn(HTMLAnchorElement.prototype, "click").mockImplementation(function (
+      this: HTMLAnchorElement,
+    ) {
+      anchor.push(this);
+    });
+
+    await downloadTemplate(COLUMNS, { type: "xlsx", filename: "alta" });
+    await flushPromises();
+
+    expect(anchor[0]!.download).toBe("alta.xlsx");
+    expect(blobs[0]!.type).toBe(
+      "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet",
+    );
+    const wb = XLSX.read(new Uint8Array(await blobs[0]!.arrayBuffer()), { type: "array" });
+    expect(wb.SheetNames).toEqual(["Template"]);
+    const sheet = wb.Sheets.Template!;
+    expect([sheet["A1"]!.v, sheet["B1"]!.v, sheet["C1"]!.v]).toEqual([
+      "Nombre",
+      "DNI",
+      "Email",
+    ]);
+    create.mockRestore();
+    clickSpy.mockRestore();
+  });
+
+  it("`buildTemplateCSV` usa el separador y escapa comillas/saltos como el CSV del core", () => {
+    expect(buildTemplateCSV(COLUMNS)).toBe("Nombre,DNI,Email\n");
+    expect(
+      buildTemplateCSV([
+        { key: "nota", label: 'Nota "interna"' },
+        { key: "multi", label: "a\nb" },
+      ]),
+    ).toBe('"Nota ""interna""","a\nb"\n');
   });
 });

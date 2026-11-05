@@ -43,7 +43,7 @@ En HTML plano, cargá el bundle `CuCellsImporter` (ver [ficha vanilla](/componen
 
 `template` activa el botón **Descargar plantilla** y define el formato del archivo generado. La plantilla se construye **siempre desde `columns`** (usa el `label` de cada columna como encabezado). El botón solo aparece si `enabled: true` **y** `columns.length > 0`; también se puede disparar con `.downloadTemplate()`.
 
-El CSV se genera con el `delimiter` configurado (se puede reimportar con la misma config) y con BOM UTF-8 para que Excel respete los acentos.
+La plantilla la genera el mismo core de archivos que usa la tabla (`utils/sheet.ts`): el CSV respeta el `delimiter` configurado (se puede reimportar con la misma config) y lleva BOM UTF-8 para que Excel respete los acentos; el XLSX sale con la hoja `Template` y los `label` como encabezado.
 
 ```vue
 <script setup lang="ts">

@@ -1,6 +1,7 @@
 <script setup lang="ts">
 import { ref, computed, getCurrentInstance, onBeforeUnmount, onMounted, useSlots, type Component, type PropType } from "vue";
 import AdvancedTable from "../../data/AdvancedTable.vue";
+import type { SheetOptions, SheetPayload } from "@/utils/sheet";
 
 const instance = getCurrentInstance();
 
@@ -82,19 +83,20 @@ interface ButtonConfig {
   divider?: boolean; // Ítem divisor (solo en el dropdown de `actions`)
 }
 
-/** Configuración visual del botón de exportación de la tabla. */
-interface ExportButtonConfig {
+/** Configuración visual y de archivo del botón de exportación de la tabla. */
+interface ExportButtonConfig extends SheetOptions {
   label?: string;
   color?: string;
   variant?: string;
+  size?: "sm" | "md" | "lg";
   disabled?: boolean;
 }
 
 /** Alcance de la exportación: todas las filas o sólo lo que se está viendo. */
 type ExportScope = "all" | "visible";
 
-/** Opciones de `getExportData`/`exportToExcel`. `scope` default `all`. */
-interface ExportOptions {
+/** Opciones de `getExportData`/`exportToExcel`: `scope` + las del core de archivo. */
+interface ExportOptions extends SheetOptions {
   scope?: ExportScope;
 }
 
@@ -111,12 +113,12 @@ interface ExportData {
 }
 
 /** Resumen que viaja en el `detail` de `export-click`/`export-heavy`: no incluye los datos. */
-interface ExportPayload {
+interface ExportPayload extends SheetPayload {
   scope: ExportScope;
-  rowCount: number;
-  columnCount: number;
-  cellCount: number;
-  heavy: boolean;
+}
+
+interface ExportBeforeDownloadPayload extends ExportPayload {
+  cancel: () => void;
 }
 
 interface FooterCell {
@@ -213,11 +215,12 @@ const props = defineProps({
   searchFields: { type: Array as () => string[], required: false, default: () => [] },
   /** Valor controlado del buscador (atributo HTML: `search-value`) */
   searchValue: { type: String, required: false, default: "" },
-  /** Muestra el botón de exportación a Excel. No descarga un archivo: emite `export-click` con el resumen de los datos (atributo HTML: `export-enabled`) */
+  /** Muestra el botón de exportación (XLSX/CSV). El botón descarga; `exportToExcel()` funciona aunque esté apagado (atributo HTML: `export-enabled`) */
   exportEnabled: { type: Boolean, required: false, default: false },
   /**
    * Configuración visual del botón de exportación. Defaults: `label` «Descargar Excel»,
-   * `color` `success`, `variant` `solid`, `disabled` `false`. Con `label: ""` queda
+   * `color` `success`, `variant` `solid`, `size` `md`, `disabled` `false`, más `format`,
+   * `filename`, `sheetName`, `delimiter`, `config` y `heavyThreshold`. Con `label: ""` queda
    * sólo el ícono. `disabled` sólo apaga el botón: `exportToExcel()` sigue disponible.
    * Se asigna como propiedad JS
    */
@@ -253,7 +256,7 @@ const props = defineProps({
 const tableRef = ref<InstanceType<typeof AdvancedTable> | null>(null);
 
 // Eventos del host: `ceEmit` despacha CustomEvent con el payload en `e.detail`.
-defineEmits(["export-click", "export-heavy"]);
+defineEmits(["before-download", "export-click", "export-heavy"]);
 
 defineExpose({
   updateRow: (rowIndex: number, newData: Record<string, any>) => tableRef.value?.updateRow(rowIndex, newData),
@@ -264,7 +267,7 @@ defineExpose({
   pushData: (newData: Record<string, any>[]) => tableRef.value?.pushData(newData),
   /** Columnas exportables y **valores crudos** de las filas (sin `cell`, badges ni botones). `scope: "all"` (default) usa todas las filas de `data`; `"visible"` usa lo renderizado ahora (página y filtros/búsqueda actuales). */
   getExportData: (options?: ExportOptions) => tableRef.value?.getExportData(options),
-  /** Punto de entrada de la exportación (lo usa el botón y lo pueden llamar los consumidores). Calcula `getExportData`, emite `export-click` siempre y `export-heavy` si `cellCount >= EXPORT_HEAVY_CELLS`, y devuelve el payload. **No genera ni descarga ningún archivo.** */
+  /** Exporta y descarga el archivo (xlsx por defecto, o csv). Emite `before-download` (cancelable con `e.detail.cancel()`), `export-click` y `export-heavy`; funciona aunque `exportEnabled` sea `false`. Devuelve el payload. */
   exportToExcel: (options?: ExportOptions) => tableRef.value?.exportToExcel(options),
 });
 </script>
@@ -297,6 +300,7 @@ defineExpose({
     :inline-editing="props.inlineEditing"
     :compact="props.compact"
 
+    @before-download="ceEmit('before-download', $event)"
     @export-click="ceEmit('export-click', $event)"
     @export-heavy="ceEmit('export-heavy', $event)"
     @update:current-page="ceEmit('update:currentPage', $event)"

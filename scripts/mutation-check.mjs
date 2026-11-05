@@ -1729,8 +1729,8 @@ const MUTATIONS = [
     id: "cu-table-export-heavy-nunca",
     file: "src/components/data/AdvancedTable.vue",
     expect: "`export-heavy` (y `heavy: true`) a partir de 10 000 celdas",
-    find: `    heavy: cellCount >= EXPORT_HEAVY_CELLS,`,
-    replace: `    heavy: false,`,
+    find: `      options.heavyThreshold ?? exportConfig.value.heavyThreshold ?? EXPORT_HEAVY_CELLS,`,
+    replace: `      Number.POSITIVE_INFINITY,`,
   },
   {
     id: "number-input-clamp-max-ignorado",
@@ -3609,6 +3609,79 @@ const MUTATIONS = [
     replace: `  <Card
     @click="(e) => e.target.getRootNode().host.dispatchEvent(new CustomEvent('click', { bubbles: true, composed: true }))"
     :color="props.color"`,
+  },
+  {
+    id: "sheet-csv-sin-escape",
+    file: "src/utils/sheet.ts",
+    expect: "el CSV entrecomilla comillas, saltos y el separador",
+    find: `  const needsQuotes =
+    text.includes('"') ||
+    text.includes('\\n') ||
+    text.includes('\\r') ||
+    text.includes(delimiter)`,
+    replace: `  const needsQuotes = false`,
+  },
+  {
+    id: "sheet-cancel-ignorado",
+    file: "src/utils/sheet.ts",
+    expect: "`beforeDownload` que devuelve false evita la descarga",
+    find: `  if (beforeDownload?.(prepared.payload) === false) return null\n`,
+    replace: ``,
+  },
+  {
+    id: "sheet-exporta-columnas-no-exportables",
+    file: "src/utils/sheet.ts",
+    expect: "las columnas con exportable:false no entran al archivo",
+    find: `  const active = columns.filter((column) => column.exportable !== false)`,
+    replace: `  const active = columns.slice()`,
+  },
+  {
+    id: "export-button-manual-descarga",
+    file: "src/components/buttons/ExportButton.vue",
+    expect: "en modo manual el click sólo emite trigger (no descarga)",
+    find: `  if (props.manual) {
+    emit("trigger", getPayload());
+    return;
+  }
+  download();`,
+    replace: `  download();`,
+  },
+  {
+    id: "export-button-label-csv",
+    file: "src/components/buttons/ExportButton.vue",
+    expect: "el label por defecto cambia con el formato csv",
+    find: `  format.value === "csv" ? "Descargar CSV" : "Descargar Excel",`,
+    replace: `  "Descargar Excel",`,
+  },
+  {
+    id: "cu-export-button-sin-bridge-download",
+    file: "src/components/customElements/buttons/ExportButton.ce.vue",
+    test: "src/components/customElements/buttons/ExportButton.ce.test.ts",
+    expect: "el evento `download` del Vue llega al host como CustomEvent",
+    find: `    @download="ceEmit('download', $event as SheetPayload)"`,
+    replace: ``,
+  },
+  {
+    id: "advanced-table-cancel-ignorado",
+    file: "src/components/data/AdvancedTable.vue",
+    expect: "`before-download` cancelado evita que exportToExcel descargue",
+    find: `  if (!cancelled) downloadSheet(rows, exportSheetColumns.value, sheetOptions);`,
+    replace: `  downloadSheet(rows, exportSheetColumns.value, sheetOptions);`,
+  },
+  {
+    id: "advanced-table-boton-duplica-descarga",
+    file: "src/components/data/AdvancedTable.vue",
+    expect: "el botón de la toolbar exporta en modo manual (una sola descarga)",
+    find: `          manual\n          @trigger=`,
+    replace: `          @trigger=`,
+  },
+  {
+    id: "cells-importer-plantilla-sin-separador",
+    file: "src/utils/cellsImporter.ts",
+    test: "src/components/form/CellsImporter.test.ts",
+    expect: "la plantilla CSV usa el separator con el que se importa",
+    find: `    delimiter: options.delimiter ?? ',',`,
+    replace: `    delimiter: ',',`,
   },
 ];
 
