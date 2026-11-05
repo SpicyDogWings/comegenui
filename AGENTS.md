@@ -41,7 +41,7 @@ src/
 ├── components/
 │   ├── {category}/MiComponente.vue        # Lógica real del componente
 │   ├── customElements/{category}/MiComponente.ce.vue  # Wrapper CE (thin)
-│   └── ...otrascarpetas (icons, theme, lab, archived, legacy)
+│   └── ...otrascarpetas (icons, theme, lab, archived)
 ├── lib/
 │   └── {category}/mi-componente.ts        # Entry point: defineComegenElement + registro
 ├── plugins/
@@ -93,10 +93,6 @@ Algunos componentes van directo de `.vue` a `.ts` sin `.ce.vue`:
 - `icons/*.vue` — Iconos
 - `theme/ThemeManagerModal.vue` — Modal de configuración
 - `lab/` — Componentes experimentales
-
-### Legacy
-
-`src/components/legacy/` contiene versiones anteriores que usan `getBgClasses`/`getBgClasses` de `palette.ts`. No usar como referencia para componentes nuevos.
 
 ### Notas de componentes específicos
 

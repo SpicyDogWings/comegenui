@@ -33,7 +33,7 @@ export function componentMap() {
       const sfc =
         src.match(/from\s+['"]@\/(components\/[^'"]+\.ce\.vue)['"]/)?.[1] ??
         src.match(/from\s+['"]@\/(components\/[^'"]+\.vue)['"]/)?.[1];
-      if (!sfc || sfc.includes("legacy/")) continue;
+      if (!sfc) continue;
       const name = sfc.split("/").pop().replace(/\.ce\.vue$|\.vue$/, "");
       const vue = `src/${sfc
         .replace("components/customElements/", "components/")
@@ -42,7 +42,7 @@ export function componentMap() {
     }
   }
 
-  // Sólo componentes públicos: categorías documentadas (sin icons/lab/legacy).
+  // Sólo componentes públicos: categorías documentadas (sin icons/lab).
   const dirs = [
     "src/components/buttons",
     "src/components/controls",
