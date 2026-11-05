@@ -1396,7 +1396,7 @@ En variantes transparentes (`outlined`, `ghost`) se aplica `backdrop-filter: blu
 
 ## Expose
 
-<!--@include: ../../partials/advanced-table/metodos.md-->
+<!--@include: ../../partials/advanced-table/metodos-vue.md-->
 
 ## Interfaces
 

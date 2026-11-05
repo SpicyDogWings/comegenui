@@ -1171,7 +1171,7 @@ En variantes transparentes (`outlined`, `ghost`) se aplica `backdrop-filter: blu
 
 ## Métodos expuestos
 
-<!--@include: ../partials/advanced-table/metodos.md-->
+<!--@include: ../partials/advanced-table/metodos-vanilla.md-->
 
 ## Interfaces
 

@@ -129,8 +129,8 @@ describe("ExportButton — eventos de control", () => {
   });
 
   it("heavy se emite cuando se pasa el umbral y la descarga sigue", async () => {
-    const w = mountButton();
-    w.vm.setOptions({ heavyThreshold: 2 });
+    const w = mountButton({ heavyThreshold: 4 });
+    expect(w.vm.getPayload().heavy).toBe(true);
     await w.find("button").trigger("click");
 
     expect(w.emitted("heavy")).toHaveLength(1);
