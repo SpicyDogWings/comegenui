@@ -28,7 +28,9 @@
   ],
   "methods": [
     "addRow",
+    "exportToExcel",
     "getData",
+    "getExportData",
     "getRow",
     "pushData",
     "removeRow",

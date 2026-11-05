@@ -23,6 +23,7 @@ interface Column {
   buttons?: (row: Record<string, any>) => ButtonConfig[];            // Botones por celda
   disabled?: boolean | ((row: Record<string, any>) => boolean);      // Columna deshabilitada (boolean o por fila)
   cellDisabled?: (row: Record<string, any>) => boolean;              // Celda deshabilitada (intersección fila × columna)
+  exportable?: boolean;                                              // Participa de la exportación (default: true)
 }
 
 interface BadgeConfig {
@@ -303,9 +304,9 @@ tabla.data = [
 
 ---
 
-## Botón de exportación a Excel
+## Exportación a Excel
 
-`export-enabled` agrega un botón de exportación a la toolbar. **Por ahora es sólo visual: no descarga el archivo ni emite eventos**; los datos de la tabla no se tocan. El ícono (`lucide-sheet`) se muestra siempre y el `gap` de `Button` separa ícono y label.
+`export-enabled` agrega el botón de exportación a la toolbar y `exportToExcel({ scope })` es su punto de entrada. **Todavía no se genera ni descarga ningún archivo**: la tabla calcula los datos y emite eventos para que el consumidor decida qué hacer (crear el `.xlsx`, subirlo, etc.). El ícono (`lucide-sheet`) se muestra siempre y el `gap` de `Button` separa ícono y label.
 
 `exportButton` define la presentación y se asigna como **propiedad JS** (no hay atributo para el objeto):
 
@@ -314,7 +315,7 @@ tabla.data = [
 | `label` | `string` | `"Descargar Excel"` | Texto visible. Con `""` queda sólo el ícono (nombre accesible `"Descargar Excel"`) |
 | `color` | `Color` | `"success"` | Color semántico del botón |
 | `variant` | `VariantFull` | `"solid"` | Variante del botón |
-| `disabled` | `boolean` | `false` | Deshabilita el botón |
+| `disabled` | `boolean` | `false` | Deshabilita **sólo el botón**: `exportToExcel()` sigue disponible por método |
 
 El botón queda a la derecha del buscador. Si el buscador está apagado, se renderiza solo, alineado a la derecha.
 
@@ -330,6 +331,96 @@ El botón queda a la derecha del buscador. Si el buscador está apagado, se rend
 ```
 
 Para dejarlo sólo con el ícono: `tabla.exportButton = { label: "" }`.
+
+### Columnas exportables
+
+La exportación excluye la columna sintética de acciones (`__actions__`) y las columnas marcadas con `exportable: false`:
+
+```ts
+interface Column {
+  key: string;
+  label?: string;
+  exportable?: boolean; // default true: la columna participa de la exportación
+}
+```
+
+```html
+<cu-table id="tablaExport" export-enabled></cu-table>
+
+<script>
+  const tabla = document.getElementById("tablaExport");
+  tabla.columns = [
+    { key: "nombre", label: "Nombre" },
+    { key: "nota", label: "Nota interna", exportable: false }, // no se exporta
+  ];
+  tabla.data = [{ nombre: "Juan", nota: "sólo para la UI" }];
+
+  // { columns: [{ key: "nombre", label: "Nombre" }], rows: [{ nombre: "Juan" }] }
+  console.log(tabla.getExportData());
+</script>
+```
+
+### `getExportData(options?)`
+
+Devuelve las columnas exportables y los valores **crudos** de las filas (lo que está en `row[key]`; no aplica `cell`, badges ni botones):
+
+```ts
+type ExportScope = "all" | "visible";
+
+interface ExportOptions { scope?: ExportScope } // default: "all"
+
+interface ExportColumn { key: string; label?: string }
+
+interface ExportData {
+  columns: ExportColumn[];
+  rows: Record<string, any>[]; // sólo las keys exportables
+}
+```
+
+- `scope: "all"` (default): todas las filas de `data`.
+- `scope: "visible"`: lo que se está renderizando (página actual + búsqueda, filtros y orden aplicados).
+
+### `exportToExcel(options?)` y eventos
+
+`exportToExcel` es el punto de entrada del botón y de los consumidores. Calcula `getExportData`, **devuelve el payload** y despacha en el host:
+
+- `export-click` siempre, con el payload en `e.detail`;
+- `export-heavy` además si `cellCount >= EXPORT_HEAVY_CELLS` (10 000 celdas).
+
+```ts
+interface ExportPayload {
+  scope: ExportScope;
+  rowCount: number;
+  columnCount: number;
+  cellCount: number;
+  heavy: boolean;
+}
+```
+
+El botón usa `exportToExcel({ scope: "all" })`. Recordá que **nada se descarga**: la generación del archivo queda del lado del consumidor.
+
+Ejemplo: interceptar una exportación pesada y avisar antes de procesarla.
+
+```html
+<cu-table id="tablaExport" export-enabled pagination></cu-table>
+<p id="avisoExport"></p>
+
+<script>
+  const tabla = document.getElementById("tablaExport");
+  const aviso = document.getElementById("avisoExport");
+  tabla.columns = [{ key: "nombre", label: "Nombre" }];
+  tabla.data = [{ nombre: "Juan" }];
+
+  tabla.addEventListener("export-click", (e) => console.log("exportar", e.detail));
+  tabla.addEventListener("export-heavy", (e) => {
+    aviso.textContent = `La exportación tiene ${e.detail.rowCount} filas (${e.detail.cellCount} celdas).`;
+  });
+
+  // El scope `visible` sólo está disponible por método, no en el botón:
+  const visibles = tabla.getExportData({ scope: "visible" });
+  const payload = tabla.exportToExcel({ scope: "visible" });
+</script>
+```
 
 En Vue, `exportEnabled` habilita el botón y `exportButton` se pasa como prop:
 

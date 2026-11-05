@@ -140,6 +140,259 @@ describe("AdvancedTable — botón de exportación", () => {
   });
 });
 
+describe("AdvancedTable — API de exportación (datos y eventos)", () => {
+  type ExportScope = "all" | "visible";
+  interface ExportDataLike {
+    columns: { key: string; label?: string }[];
+    rows: Record<string, any>[];
+  }
+  interface ExportPayloadLike {
+    scope: ExportScope;
+    rowCount: number;
+    columnCount: number;
+    cellCount: number;
+    heavy: boolean;
+  }
+  interface ExportVm {
+    getExportData: (options?: { scope?: ExportScope }) => ExportDataLike;
+    exportToExcel: (options?: { scope?: ExportScope }) => ExportPayloadLike;
+  }
+  const api = (w: VueWrapper) => w.vm as unknown as ExportVm;
+
+  const columnas = [
+    { key: "nombre", label: "Nombre" },
+    { key: "rol", label: "Rol" },
+    { key: "interno", label: "Interno", exportable: false },
+    { key: "__actions__", label: "Acciones" },
+  ];
+  const filas = [
+    { nombre: "Juan", rol: "Admin", interno: "x" },
+    { nombre: "Ana", rol: "User", interno: "y" },
+  ];
+
+  it("default: todas las columnas exportables; `exportable: false` y `__actions__` quedan fuera", () => {
+    const w = mount(AdvancedTable, { props: { columns: columnas, data: filas } });
+    const { columns: exportadas, rows } = api(w).getExportData();
+
+    expect(exportadas).toEqual([
+      { key: "nombre", label: "Nombre" },
+      { key: "rol", label: "Rol" },
+    ]);
+    // Sólo las keys exportables, con el valor crudo de la fila.
+    expect(rows).toEqual([
+      { nombre: "Juan", rol: "Admin" },
+      { nombre: "Ana", rol: "User" },
+    ]);
+    expect(Object.keys(rows[0]!)).not.toContain("interno");
+  });
+
+  it("`scope: all` usa todas las filas; `visible` usa la página/filtro actual", () => {
+    const muchas = Array.from({ length: 12 }, (_, i) => ({
+      id: i + 1,
+      nombre: `Fila ${i + 1}`,
+      estado: i < 8 ? "activo" : "inactivo",
+    }));
+    const w = mount(AdvancedTable, {
+      props: {
+        columns: [{ key: "nombre", label: "Nombre" }, { key: "estado", label: "Estado" }],
+        data: muchas,
+        pagination: true,
+        itemsPerPage: 5,
+        filters: { estado: "activo" },
+      },
+    });
+
+    const todas = api(w).getExportData({ scope: "all" });
+    expect(todas.rows).toHaveLength(12);
+    expect(todas.rows[11]).toEqual({ nombre: "Fila 12", estado: "inactivo" });
+
+    const visibles = api(w).getExportData({ scope: "visible" });
+    expect(visibles.rows.map((row) => row.nombre)).toEqual([
+      "Fila 1",
+      "Fila 2",
+      "Fila 3",
+      "Fila 4",
+      "Fila 5",
+    ]);
+
+    // Sin opciones, el default es `all`.
+    expect(api(w).getExportData().rows).toHaveLength(12);
+  });
+
+  it("`exportToExcel` devuelve el payload y emite `export-click` (sin `export-heavy`)", () => {
+    const w = mount(AdvancedTable, {
+      props: {
+        columns: [{ key: "nombre" }, { key: "rol" }],
+        data: [
+          { nombre: "A", rol: "x" },
+          { nombre: "B", rol: "y" },
+          { nombre: "C", rol: "z" },
+        ],
+        exportEnabled: true,
+      },
+    });
+
+    const payload = api(w).exportToExcel();
+    expect(payload).toEqual({
+      scope: "all",
+      rowCount: 3,
+      columnCount: 2,
+      cellCount: 6,
+      heavy: false,
+    });
+    expect(w.emitted("export-click")).toHaveLength(1);
+    expect(w.emitted("export-click")![0]![0]).toEqual(payload);
+    expect(w.emitted("export-heavy")).toBeFalsy();
+
+    const visible = api(w).exportToExcel({ scope: "visible" });
+    expect(visible.scope).toBe("visible");
+    expect(w.emitted("export-click")).toHaveLength(2);
+  });
+
+  it("`exportButton.disabled` sólo apaga el botón: `exportToExcel` externo sigue disponible", () => {
+    const w = mount(AdvancedTable, {
+      props: { ...{ columns, data }, exportEnabled: true, exportButton: { disabled: true } },
+    });
+
+    expect(api(w).exportToExcel().rowCount).toBe(1);
+    expect(w.emitted("export-click")).toHaveLength(1);
+
+    (w.find(".cu-advanced-table-export .cu-button").element as HTMLButtonElement).click();
+    expect(w.emitted("export-click")).toHaveLength(1);
+  });
+
+  it("`export-heavy` sólo a partir de 10 000 celdas, con el mismo payload", () => {
+    const diezColumnas = Array.from({ length: 10 }, (_, i) => ({ key: `c${i}` }));
+    const fila = (i: number) => Object.fromEntries(diezColumnas.map((col) => [col.key, i]));
+
+    const justo = mount(AdvancedTable, {
+      props: {
+        columns: diezColumnas,
+        data: Array.from({ length: 1000 }, (_, i) => fila(i)),
+      },
+    });
+    const payload = api(justo).exportToExcel();
+    expect(payload).toMatchObject({ rowCount: 1000, columnCount: 10, cellCount: 10_000, heavy: true });
+    expect(justo.emitted("export-heavy")).toHaveLength(1);
+    expect(justo.emitted("export-heavy")![0]![0]).toEqual(payload);
+
+    const debajo = mount(AdvancedTable, {
+      props: {
+        columns: diezColumnas,
+        data: Array.from({ length: 999 }, (_, i) => fila(i)),
+      },
+    });
+    const chico = api(debajo).exportToExcel();
+    expect(chico).toMatchObject({ cellCount: 9990, heavy: false });
+    expect(debajo.emitted("export-heavy")).toBeFalsy();
+  });
+
+  it("el click del botón exporta con scope `all`", async () => {
+    const w = mount(AdvancedTable, {
+      props: { columns, data, exportEnabled: true },
+    });
+    expect(w.emitted("export-click")).toBeFalsy();
+
+    await w.find(".cu-advanced-table-export .cu-button").trigger("click");
+    expect(w.emitted("export-click")).toHaveLength(1);
+    expect(w.emitted("export-click")![0]![0]).toMatchObject({
+      scope: "all",
+      rowCount: 1,
+      columnCount: 2,
+      cellCount: 2,
+    });
+  });
+});
+
+describe("AdvancedTable.ce (cu-table vanilla) — API de exportación", () => {
+  const TAG = "cu-table-export-api-test";
+  if (!customElements.get(TAG)) {
+    customElements.define(TAG, defineCustomElement(AdvancedTableCe));
+  }
+
+  type ExportScope = "all" | "visible";
+  interface ExportCeElement extends HTMLElement {
+    columns: Record<string, any>[];
+    data: Record<string, any>[];
+    pagination: boolean;
+    getExportData: (options?: { scope?: ExportScope }) => {
+      columns: { key: string; label?: string }[];
+      rows: Record<string, any>[];
+    };
+    exportToExcel: (options?: { scope?: ExportScope }) => {
+      scope: ExportScope;
+      rowCount: number;
+      columnCount: number;
+      cellCount: number;
+      heavy: boolean;
+    };
+  }
+
+  const mountCe = async (el: ExportCeElement) => {
+    document.body.appendChild(el);
+    await flushPromises();
+  };
+
+  it("expone los métodos y emite `export-click` con el payload en `e.detail`", async () => {
+    const el = document.createElement(TAG) as ExportCeElement;
+    el.columns = [
+      { key: "nombre", label: "Nombre" },
+      { key: "interno", label: "Interno", exportable: false },
+    ];
+    el.data = [
+      { nombre: "A", interno: 1 },
+      { nombre: "B", interno: 2 },
+    ];
+    await mountCe(el);
+
+    expect(typeof el.getExportData).toBe("function");
+    expect(typeof el.exportToExcel).toBe("function");
+    expect(el.getExportData().columns).toEqual([{ key: "nombre", label: "Nombre" }]);
+    expect(el.getExportData().rows).toEqual([{ nombre: "A" }, { nombre: "B" }]);
+
+    const clicks: unknown[] = [];
+    el.addEventListener("export-click", (event) => clicks.push((event as CustomEvent).detail));
+
+    const payload = el.exportToExcel({ scope: "all" });
+    expect(payload).toEqual({
+      scope: "all",
+      rowCount: 2,
+      columnCount: 1,
+      cellCount: 2,
+      heavy: false,
+    });
+    expect(clicks).toEqual([payload]);
+    el.remove();
+  });
+
+  it("`visible` respeta la página y `export-heavy` sale con ≥10 000 celdas", async () => {
+    const el = document.createElement(TAG) as ExportCeElement;
+    el.pagination = true;
+    el.columns = [{ key: "a" }, { key: "b" }];
+    el.data = Array.from({ length: 5000 }, (_, i) => ({ a: i, b: i }));
+    await mountCe(el);
+
+    expect(el.getExportData({ scope: "visible" }).rows).toHaveLength(10);
+
+    const clicks: unknown[] = [];
+    const heavies: unknown[] = [];
+    el.addEventListener("export-click", (event) => clicks.push((event as CustomEvent).detail));
+    el.addEventListener("export-heavy", (event) => heavies.push((event as CustomEvent).detail));
+
+    const payload = el.exportToExcel();
+    expect(payload).toEqual({
+      scope: "all",
+      rowCount: 5000,
+      columnCount: 2,
+      cellCount: 10_000,
+      heavy: true,
+    });
+    expect(clicks).toEqual([payload]);
+    expect(heavies).toEqual([payload]);
+    el.remove();
+  });
+});
+
 describe("AdvancedTable — acciones condicionales (`actions` por fila, `disabled` y `hidden`)", () => {
   const rows = [
     { nombre: "Juan", premium: true },

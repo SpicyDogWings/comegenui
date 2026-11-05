@@ -13,8 +13,8 @@
 | `searchPlaceholder` | `string` | `"Buscar..."` | — |
 | `searchFields` | `string[]` | `[]` | — |
 | `searchValue` | `string` | `""` | — |
-| `exportEnabled` | `boolean` | `false` | Muestra el botón de exportación a Excel. Por ahora es sólo visual: no descarga nada |
-| `exportButton` | `ExportButtonConfig \| null` | `{}` | Configuración visual del botón. Defaults: `label` «Descargar Excel», `color` `success`, `variant` `solid`, `disabled` `false`. Con `label: ""` queda sólo el ícono (nombre accesible «Descargar Excel») |
+| `exportEnabled` | `boolean` | `false` | Muestra el botón de exportación a Excel. No descarga un archivo: emite `export-click` con el resumen de los datos |
+| `exportButton` | `ExportButtonConfig \| null` | `{}` | Configuración visual del botón. Defaults: `label` «Descargar Excel», `color` `success`, `variant` `solid`, `disabled` `false`. Con `label: ""` queda sólo el ícono (nombre accesible «Descargar Excel»). `disabled` sólo apaga el botón: `exportToExcel()` sigue disponible por método |
 | `filters` | `Record<string, any>` | `{}` | — |
 | `loading` | `boolean` | `false` | — |
 | `actions` | `ButtonConfig[] \| ((row: Record<string, any>) => ButtonConfig[])` | `[]` | — |
