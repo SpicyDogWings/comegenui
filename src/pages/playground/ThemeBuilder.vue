@@ -397,37 +397,39 @@ function handleImport(config: any) {
           </AdvancedTable>
         </Collapse>
 
-        <Collapse label="Modal" :default-open="false">
-          <div class="tb-group">
-            <h3>Size</h3>
-            <div class="tb-grid">
-              <div v-for="(value, key) in modal.size" :key="key" class="tb-field">
-                <Label :label="key" color="var(--cu-color-neutral)" />
-                <Input v-model="modal.size[key]" :disabled="!isEditing" />
+        <Collapse label="Componentes" :default-open="false">
+          <Collapse label="Modal" :default-open="false">
+            <div class="tb-group">
+              <h3>Size</h3>
+              <div class="tb-grid">
+                <div v-for="(value, key) in modal.size" :key="key" class="tb-field">
+                  <Label :label="key" color="var(--cu-color-neutral)" />
+                  <Input v-model="modal.size[key]" :disabled="!isEditing" />
+                </div>
               </div>
             </div>
-          </div>
-          <div class="tb-group">
-            <h3>Height</h3>
-            <div class="tb-grid">
-              <div v-for="(value, key) in modal.height" :key="key" class="tb-field">
-                <Label :label="key" color="var(--cu-color-neutral)" />
-                <Input v-model="modal.height[key]" :disabled="!isEditing" />
+            <div class="tb-group">
+              <h3>Height</h3>
+              <div class="tb-grid">
+                <div v-for="(value, key) in modal.height" :key="key" class="tb-field">
+                  <Label :label="key" color="var(--cu-color-neutral)" />
+                  <Input v-model="modal.height[key]" :disabled="!isEditing" />
+                </div>
               </div>
             </div>
-          </div>
-        </Collapse>
+          </Collapse>
 
-        <Collapse label="Side Over" :default-open="false">
-          <div class="tb-group">
-            <h3>Size</h3>
-            <div class="tb-grid">
-              <div v-for="(value, key) in sideover.size" :key="key" class="tb-field">
-                <Label :label="key" color="var(--cu-color-neutral)" />
-                <Input v-model="sideover.size[key]" :disabled="!isEditing" />
+          <Collapse label="Side Over" :default-open="false">
+            <div class="tb-group">
+              <h3>Size</h3>
+              <div class="tb-grid">
+                <div v-for="(value, key) in sideover.size" :key="key" class="tb-field">
+                  <Label :label="key" color="var(--cu-color-neutral)" />
+                  <Input v-model="sideover.size[key]" :disabled="!isEditing" />
+                </div>
               </div>
             </div>
-          </div>
+          </Collapse>
         </Collapse>
 
         <Collapse label="Opacities" :default-open="false">
