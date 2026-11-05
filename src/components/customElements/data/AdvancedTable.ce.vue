@@ -90,6 +90,35 @@ interface ExportButtonConfig {
   disabled?: boolean;
 }
 
+/** Alcance de la exportación: todas las filas o sólo lo que se está viendo. */
+type ExportScope = "all" | "visible";
+
+/** Opciones de `getExportData`/`exportToExcel`. `scope` default `all`. */
+interface ExportOptions {
+  scope?: ExportScope;
+}
+
+/** Columna que participa de la exportación: la key y su label legible (si tiene). */
+interface ExportColumn {
+  key: string;
+  label?: string;
+}
+
+/** Columnas exportables y valores crudos de las filas (sin formato de celda). */
+interface ExportData {
+  columns: ExportColumn[];
+  rows: Record<string, any>[];
+}
+
+/** Resumen que viaja en el `detail` de `export-click`/`export-heavy`: no incluye los datos. */
+interface ExportPayload {
+  scope: ExportScope;
+  rowCount: number;
+  columnCount: number;
+  cellCount: number;
+  heavy: boolean;
+}
+
 interface FooterCell {
   value: string;
   colspan?: number;
@@ -118,6 +147,7 @@ interface Column {
   buttons?: (row: Record<string, any>) => ButtonConfig[];
   disabled?: boolean | ((row: Record<string, any>) => boolean); // Columna deshabilitada (opcional por fila)
   cellDisabled?: (row: Record<string, any>) => boolean; // Celda deshabilitada (intersección fila × columna)
+  exportable?: boolean; // Participa de `getExportData` (default: true); con `false` la columna no se exporta
 }
 
 const props = defineProps({
@@ -183,12 +213,13 @@ const props = defineProps({
   searchFields: { type: Array as () => string[], required: false, default: () => [] },
   /** Valor controlado del buscador (atributo HTML: `search-value`) */
   searchValue: { type: String, required: false, default: "" },
-  /** Muestra el botón de exportación a Excel. Por ahora es sólo visual: no descarga nada (atributo HTML: `export-enabled`) */
+  /** Muestra el botón de exportación a Excel. No descarga un archivo: emite `export-click` con el resumen de los datos (atributo HTML: `export-enabled`) */
   exportEnabled: { type: Boolean, required: false, default: false },
   /**
    * Configuración visual del botón de exportación. Defaults: `label` «Descargar Excel»,
    * `color` `success`, `variant` `solid`, `disabled` `false`. Con `label: ""` queda
-   * sólo el ícono. Se asigna como propiedad JS
+   * sólo el ícono. `disabled` sólo apaga el botón: `exportToExcel()` sigue disponible.
+   * Se asigna como propiedad JS
    */
   exportButton: {
     type: Object as () => ExportButtonConfig | null,
@@ -221,6 +252,9 @@ const props = defineProps({
 
 const tableRef = ref<InstanceType<typeof AdvancedTable> | null>(null);
 
+// Eventos del host: `ceEmit` despacha CustomEvent con el payload en `e.detail`.
+defineEmits(["export-click", "export-heavy"]);
+
 defineExpose({
   updateRow: (rowIndex: number, newData: Record<string, any>) => tableRef.value?.updateRow(rowIndex, newData),
   getData: (filterFn?: (row: Record<string, any>) => boolean) => tableRef.value?.getData(filterFn),
@@ -228,6 +262,10 @@ defineExpose({
   removeRow: (rowIndex: number) => tableRef.value?.removeRow(rowIndex),
   addRow: (newRow: Record<string, any>) => tableRef.value?.addRow(newRow),
   pushData: (newData: Record<string, any>[]) => tableRef.value?.pushData(newData),
+  /** Columnas exportables y **valores crudos** de las filas (sin `cell`, badges ni botones). `scope: "all"` (default) usa todas las filas de `data`; `"visible"` usa lo renderizado ahora (página y filtros/búsqueda actuales). */
+  getExportData: (options?: ExportOptions) => tableRef.value?.getExportData(options),
+  /** Punto de entrada de la exportación (lo usa el botón y lo pueden llamar los consumidores). Calcula `getExportData`, emite `export-click` siempre y `export-heavy` si `cellCount >= EXPORT_HEAVY_CELLS`, y devuelve el payload. **No genera ni descarga ningún archivo.** */
+  exportToExcel: (options?: ExportOptions) => tableRef.value?.exportToExcel(options),
 });
 </script>
 
@@ -259,6 +297,8 @@ defineExpose({
     :inline-editing="props.inlineEditing"
     :compact="props.compact"
 
+    @export-click="ceEmit('export-click', $event)"
+    @export-heavy="ceEmit('export-heavy', $event)"
     @update:current-page="ceEmit('update:currentPage', $event)"
     @update:items-per-page="ceEmit('update:itemsPerPage', $event)"
     @update:search="ceEmit('update:search', $event)"

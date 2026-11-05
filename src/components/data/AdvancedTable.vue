@@ -137,6 +137,35 @@ interface ExportButtonConfig {
   disabled?: boolean;
 }
 
+/** Alcance de la exportación: todas las filas o sólo lo que se está viendo. */
+type ExportScope = "all" | "visible";
+
+/** Opciones de `getExportData`/`exportToExcel`. `scope` default `all`. */
+interface ExportOptions {
+  scope?: ExportScope;
+}
+
+/** Columna que participa de la exportación: la key y su label legible (si tiene). */
+interface ExportColumn {
+  key: string;
+  label?: string;
+}
+
+/** Columnas exportables y valores crudos de las filas (sin formato de celda). */
+interface ExportData {
+  columns: ExportColumn[];
+  rows: Record<string, any>[];
+}
+
+/** Resumen que viaja en `export-click`/`export-heavy`: no incluye los datos. */
+interface ExportPayload {
+  scope: ExportScope;
+  rowCount: number;
+  columnCount: number;
+  cellCount: number;
+  heavy: boolean;
+}
+
 interface AutocompleteItem {
   label: string;
   value?: string;
@@ -228,10 +257,17 @@ interface Column {
   buttons?: (row: Record<string, any>) => ButtonConfig[];
   disabled?: boolean | ((row: Record<string, any>) => boolean); // Columna deshabilitada (opcional por fila)
   cellDisabled?: (row: Record<string, any>) => boolean; // Celda deshabilitada (intersección fila × columna)
+  exportable?: boolean; // Participa de `getExportData` (default: true)
 }
 
 /** Tamaño de página que se usa cuando `itemsPerPage` no es un entero ≥ 1. */
 const DEFAULT_ITEMS_PER_PAGE = 10;
+
+/**
+ * Celdas (filas × columnas exportables) a partir de las cuales la exportación
+ * se considera pesada y `exportToExcel` emite además `export-heavy`.
+ */
+const EXPORT_HEAVY_CELLS = 10_000;
 
 // `itemsPerPage` llega del consumidor (y del selector de página): un 0, un
 // negativo, un NaN o un decimal dejan el paginador en un estado imposible
@@ -266,12 +302,13 @@ const props = defineProps({
   searchPlaceholder: { type: String, required: false, default: "Buscar..." },
   searchFields: { type: Array as () => string[], required: false, default: () => [] },
   searchValue: { type: String, required: false, default: "" },
-  /** Muestra el botón de exportación a Excel. Por ahora es sólo visual: no descarga nada */
+  /** Muestra el botón de exportación a Excel. No descarga un archivo: emite `export-click` con el resumen de los datos */
   exportEnabled: { type: Boolean, required: false, default: false },
   /**
    * Configuración visual del botón de exportación. Defaults: `label` «Descargar Excel»,
    * `color` `success`, `variant` `solid`, `disabled` `false`. Con `label: ""` queda
-   * sólo el ícono (nombre accesible «Descargar Excel»)
+   * sólo el ícono (nombre accesible «Descargar Excel»). `disabled` sólo apaga el
+   * botón: `exportToExcel()` sigue disponible por método
    */
   exportButton: {
     type: Object as PropType<ExportButtonConfig | null>,
@@ -309,10 +346,19 @@ const props = defineProps({
   },
 });
 
-const emit = defineEmits([
-  "update:currentPage", "update:itemsPerPage", "update:search",
-  "edit-start", "edit-save", "edit-cancel", "edit-error",
-]);
+const emit = defineEmits<{
+  "update:currentPage": [page: number]
+  "update:itemsPerPage": [size: number]
+  "update:search": [query: string]
+  "edit-start": [payload: any]
+  "edit-save": [payload: any]
+  "edit-cancel": [payload: any]
+  "edit-error": [payload: any]
+  /** Se emite al llamar `exportToExcel`, con el resumen (`scope`, filas, columnas, celdas y `heavy`). */
+  "export-click": [payload: ExportPayload]
+  /** Se emite además de `export-click` cuando la exportación llega a `EXPORT_HEAVY_CELLS` celdas o más. */
+  "export-heavy": [payload: ExportPayload]
+}>();
 
 const searchQuery = ref("");
 
@@ -487,6 +533,56 @@ const exportColor = computed<Color>(() => exportConfig.value.color ?? "success")
 const exportVariant = computed<VariantFull>(() => exportConfig.value.variant ?? "solid");
 const exportDisabled = computed(() => exportConfig.value.disabled ?? false);
 
+// Columnas que entran en la exportación: fuera `__actions__` (columna sintética
+// de acciones) y las que el consumidor marcó `exportable: false`.
+const exportColumns = computed<ExportColumn[]>(() =>
+  props.columns
+    .filter((col) => col.key !== "__actions__" && col.exportable !== false)
+    .map((col) => (col.label === undefined ? { key: col.key } : { key: col.key, label: col.label }))
+);
+
+/**
+ * Columnas exportables y **valores crudos** de las filas (sin `cell`, badges ni
+ * botones). `scope: "all"` (default) usa todas las filas de `data`; `"visible"`
+ * usa lo renderizado ahora (página y filtros/búsqueda actuales).
+ */
+function getExportData(options: ExportOptions = {}): ExportData {
+  const scope = options.scope ?? "all";
+  const source = scope === "visible" ? renderedData.value : localData.value;
+  const columns = exportColumns.value.map((col) => ({ ...col }));
+  const keys = columns.map((col) => col.key);
+  const rows = source.map((row) => {
+    const exported: Record<string, any> = {};
+    for (const key of keys) exported[key] = row[key];
+    return exported;
+  });
+  return { columns, rows };
+}
+
+/**
+ * Punto de entrada de la exportación (lo usa el botón y lo pueden llamar los
+ * consumidores). Calcula `getExportData`, emite `export-click` siempre y
+ * `export-heavy` si `cellCount >= EXPORT_HEAVY_CELLS`, y devuelve el payload.
+ * **No genera ni descarga ningún archivo.**
+ */
+function exportToExcel(options: ExportOptions = {}): ExportPayload {
+  const scope: ExportScope = options.scope ?? "all";
+  const { columns, rows } = getExportData({ scope });
+  const columnCount = columns.length;
+  const rowCount = rows.length;
+  const cellCount = rowCount * columnCount;
+  const payload: ExportPayload = {
+    scope,
+    rowCount,
+    columnCount,
+    cellCount,
+    heavy: cellCount >= EXPORT_HEAVY_CELLS,
+  };
+  emit("export-click", payload);
+  if (payload.heavy) emit("export-heavy", payload);
+  return payload;
+}
+
 defineExpose({
   /** Actualiza una fila por índice con los campos indicados. */
   updateRow,
@@ -500,6 +596,10 @@ defineExpose({
   addRow,
   /** Agrega varias filas al final si respetan las columnas existentes. */
   pushData,
+  /** Columnas exportables y valores crudos de las filas (`all` todas, `visible` la página/filtro actual). */
+  getExportData,
+  /** Calcula los datos, emite `export-click`/`export-heavy` y devuelve el payload. No genera archivo. */
+  exportToExcel,
 });
 </script>
 
@@ -528,6 +628,7 @@ defineExpose({
           :disabled="exportDisabled"
           :icon-only="exportIconOnly"
           :aria-label="exportIconOnly ? 'Descargar Excel' : undefined"
+          @click="exportToExcel({ scope: 'all' })"
         >
           <LucideSheet aria-hidden="true" focusable="false" />
           <span v-if="!exportIconOnly">{{ exportLabel }}</span>

@@ -1712,6 +1712,27 @@ const MUTATIONS = [
     replace: `const exportVariant = computed<VariantFull>(() => exportConfig.value.variant ?? "soft");`,
   },
   {
+    id: "cu-table-export-ignora-exportable",
+    file: "src/components/data/AdvancedTable.vue",
+    expect: "`getExportData` excluye las columnas con `exportable: false` (y `__actions__`)",
+    find: `    .filter((col) => col.key !== "__actions__" && col.exportable !== false)`,
+    replace: `    .filter((col) => col.key !== "__actions__")`,
+  },
+  {
+    id: "cu-table-export-scope-visible-ignorado",
+    file: "src/components/data/AdvancedTable.vue",
+    expect: "`getExportData({ scope: 'visible' })` usa la página/filtro actual y no todas las filas",
+    find: `  const source = scope === "visible" ? renderedData.value : localData.value;`,
+    replace: `  const source = localData.value;`,
+  },
+  {
+    id: "cu-table-export-heavy-nunca",
+    file: "src/components/data/AdvancedTable.vue",
+    expect: "`export-heavy` (y `heavy: true`) a partir de 10 000 celdas",
+    find: `    heavy: cellCount >= EXPORT_HEAVY_CELLS,`,
+    replace: `    heavy: false,`,
+  },
+  {
     id: "number-input-clamp-max-ignorado",
     file: "src/components/form/NumberInput.vue",
     expect: "confirmar por encima de max recorta al máximo",
