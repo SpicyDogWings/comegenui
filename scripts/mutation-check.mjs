@@ -2117,8 +2117,8 @@ const MUTATIONS = [
   {
     id: "button-solid-texto-negro",
     file: "src/components/buttons/Button.vue",
-    expect: "solid/none conservan el texto del tema (nunca negro por color)",
-    find: "  '--btn-solid-text': `var(--cu-color-surface)`,",
+    expect: "solid/none usan -solid-text (el polo de máximo contraste), nunca un negro fijo",
+    find: "  '--btn-solid-text': `var(--cu-color-${safeColor.value}-solid-text)`,",
     replace: "  '--btn-solid-text': '#000000',",
   },
   {
@@ -2146,25 +2146,27 @@ const MUTATIONS = [
     id: "token-text-no-adapta",
     file: "src/plugins/cu-tokens/css.ts",
     test: "src/plugins/cu-tokens/contrast.test.ts",
-    expect: "el texto de las variantes tintadas garantiza 4.5:1 en los 15 temas",
-    find: "  return ensureContrast(value, compositeOver(value, surface, 0.35), MIN_TEXT_CONTRAST)",
-    replace: "  return toHex(darken(value, 0.25))",
+    expect: "el texto de las variantes tintadas se ajusta contra su propio tinte (4.5:1)",
+    find: "  const textSoft = ensureContrast(value, compositeOver(value, surface, SOFT_TINT_ALPHA), MIN_TEXT_CONTRAST)",
+    replace: "  const textSoft = '#808080'",
   },
   {
-    id: "token-solid-sin-ajuste",
+    id: "token-solid-texto-fijo",
     file: "src/plugins/cu-tokens/css.ts",
     test: "src/plugins/cu-tokens/contrast.test.ts",
-    expect: "solid ajusta el fondo hasta que el texto del tema alcanza 4.5:1",
-    find: "  if (contrastRatio(value, surface) >= MIN_TEXT_CONTRAST) return toHex(value)",
-    replace: "  return toHex(value)",
+    expect: "-solid-text es negro o blanco, el de máximo contraste sobre el fondo y sus estados",
+    find: "  return contrastRatio(solid, '#ffffff') >= contrastRatio(solid, '#000000') ? '#ffffff' : '#000000'",
+    replace: "  return '#ffffff'",
   },
   {
     id: "token-solid-hover-hacia-superficie",
     file: "src/plugins/cu-tokens/css.ts",
     test: "src/plugins/cu-tokens/contrast.test.ts",
     expect: "hover/active de solid se alejan del texto (siguen en 4.5:1)",
-    find: "  return toHex(relLuma(surface) < 0.5 ? lighten(solid, amount) : darken(solid, amount))",
-    replace: "  return toHex(relLuma(surface) < 0.5 ? darken(solid, amount) : lighten(solid, amount))",
+    find: `  const solidHover = toHex(solidText === '#ffffff' ? darken(solid, 0.1) : lighten(solid, 0.1))
+  const solidActive = toHex(solidText === '#ffffff' ? darken(solid, 0.2) : lighten(solid, 0.2))`,
+    replace: `  const solidHover = '#ffffff'
+  const solidActive = '#ffffff'`,
   },
   {
     id: "token-borde-sin-contraste",
@@ -2632,10 +2634,10 @@ const MUTATIONS = [
     id: "month-slider-label-contraste",
     file: "src/components/controls/month-slider/MonthSliderLabel.vue",
     test: "src/components/controls/month-slider/MonthSliderLabel.contrast.test.ts",
-    expect: "el label usa el tono de texto accesible (-text), no el color base",
+    expect: "el label soft usa el tono de texto del tinte (-text-on-soft), no el color base",
     find: `.cu-month-slider-label.cu-month-slider-label--soft {
   background-color: var(--ms-soft);
-  color: var(--ms-accent-text);
+  color: var(--ms-text-soft);
 }`,
     replace: `.cu-month-slider-label.cu-month-slider-label--soft {
   background-color: var(--ms-soft);
