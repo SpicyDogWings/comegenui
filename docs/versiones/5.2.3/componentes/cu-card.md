@@ -9,7 +9,7 @@ Tarjeta para mostrar información agrupada con jerarquía visual: media, header 
 ```html
 <script src="dist-libs/umd-core/CuCard.umd.js"></script>
 
-<cu-card title="Resumen" subtitle="Último corte" color="primary">
+<cu-card heading="Resumen" subtitle="Último corte" color="primary">
   Contenido principal de la tarjeta.
   <div slot="footer">
     <cu-button color="primary" variant="soft">Ver más</cu-button>
@@ -19,16 +19,35 @@ Tarjeta para mostrar información agrupada con jerarquía visual: media, header 
 
 En Vue, importá `Card` de `@/components/information/Card.vue` (ver [ficha Vue](/componentes/vue/card)).
 
+## `heading` vs `title`
+
+`heading` es la forma recomendada: pinta el título del header y **no** deja ningún atributo
+`title` en el host, así que el navegador no muestra su tooltip nativo sobre la tarjeta.
+
+`title` se mantiene por compatibilidad. Como el atributo queda en el host, el navegador lo trata
+como el `title` global del elemento y muestra un tooltip nativo al pasar el mouse por **cualquier
+parte** de la tarjeta (no solo el encabezado). Es deuda de compatibilidad: migrá a `heading`.
+
+Si llegan los dos, gana `heading`.
+
+```html
+<!-- recomendado: sin tooltip nativo -->
+<cu-card heading="Resumen">Contenido.</cu-card>
+
+<!-- compatibilidad: tooltip nativo sobre toda la tarjeta -->
+<cu-card title="Resumen">Contenido.</cu-card>
+```
+
 ## Variantes visuales
 
 `variant` decide el aspecto: `ghost` (**default**; superficie + sombra), `outlined` (solo borde), `soft` (fondo tenue), `subtle` (tenue con borde) y `solid` (relleno con el color).
 
 ```html
-<cu-card title="Ghost">ghost (default)</cu-card>
-<cu-card title="Outlined" variant="outlined" color="primary">outlined</cu-card>
-<cu-card title="Soft" variant="soft" color="primary">soft</cu-card>
-<cu-card title="Subtle" variant="subtle" color="primary">subtle</cu-card>
-<cu-card title="Solid" variant="solid" color="primary">solid</cu-card>
+<cu-card heading="Ghost">ghost (default)</cu-card>
+<cu-card heading="Outlined" variant="outlined" color="primary">outlined</cu-card>
+<cu-card heading="Soft" variant="soft" color="primary">soft</cu-card>
+<cu-card heading="Subtle" variant="subtle" color="primary">subtle</cu-card>
+<cu-card heading="Solid" variant="solid" color="primary">solid</cu-card>
 ```
 
 <!-- demo:card-variantes -->
@@ -38,12 +57,12 @@ En Vue, importá `Card` de `@/components/information/Card.vue` (ver [ficha Vue](
 `color` es un nombre semántico (`primary`, `secondary`, `neutral`, `success`, `warning`, `danger`). Se ve en las variantes que usan el color de fondo (`soft`, `subtle`, `solid`) y en el borde de `outlined`; `ghost` no lo usa.
 
 ```html
-<cu-card title="primary" color="primary" variant="solid">Contenido de la tarjeta.</cu-card>
-<cu-card title="secondary" color="secondary" variant="solid">Contenido de la tarjeta.</cu-card>
-<cu-card title="neutral" color="neutral" variant="solid">Contenido de la tarjeta.</cu-card>
-<cu-card title="success" color="success" variant="solid">Contenido de la tarjeta.</cu-card>
-<cu-card title="warning" color="warning" variant="solid">Contenido de la tarjeta.</cu-card>
-<cu-card title="danger" color="danger" variant="solid">Contenido de la tarjeta.</cu-card>
+<cu-card heading="primary" color="primary" variant="solid">Contenido de la tarjeta.</cu-card>
+<cu-card heading="secondary" color="secondary" variant="solid">Contenido de la tarjeta.</cu-card>
+<cu-card heading="neutral" color="neutral" variant="solid">Contenido de la tarjeta.</cu-card>
+<cu-card heading="success" color="success" variant="solid">Contenido de la tarjeta.</cu-card>
+<cu-card heading="warning" color="warning" variant="solid">Contenido de la tarjeta.</cu-card>
+<cu-card heading="danger" color="danger" variant="solid">Contenido de la tarjeta.</cu-card>
 ```
 
 <!-- demo:card-colores -->
@@ -57,7 +76,7 @@ En Vue, importá `Card` de `@/components/information/Card.vue` (ver [ficha Vue](
 
 ```html
 <cu-card
-  title="Proyecto"
+  heading="Proyecto"
   subtitle="Equipo de desarrollo"
   image="https://example.com/cover.jpg"
   color="success"
@@ -73,7 +92,7 @@ En Vue, importá `Card` de `@/components/information/Card.vue` (ver [ficha Vue](
 `layout` acepta `vertical` (**default**; media arriba) u `horizontal` (media al costado, contenido a la derecha). Si no hay media (ni `image` ni slot `media`), la tarjeta ocupa todo el ancho y no queda la columna vacía del 40 %.
 
 ```html
-<cu-card layout="horizontal" title="Perfil" subtitle="Información del usuario" image="https://example.com/avatar.jpg">
+<cu-card layout="horizontal" heading="Perfil" subtitle="Información del usuario" image="https://example.com/avatar.jpg">
   Datos del perfil.
 </cu-card>
 ```

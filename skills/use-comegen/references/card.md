@@ -5,9 +5,14 @@ superficie. No es interactiva: para una tarjeta clickeable, envolvela vos.
 
 ## Receta
 
-- Contenido por el **slot default**; `title` y `subtitle` arman el header.
+- Contenido por el **slot default**; `heading` arma el título del header (`subtitle` debajo).
+  `heading` es el alias recomendado: no deja atributo `title` en el host, así que no aparece el
+  tooltip nativo del navegador. `title` sigue funcionando (compatibilidad) y, si vienen ambos,
+  gana `heading`.
 - Media: `image` (URL) o slot `media` (el slot pisa a `image`).
-- El slot `header` reemplaza por completo `title`/`subtitle`.
+- El slot `header` reemplaza por completo el título (`heading`/`title`) y `subtitle`.
+- En el custom element, `title` queda como atributo del host: el navegador muestra su tooltip
+  nativo sobre toda la tarjeta. Usá `heading` para evitarlo (deuda de compatibilidad).
 - En el **custom element** los tres slots (`media`, `header`, `footer`) funcionan igual: el contenido
   va en el light DOM del host (`<div slot="media">…`), no hace falta ningún atributo extra.
 - `footer` sólo se renderiza si tiene contenido (no reserva el espacio).
@@ -15,11 +20,11 @@ superficie. No es interactiva: para una tarjeta clickeable, envolvela vos.
 - `color` tiñe la variante elegida.
 
 ```html
-<cu-card title="<title>" subtitle="<subtitle>" image="<url>" color="<color>" variant="<variant>" layout="<layout>"><body><div slot="footer"><footer></div></cu-card>
+<cu-card heading="<heading>" subtitle="<subtitle>" image="<url>" color="<color>" variant="<variant>" layout="<layout>"><body><div slot="footer"><footer></div></cu-card>
 ```
 
 ```vue
-<Card title="<title>" subtitle="<subtitle>" image="<url>" color="<color>" variant="<variant>" layout="<layout>"><body><template #footer><footer></template></Card>
+<Card heading="<heading>" subtitle="<subtitle>" image="<url>" color="<color>" variant="<variant>" layout="<layout>"><body><template #footer><footer></template></Card>
 ```
 
 Los valores de `color` / `variant` / `layout` están en «Atributos» / «Props», abajo.
@@ -46,7 +51,8 @@ Los valores de `color` / `variant` / `layout` están en «Atributos» / «Props�
 | `color` | `"primary" \| "secondary" \| "neutral" \| "success" \| "warning" \| "danger"` | `"neutral"` | Color semántico: `primary`, `secondary`, `neutral`, `success`, `warning`, `danger` |
 | `variant` | `"solid" \| "outlined" \| "soft" \| "ghost" \| "subtle"` | `"ghost"` | `ghost` (default), `outlined`, `soft`, `subtle`, `solid` |
 | `layout` | `"vertical" \| "horizontal"` | `"vertical"` | `vertical` (media arriba) o `horizontal` (media al costado) |
-| `title` | `string` | `—` | Título del header |
+| `title` | `string` | `—` | Título del header. Se mantiene por compatibilidad: el atributo `title` queda en el host y el navegador muestra su tooltip nativo sobre toda la tarjeta. Usá `heading` para evitar el tooltip. |
+| `heading` | `string` | `—` | Título del header (alias preferido de `title`). Si vienen ambos, gana `heading`. |
 | `subtitle` | `string` | `—` | Subtítulo bajo el título |
 | `image` | `string` | `—` | URL de imagen que se muestra como media en la parte superior (o al costado con `layout="horizontal"`) |
 <!-- /@api:atributos -->
@@ -84,7 +90,8 @@ No expone métodos.
 | `color` | `"primary" \| "secondary" \| "neutral" \| "success" \| "warning" \| "danger"` | `"neutral"` | — |
 | `variant` | `"solid" \| "outlined" \| "soft" \| "ghost" \| "subtle"` | `"ghost"` | — |
 | `layout` | `"vertical" \| "horizontal"` | `"vertical"` | — |
-| `title` | `string` | `—` | — |
+| `title` | `string` | `—` | Título visible del header. Se mantiene por compatibilidad: en el custom element el atributo `title` queda en el host y el navegador muestra su tooltip nativo sobre toda la tarjeta. Usá `heading` para evitarlo. |
+| `heading` | `string` | `—` | Título visible del header (alias preferido de `title`). Si vienen ambos, gana `heading`. |
 | `subtitle` | `string` | `—` | — |
 | `image` | `string` | `—` | — |
 <!-- /@api:props -->

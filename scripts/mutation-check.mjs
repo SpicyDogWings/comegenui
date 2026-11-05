@@ -1976,8 +1976,15 @@ const MUTATIONS = [
     id: "card-header-sin-prioridad",
     file: "src/components/information/Card.vue",
     expect: "el slot header tiene prioridad sobre title/subtitle",
-    find: `        <h3 v-if="props.title && !hasHeaderSlot" class="cu-card-title">{{ props.title }}</h3>`,
-    replace: `        <h3 v-if="props.title" class="cu-card-title">{{ props.title }}</h3>`,
+    find: `        <h3 v-if="visibleTitle && !hasHeaderSlot" class="cu-card-title">{{ visibleTitle }}</h3>`,
+    replace: `        <h3 v-if="visibleTitle" class="cu-card-title">{{ visibleTitle }}</h3>`,
+  },
+  {
+    id: "card-heading-sin-precedencia",
+    file: "src/components/information/Card.vue",
+    expect: "heading pisa a title en el encabezado (heading ?? title)",
+    find: `const visibleTitle = computed(() => props.heading ?? props.title);`,
+    replace: `const visibleTitle = computed(() => props.title);`,
   },
   {
     id: "date-picker-label-no-enfoca",

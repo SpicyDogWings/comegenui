@@ -18,7 +18,13 @@ const props = defineProps({
     type: String as PropType<'vertical' | 'horizontal'>,
     default: "vertical",
   },
-  /** Título del header */
+  /** Título del header (alias preferido de `title`). Si vienen ambos, gana `heading`. */
+  heading: String,
+  /**
+   * Título del header. Se mantiene por compatibilidad: el atributo `title` queda en el
+   * host y el navegador muestra su tooltip nativo sobre toda la tarjeta. Usá `heading`
+   * para evitar el tooltip.
+   */
   title: String,
   /** Subtítulo bajo el título */
   subtitle: String,
@@ -32,6 +38,7 @@ const props = defineProps({
     :color="props.color"
     :variant="props.variant"
     :layout="props.layout"
+    :heading="props.heading"
     :title="props.title"
     :subtitle="props.subtitle"
     :image="props.image"
