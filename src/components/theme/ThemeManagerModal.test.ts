@@ -38,6 +38,21 @@ describe("ThemeManagerModal", () => {
     expect((em as unknown[][])[0]![0]).toBe("nuevo-tema");
   });
 
+  it("si el padre rechaza el nombre, el input vuelve al vigente", async () => {
+    const w = factory({ themeName: "mi-tema" });
+    const input = w.find("input.cu-input");
+    await input.setValue("dark");
+    await flushPromises();
+
+    expect(w.emitted("update:themeName")).toBeTruthy();
+    expect((input.element as HTMLInputElement).value).toBe("mi-tema");
+  });
+
+  it("nameError explica por qué no se aplicó el nombre", () => {
+    const w = factory({ nameError: 'El nombre no puede quedar vacío' });
+    expect(w.find(".tm-name-error").text()).toBe("El nombre no puede quedar vacío");
+  });
+
   it("botones de acción emiten sus eventos", async () => {
     const w = factory();
     const buttons = w.findAll("button.cu-button");

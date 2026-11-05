@@ -1,4 +1,4 @@
-import { describe, expect, it } from "vitest";
+import { afterEach, beforeEach, describe, expect, it, vi } from "vitest";
 import { flushPromises, mount, type VueWrapper } from "@vue/test-utils";
 import { defineCustomElement, nextTick } from "vue";
 
@@ -14,6 +14,22 @@ const columns = [
 ];
 const data = [{ nombre: "Juan", rol: "Admin" }];
 const actions = [{ label: "Editar", onClick: () => {} }];
+
+let downloads: HTMLAnchorElement[];
+beforeEach(() => {
+  downloads = [];
+  URL.createObjectURL = vi.fn(() => "blob:mock") as unknown as typeof URL.createObjectURL;
+  URL.revokeObjectURL = vi.fn() as unknown as typeof URL.revokeObjectURL;
+  vi.spyOn(HTMLAnchorElement.prototype, "click").mockImplementation(function (
+    this: HTMLAnchorElement,
+  ) {
+    downloads.push(this);
+  });
+});
+afterEach(() => {
+  vi.restoreAllMocks();
+  document.body.innerHTML = "";
+});
 
 describe("AdvancedTable (Vue)", () => {
   it("default: el header de acciones queda vacío (no cae a `__actions__`)", () => {
@@ -54,6 +70,447 @@ describe("AdvancedTable (Vue)", () => {
       props: { columns, data, tableMaxHeight: "20rem" },
     });
     expect(w.findComponent(Table).props("maxHeight")).toBe("20rem");
+  });
+});
+
+describe("AdvancedTable — botón de exportación", () => {
+  const exportButton = (w: VueWrapper) =>
+    w.find(".cu-advanced-table-export .cu-button");
+
+  it("sin `exportEnabled` no hay toolbar ni botón", () => {
+    const w = mount(AdvancedTable, { props: { columns, data } });
+    expect(w.find(".cu-advanced-table-toolbar").exists()).toBe(false);
+    expect(w.find(".cu-advanced-table-export").exists()).toBe(false);
+  });
+
+  it("sólo export: toolbar sin buscador y botón presente", () => {
+    const w = mount(AdvancedTable, {
+      props: { columns, data, exportEnabled: true },
+    });
+    expect(w.find(".cu-advanced-table-toolbar").exists()).toBe(true);
+    expect(w.find(".cu-advanced-table-search").exists()).toBe(false);
+    expect(exportButton(w).exists()).toBe(true);
+  });
+
+  it("con buscador y export, el botón va después del buscador en el DOM", () => {
+    const w = mount(AdvancedTable, {
+      props: { columns, data, searchEnabled: true, exportEnabled: true },
+    });
+    const toolbar = w.find(".cu-advanced-table-toolbar");
+    const children = Array.from(toolbar.element.children);
+    const searchIndex = children.indexOf(w.find(".cu-advanced-table-search").element);
+    const exportIndex = children.indexOf(w.find(".cu-advanced-table-export").element);
+    expect(searchIndex).toBeGreaterThanOrEqual(0);
+    expect(exportIndex).toBeGreaterThan(searchIndex);
+    expect(w.find(".cu-advanced-table-search input").exists()).toBe(true);
+  });
+
+  it("defaults: solid, tokens de success, label «Descargar Excel» y SVG fijo", () => {
+    const w = mount(AdvancedTable, {
+      props: { columns, data, exportEnabled: true },
+    });
+    const button = exportButton(w);
+    expect(button.classes()).toContain("cu-button--solid");
+    expect(button.attributes("style")).toContain("--btn-solid: var(--cu-color-success-solid)");
+    expect(button.text()).toBe("Descargar Excel");
+    const svg = button.find("svg");
+    expect(svg.exists()).toBe(true);
+    expect(svg.attributes("width")).toBe("1em");
+    expect(svg.attributes("height")).toBe("1em");
+    expect(svg.attributes("aria-hidden")).toBe("true");
+    expect(svg.find("rect").exists()).toBe(true);
+    expect(svg.findAll("line")).toHaveLength(4);
+    expect(button.attributes("aria-label")).toBeUndefined();
+  });
+
+  it("aplica label, color, variant y disabled de `exportButton`", () => {
+    const w = mount(AdvancedTable, {
+      props: {
+        columns,
+        data,
+        exportEnabled: true,
+        exportButton: {
+          label: "Exportar planilla",
+          color: "danger",
+          variant: "outlined",
+          disabled: true,
+        },
+      },
+    });
+    const button = exportButton(w);
+    expect(button.text()).toBe("Exportar planilla");
+    expect(button.classes()).toContain("cu-button--outlined");
+    expect(button.attributes("style")).toContain("--btn-border: var(--cu-color-danger-border)");
+    expect(button.attributes("disabled")).toBeDefined();
+  });
+
+  it("label vacío deja icon-only con nombre accesible «Descargar Excel»", () => {
+    const w = mount(AdvancedTable, {
+      props: { columns, data, exportEnabled: true, exportButton: { label: "" } },
+    });
+    const button = exportButton(w);
+    expect(button.classes()).toContain("cu-button--icon-only");
+    expect(button.attributes("aria-label")).toBe("Descargar Excel");
+    expect(button.text()).toBe("");
+    expect(button.find("svg").exists()).toBe(true);
+  });
+});
+
+describe("AdvancedTable — API de exportación (datos y eventos)", () => {
+  type ExportScope = "all" | "visible";
+  interface ExportDataLike {
+    columns: { key: string; label?: string }[];
+    rows: Record<string, any>[];
+  }
+  interface ExportPayloadLike {
+    scope: ExportScope;
+    format: "xlsx" | "csv";
+    fileName: string;
+    rowCount: number;
+    columnCount: number;
+    cellCount: number;
+    heavy: boolean;
+  }
+  interface ExportVm {
+    getExportData: (options?: { scope?: ExportScope }) => ExportDataLike;
+    exportToExcel: (options?: { scope?: ExportScope }) => ExportPayloadLike;
+  }
+  const api = (w: VueWrapper) => w.vm as unknown as ExportVm;
+
+  const columnas = [
+    { key: "nombre", label: "Nombre" },
+    { key: "rol", label: "Rol" },
+    { key: "interno", label: "Interno", exportable: false },
+    { key: "__actions__", label: "Acciones" },
+  ];
+  const filas = [
+    { nombre: "Juan", rol: "Admin", interno: "x" },
+    { nombre: "Ana", rol: "User", interno: "y" },
+  ];
+
+  it("default: todas las columnas exportables; `exportable: false` y `__actions__` quedan fuera", () => {
+    const w = mount(AdvancedTable, { props: { columns: columnas, data: filas } });
+    const { columns: exportadas, rows } = api(w).getExportData();
+
+    expect(exportadas).toEqual([
+      { key: "nombre", label: "Nombre" },
+      { key: "rol", label: "Rol" },
+    ]);
+    // Sólo las keys exportables, con el valor crudo de la fila.
+    expect(rows).toEqual([
+      { nombre: "Juan", rol: "Admin" },
+      { nombre: "Ana", rol: "User" },
+    ]);
+    expect(Object.keys(rows[0]!)).not.toContain("interno");
+  });
+
+  it("`scope: all` usa todas las filas; `visible` usa la página/filtro actual", () => {
+    const muchas = Array.from({ length: 12 }, (_, i) => ({
+      id: i + 1,
+      nombre: `Fila ${i + 1}`,
+      estado: i < 8 ? "activo" : "inactivo",
+    }));
+    const w = mount(AdvancedTable, {
+      props: {
+        columns: [{ key: "nombre", label: "Nombre" }, { key: "estado", label: "Estado" }],
+        data: muchas,
+        pagination: true,
+        itemsPerPage: 5,
+        filters: { estado: "activo" },
+      },
+    });
+
+    const todas = api(w).getExportData({ scope: "all" });
+    expect(todas.rows).toHaveLength(12);
+    expect(todas.rows[11]).toEqual({ nombre: "Fila 12", estado: "inactivo" });
+
+    const visibles = api(w).getExportData({ scope: "visible" });
+    expect(visibles.rows.map((row) => row.nombre)).toEqual([
+      "Fila 1",
+      "Fila 2",
+      "Fila 3",
+      "Fila 4",
+      "Fila 5",
+    ]);
+
+    // Sin opciones, el default es `all`.
+    expect(api(w).getExportData().rows).toHaveLength(12);
+  });
+
+  it("`exportToExcel` devuelve el payload y emite `export-click` (sin `export-heavy`)", () => {
+    const w = mount(AdvancedTable, {
+      props: {
+        columns: [{ key: "nombre" }, { key: "rol" }],
+        data: [
+          { nombre: "A", rol: "x" },
+          { nombre: "B", rol: "y" },
+          { nombre: "C", rol: "z" },
+        ],
+        exportEnabled: true,
+      },
+    });
+
+    const payload = api(w).exportToExcel();
+    expect(payload).toEqual({
+      scope: "all",
+      format: "xlsx",
+      fileName: expect.stringMatching(/^export-\d{4}-\d{2}-\d{2}\.xlsx$/),
+      rowCount: 3,
+      columnCount: 2,
+      cellCount: 6,
+      heavy: false,
+    });
+    expect(downloads).toHaveLength(1);
+    expect(downloads[0]!.download).toBe(payload.fileName);
+    expect(w.emitted("export-click")).toHaveLength(1);
+    expect(w.emitted("export-click")![0]![0]).toEqual(payload);
+    expect(w.emitted("export-heavy")).toBeFalsy();
+
+    const visible = api(w).exportToExcel({ scope: "visible" });
+    expect(visible.scope).toBe("visible");
+    expect(w.emitted("export-click")).toHaveLength(2);
+  });
+
+  it("`exportButton.disabled` sólo apaga el botón: `exportToExcel` externo sigue disponible", () => {
+    const w = mount(AdvancedTable, {
+      props: { ...{ columns, data }, exportEnabled: true, exportButton: { disabled: true } },
+    });
+
+    expect(api(w).exportToExcel().rowCount).toBe(1);
+    expect(w.emitted("export-click")).toHaveLength(1);
+
+    (w.find(".cu-advanced-table-export .cu-button").element as HTMLButtonElement).click();
+    expect(w.emitted("export-click")).toHaveLength(1);
+  });
+
+  it("`export-heavy` sólo a partir de 10 000 celdas, con el mismo payload", () => {
+    const diezColumnas = Array.from({ length: 10 }, (_, i) => ({ key: `c${i}` }));
+    const fila = (i: number) => Object.fromEntries(diezColumnas.map((col) => [col.key, i]));
+
+    const justo = mount(AdvancedTable, {
+      props: {
+        columns: diezColumnas,
+        data: Array.from({ length: 1000 }, (_, i) => fila(i)),
+      },
+    });
+    const payload = api(justo).exportToExcel();
+    expect(payload).toMatchObject({ rowCount: 1000, columnCount: 10, cellCount: 10_000, heavy: true });
+    expect(justo.emitted("export-heavy")).toHaveLength(1);
+    expect(justo.emitted("export-heavy")![0]![0]).toEqual(payload);
+
+    const debajo = mount(AdvancedTable, {
+      props: {
+        columns: diezColumnas,
+        data: Array.from({ length: 999 }, (_, i) => fila(i)),
+      },
+    });
+    const chico = api(debajo).exportToExcel();
+    expect(chico).toMatchObject({ cellCount: 9990, heavy: false });
+    expect(debajo.emitted("export-heavy")).toBeFalsy();
+  });
+
+  it("el click del botón exporta con scope `all`", async () => {
+    const w = mount(AdvancedTable, {
+      props: { columns, data, exportEnabled: true },
+    });
+    expect(w.emitted("export-click")).toBeFalsy();
+
+    await w.find(".cu-advanced-table-export .cu-button").trigger("click");
+    expect(w.emitted("export-click")).toHaveLength(1);
+    expect(w.emitted("export-click")![0]![0]).toMatchObject({
+      scope: "all",
+      rowCount: 1,
+      columnCount: 2,
+      cellCount: 2,
+    });
+  });
+  it("`exportToExcel` descarga sin botón: funciona con `exportEnabled: false`", () => {
+    const w = mount(AdvancedTable, {
+      props: {
+        columns,
+        data,
+        exportButton: { filename: "sin-boton" },
+      },
+    });
+    expect(w.find(".cu-advanced-table-export").exists()).toBe(false);
+
+    const payload = api(w).exportToExcel();
+    expect(payload.fileName).toBe("sin-boton.xlsx");
+    expect(downloads).toHaveLength(1);
+    expect(downloads[0]!.download).toBe("sin-boton.xlsx");
+  });
+
+  it("`exportButton.format: 'csv'` descarga CSV y el payload lo refleja", () => {
+    const w = mount(AdvancedTable, {
+      props: {
+        columns,
+        data,
+        exportButton: { format: "csv", filename: "planilla" },
+      },
+    });
+    const payload = api(w).exportToExcel();
+    expect(payload).toMatchObject({ format: "csv", fileName: "planilla.csv" });
+    expect(downloads[0]!.download).toBe("planilla.csv");
+    expect(w.emitted("export-click")![0]![0]).toMatchObject({ format: "csv" });
+  });
+
+  it("`before-download` cancelable evita la descarga pero conserva el resumen", () => {
+    const w = mount(AdvancedTable, { props: { columns, data } });
+    let cancelledPayload: unknown = null;
+    w.vm.$.vnode.props = {
+      ...w.vm.$.vnode.props,
+      onBeforeDownload: (payload: { cancel: () => void }) => {
+        cancelledPayload = payload;
+        payload.cancel();
+      },
+    };
+
+    const payload = api(w).exportToExcel();
+    expect(downloads).toHaveLength(0);
+    expect(cancelledPayload).toMatchObject({ cellCount: payload.cellCount });
+    // El resumen y el evento siguen saliendo: lo cancelado es el archivo.
+    expect(w.emitted("export-click")).toHaveLength(1);
+  });
+
+  it("el botón manual no duplica eventos: un click, una descarga y un `export-click`", async () => {
+    const w = mount(AdvancedTable, {
+      props: { columns, data, exportEnabled: true, exportButton: { filename: "toolbar" } },
+    });
+    await w.find(".cu-advanced-table-export .cu-button").trigger("click");
+
+    expect(downloads).toHaveLength(1);
+    expect(downloads[0]!.download).toBe("toolbar.xlsx");
+    expect(w.emitted("before-download")).toHaveLength(1);
+    expect(w.emitted("export-click")).toHaveLength(1);
+    expect(w.emitted("download")).toBeUndefined();
+  });
+});
+
+describe("AdvancedTable.ce (cu-table vanilla) — API de exportación", () => {
+  const TAG = "cu-table-export-api-test";
+  if (!customElements.get(TAG)) {
+    customElements.define(TAG, defineCustomElement(AdvancedTableCe));
+  }
+
+  type ExportScope = "all" | "visible";
+  interface ExportCeElement extends HTMLElement {
+    columns: Record<string, any>[];
+    data: Record<string, any>[];
+    pagination: boolean;
+    exportButton: Record<string, unknown>;
+    getExportData: (options?: { scope?: ExportScope }) => {
+      columns: { key: string; label?: string }[];
+      rows: Record<string, any>[];
+    };
+    exportToExcel: (options?: { scope?: ExportScope }) => {
+      scope: ExportScope;
+      format: "xlsx" | "csv";
+      fileName: string;
+      rowCount: number;
+      columnCount: number;
+      cellCount: number;
+      heavy: boolean;
+    };
+  }
+
+  const mountCe = async (el: ExportCeElement) => {
+    document.body.appendChild(el);
+    await flushPromises();
+  };
+
+  it("expone los métodos y emite `export-click` con el payload en `e.detail`", async () => {
+    const el = document.createElement(TAG) as ExportCeElement;
+    el.columns = [
+      { key: "nombre", label: "Nombre" },
+      { key: "interno", label: "Interno", exportable: false },
+    ];
+    el.data = [
+      { nombre: "A", interno: 1 },
+      { nombre: "B", interno: 2 },
+    ];
+    await mountCe(el);
+
+    expect(typeof el.getExportData).toBe("function");
+    expect(typeof el.exportToExcel).toBe("function");
+    expect(el.getExportData().columns).toEqual([{ key: "nombre", label: "Nombre" }]);
+    expect(el.getExportData().rows).toEqual([{ nombre: "A" }, { nombre: "B" }]);
+
+    const clicks: unknown[] = [];
+    el.addEventListener("export-click", (event) => clicks.push((event as CustomEvent).detail));
+
+    const payload = el.exportToExcel({ scope: "all" });
+    expect(payload).toEqual({
+      scope: "all",
+      format: "xlsx",
+      fileName: expect.stringMatching(/^export-\d{4}-\d{2}-\d{2}\.xlsx$/),
+      rowCount: 2,
+      columnCount: 1,
+      cellCount: 2,
+      heavy: false,
+    });
+    expect(downloads).toHaveLength(1);
+    expect(clicks).toEqual([payload]);
+    el.remove();
+  });
+
+  it("`visible` respeta la página y `export-heavy` sale con ≥10 000 celdas", async () => {
+    const el = document.createElement(TAG) as ExportCeElement;
+    el.pagination = true;
+    el.columns = [{ key: "a" }, { key: "b" }];
+    el.data = Array.from({ length: 5000 }, (_, i) => ({ a: i, b: i }));
+    await mountCe(el);
+
+    expect(el.getExportData({ scope: "visible" }).rows).toHaveLength(10);
+
+    const clicks: unknown[] = [];
+    const heavies: unknown[] = [];
+    el.addEventListener("export-click", (event) => clicks.push((event as CustomEvent).detail));
+    el.addEventListener("export-heavy", (event) => heavies.push((event as CustomEvent).detail));
+
+    const payload = el.exportToExcel();
+    expect(payload).toEqual({
+      scope: "all",
+      format: "xlsx",
+      fileName: expect.stringMatching(/^export-\d{4}-\d{2}-\d{2}\.xlsx$/),
+      rowCount: 5000,
+      columnCount: 2,
+      cellCount: 10_000,
+      heavy: true,
+    });
+    expect(clicks).toEqual([payload]);
+    expect(heavies).toEqual([payload]);
+    el.remove();
+  });
+  it("el host recibe `before-download` y `cancel()` evita la descarga", async () => {
+    const el = document.createElement(TAG) as ExportCeElement;
+    el.columns = [{ key: "nombre", label: "Nombre" }];
+    el.data = [{ nombre: "A" }];
+    const payloads: unknown[] = [];
+    el.addEventListener("before-download", (event) => {
+      const detail = (event as CustomEvent).detail;
+      payloads.push(detail);
+      detail.cancel();
+    });
+    await mountCe(el);
+
+    el.exportToExcel();
+    expect(payloads).toHaveLength(1);
+    expect(payloads[0]).toMatchObject({ scope: "all", rowCount: 1, columnCount: 1 });
+    expect(downloads).toHaveLength(0);
+    el.remove();
+  });
+
+  it("`exportButton.format` viaja al archivo: csv con separador", async () => {
+    const el = document.createElement(TAG) as ExportCeElement;
+    el.columns = [{ key: "nombre", label: "Nombre" }];
+    el.data = [{ nombre: "A" }];
+    el.exportButton = { format: "csv", filename: "vanilla" };
+    await mountCe(el);
+
+    const payload = el.exportToExcel();
+    expect(payload).toMatchObject({ format: "csv", fileName: "vanilla.csv" });
+    expect(downloads[0]!.download).toBe("vanilla.csv");
+    el.remove();
   });
 });
 
@@ -254,6 +711,43 @@ describe("AdvancedTable.ce (cu-table vanilla)", () => {
 
     expect(el.shadowRoot.querySelector('slot[name="footer"]')).not.toBeNull();
     expect(el.shadowRoot.querySelector('slot[name="header-__actions__"]')).not.toBeNull();
+    el.remove();
+  });
+});
+
+describe("AdvancedTable.ce (cu-table vanilla) — exportación", () => {
+  const TAG = "cu-table-export-test";
+  if (!customElements.get(TAG)) {
+    customElements.define(TAG, defineCustomElement(AdvancedTableCe));
+  }
+
+  it("`exportEnabled` y `exportButton` (propiedades JS) se reflejan en el shadow root", async () => {
+    type ExportTableElement = HTMLElement & {
+      columns: typeof columns;
+      data: typeof data;
+      exportEnabled: boolean;
+      exportButton: Record<string, unknown>;
+    };
+    const el = document.createElement(TAG) as ExportTableElement;
+    el.columns = columns;
+    el.data = data;
+    el.exportEnabled = true;
+    el.exportButton = { label: "Bajar", color: "warning", variant: "soft", disabled: true };
+    document.body.appendChild(el);
+    await flushPromises();
+
+    expect(el.shadowRoot).not.toBeNull();
+    const root = el.shadowRoot!;
+    expect(root.querySelector(".cu-advanced-table-toolbar")).not.toBeNull();
+    expect(root.querySelector(".cu-advanced-table-search")).toBeNull();
+    const button = root.querySelector(
+      ".cu-advanced-table-export .cu-button",
+    ) as HTMLButtonElement | null;
+    expect(button).not.toBeNull();
+    expect(button!.textContent!.trim()).toBe("Bajar");
+    expect(button!.classList.contains("cu-button--soft")).toBe(true);
+    expect(button!.classList.contains("cu-button--disabled")).toBe(true);
+    expect(button!.disabled).toBe(true);
     el.remove();
   });
 });

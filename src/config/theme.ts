@@ -1,5 +1,5 @@
-// LEGACY: mapa de 3 colores que sólo usa el código de `src/components/legacy/` y
-// `archived/` (con `getHostTheme`/`getColorMap`). La fuente de verdad de temas es
+// LEGACY: mapa de 3 colores que sólo usa el código de `src/components/archived/`
+// (con `getHostTheme`/`getColorMap`). La fuente de verdad de temas es
 // `comegen.config.json` (15 temas) y el sistema `cu-tokens`. No usar en componentes nuevos.
 export const themes = {
   light: { primary: '#1774A4', neutral: '#2c2c2c', success: '#22c55e', warning: '#f59e0b', danger: '#ef4444', surface: '#ffffff' },

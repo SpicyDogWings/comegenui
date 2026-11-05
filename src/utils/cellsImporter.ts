@@ -1,4 +1,5 @@
 import * as XLSX from 'xlsx'
+import { buildCSV, downloadSheet } from './sheet'
 
 export type CellType = 'string' | 'integer' | 'number' | 'date' | 'boolean' | 'email'
 
@@ -324,45 +325,25 @@ export function validateRows(rows: Record<string, unknown>[], columns: CellColum
   return errors
 }
 
+/** Columnas de la plantilla en el formato del core de exportación (sólo key/label). */
+function templateColumns(columns: CellColumn[]) {
+  return columns.map((column) => ({ key: column.key, label: column.label }))
+}
+
 export function buildTemplateCSV(columns: CellColumn[], delimiter = ','): string {
-  const escaped = columns.map((c) => {
-    const v = c.label
-    const needsQuotes =
-      v.includes('"') || v.includes('\n') || v.includes('\r') || v.includes(delimiter)
-    return needsQuotes ? `"${v.replace(/"/g, '""')}"` : v
-  })
-  return escaped.join(delimiter) + '\n'
+  return buildCSV([], templateColumns(columns), delimiter)
 }
 
 export async function downloadTemplate(
   columns: CellColumn[],
   options: { type?: 'xlsx' | 'csv'; filename?: string; delimiter?: string } = {},
 ): Promise<void> {
-  const type = options.type ?? 'csv'
-  const filename = options.filename ?? 'template'
-  const header = columns.map((c) => c.label)
-
-  if (type === 'csv') {
-    const content = buildTemplateCSV(columns, options.delimiter ?? ',')
-    const blob = new Blob(['\uFEFF' + content], { type: 'text/csv;charset=utf-8' })
-    triggerDownload(blob, `${filename}.csv`)
-    return
-  }
-
-  const ws = XLSX.utils.aoa_to_sheet([header])
-  const wb = XLSX.utils.book_new()
-  XLSX.utils.book_append_sheet(wb, ws, 'Template')
-  const buf = XLSX.write(wb, { bookType: 'xlsx', type: 'array' })
-  triggerDownload(new Blob([buf], { type: 'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet' }), `${filename}.xlsx`)
-}
-
-function triggerDownload(blob: Blob, filename: string) {
-  const url = URL.createObjectURL(blob)
-  const a = document.createElement('a')
-  a.href = url
-  a.download = filename
-  document.body.appendChild(a)
-  a.click()
-  a.remove()
-  setTimeout(() => URL.revokeObjectURL(url), 1000)
+  // La plantilla es un archivo más: la genera el mismo writer que la tabla y el
+  // botón, con el separador con el que se va a importar.
+  downloadSheet([], templateColumns(columns), {
+    filename: options.filename ?? 'template',
+    format: options.type ?? 'csv',
+    sheetName: 'Template',
+    delimiter: options.delimiter ?? ',',
+  })
 }

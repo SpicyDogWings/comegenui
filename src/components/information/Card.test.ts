@@ -41,6 +41,21 @@ describe("Card — header, contenido y media", () => {
     expect(w.find(".cu-card-subtitle").text()).toBe("Último corte");
   });
 
+  it("heading renderiza el título del header", () => {
+    const w = mount(Card, { props: { heading: "Resumen" } });
+    expect(w.find(".cu-card-title").text()).toBe("Resumen");
+  });
+
+  it("title sigue renderizando el título (compatibilidad)", () => {
+    const w = mount(Card, { props: { title: "Resumen" } });
+    expect(w.find(".cu-card-title").text()).toBe("Resumen");
+  });
+
+  it("con heading y title gana heading", () => {
+    const w = mount(Card, { props: { heading: "Nuevo", title: "Viejo" } });
+    expect(w.find(".cu-card-title").text()).toBe("Nuevo");
+  });
+
   it("sin title/subtitle ni header mantiene el header oculto", () => {
     const w = mount(Card);
     expect(w.find(".cu-card-header").exists()).toBe(true);
@@ -142,6 +157,40 @@ describe("Card — subtítulo atenuado", () => {
 });
 
 describe("Card — custom element", () => {
+  it("el atributo heading muestra el título y no setea title en el host (sin tooltip nativo)", async () => {
+    const el = document.createElement(CE_TAG);
+    el.setAttribute("heading", "Resumen SIGACAD");
+    document.body.appendChild(el);
+    await flushPromises();
+
+    expect(el.shadowRoot!.querySelector(".cu-card-title")!.textContent).toBe("Resumen SIGACAD");
+    expect(el.hasAttribute("title")).toBe(false);
+    expect(el.getAttribute("title")).toBeNull();
+    el.remove();
+  });
+
+  it("el atributo title sigue funcionando (compatibilidad: conserva el tooltip nativo del host)", async () => {
+    const el = document.createElement(CE_TAG);
+    el.setAttribute("title", "Título compat");
+    document.body.appendChild(el);
+    await flushPromises();
+
+    expect(el.shadowRoot!.querySelector(".cu-card-title")!.textContent).toBe("Título compat");
+    expect(el.getAttribute("title")).toBe("Título compat");
+    el.remove();
+  });
+
+  it("con heading y title gana heading en el CE", async () => {
+    const el = document.createElement(CE_TAG);
+    el.setAttribute("heading", "Nuevo");
+    el.setAttribute("title", "Viejo");
+    document.body.appendChild(el);
+    await flushPromises();
+
+    expect(el.shadowRoot!.querySelector(".cu-card-title")!.textContent).toBe("Nuevo");
+    el.remove();
+  });
+
   it("los slots media/header/footer del light DOM se proyectan y muestran", async () => {
     const el = document.createElement(CE_TAG);
     el.setAttribute("title", "Título");

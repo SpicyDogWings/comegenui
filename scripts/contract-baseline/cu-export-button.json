@@ -1,0 +1,26 @@
+{
+  "tag": "cu-export-button",
+  "props": [
+    "color",
+    "columns",
+    "config",
+    "data",
+    "delimiter",
+    "disabled",
+    "filename",
+    "format",
+    "heavyThreshold",
+    "label",
+    "manual",
+    "sheetName",
+    "size",
+    "variant"
+  ],
+  "methods": [
+    "download",
+    "getPayload",
+    "setData",
+    "setOptions"
+  ],
+  "shadow": "button.cu-button.cu-button--md.cu-button--solid.cu-export-button[style,type]\n  svg.cu-export-button-icon[aria-hidden,focusable,height,viewBox,width,xmlns]\n    g[fill,stroke,stroke-linecap,stroke-linejoin,stroke-width]\n      rect[height,rx,ry,width,x,y]\n      line[x1,x2,y1,y2]\n      line[x1,x2,y1,y2]\n      line[x1,x2,y1,y2]\n      line[x1,x2,y1,y2]\n  span.cu-export-button-text"
+}

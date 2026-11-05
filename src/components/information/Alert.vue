@@ -109,9 +109,11 @@ const colorStyles = computed(() => ({
   '--alert-solid': `var(--cu-color-${safeColor.value}-solid)`,
   '--alert-solid-hover': `var(--cu-color-${safeColor.value}-solid-hover)`,
   '--alert-solid-active': `var(--cu-color-${safeColor.value}-solid-active)`,
-  '--alert-solid-text': `var(--cu-color-surface)`,
+  '--alert-solid-text': `var(--cu-color-${safeColor.value}-solid-text)`,
   '--alert-border': `var(--cu-color-${safeColor.value}-border)`,
   '--alert-text': `var(--cu-color-${safeColor.value}-text)`,
+  '--alert-text-soft': `var(--cu-color-${safeColor.value}-text-on-soft)`,
+  '--alert-text-subtle': `var(--cu-color-${safeColor.value}-text-on-subtle)`,
   '--alert-ghost-hover': `var(--cu-color-${safeColor.value}-ghost-hover)`,
   '--alert-ghost-active': `var(--cu-color-${safeColor.value}-ghost-active)`,
   '--alert-soft': `var(--cu-color-${safeColor.value}-soft)`,
@@ -195,10 +197,12 @@ defineExpose({
   position: relative;
 }
 
-/* solid */
+/* solid: el borde (`-border`, ≥3:1 contra la superficie) delimita el bloque
+   cuando el relleno por sí solo no alcanza ese piso. */
 .cu-alert.cu-alert--solid {
   background-color: var(--alert-solid);
   color: var(--alert-solid-text);
+  border: var(--cu-border-thin) solid var(--alert-border);
 }
 .cu-alert.cu-alert--solid .cu-alert-title-text {
   color: var(--alert-solid-text);
@@ -213,13 +217,13 @@ defineExpose({
 /* soft */
 .cu-alert.cu-alert--soft {
   background-color: var(--alert-soft);
-  color: var(--alert-text);
+  color: var(--alert-text-soft);
 }
 
 /* subtle */
 .cu-alert.cu-alert--subtle {
   background-color: var(--alert-subtle);
-  color: var(--alert-text);
+  color: var(--alert-text-subtle);
   border: var(--cu-border-thin) solid var(--alert-subtle-border);
 }
 

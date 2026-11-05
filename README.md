@@ -52,7 +52,7 @@ navegador lo cacheó). Más detalle, y lo mismo para el resto de las configs:
 ## Versiones y documentación
 
 La documentación publicada es la de la **última versión**. Cada release queda en un **tag** de git
-(`v5.2.3`, `v5.2.2`, …) y la doc de esa versión se lee desde ahí:
+(`v5.2.4`, `v5.2.3`, …) y la doc de esa versión se lee desde ahí:
 
 ```bash
 git checkout v5.1.1
@@ -112,6 +112,15 @@ cp -r skills/use-comegen <proyecto>/.opencode/skills/
 
 Cambiá `--branch main` por la rama o tag que quieras. Detalle y correspondencia con la versión de
 la lib: [`skills/use-comegen/SKILL.md`](./skills/use-comegen/SKILL.md).
+
+## Desarrollo
+
+- Las ramas de feature **no** corren `guard.sh --full`.
+- Verificación de rama: tests del archivo tocado, `node scripts/mutation-check.mjs --solo <ids>` y type-check.
+- El `guard.sh --full` lo corre **solo el agente de integración**, una vez, sobre el árbol unido antes del push.
+- No correr guards/mutaciones en paralelo. El hook `pre-commit` (`--fast`) se mantiene; no usar `--no-verify` sin autorización.
+
+Detalle completo: [`AGENTS.md`](./AGENTS.md#regla-dura-no-terminás-sin-veredicto-verde).
 
 ## Licencia
 

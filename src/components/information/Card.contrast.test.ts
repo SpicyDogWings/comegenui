@@ -57,8 +57,8 @@ describe('Card — contraste del subtítulo en los 15 temas', () => {
           [`${color}/outlined`, muted, surface],
           [`${color}/soft`, muted, compositeOver(token(theme.css, color, '-soft'), surface, 0.15)],
           [`${color}/subtle`, muted, compositeOver(token(theme.css, color, '-subtle'), surface, 0.1)],
-          // solid: texto del tema sobre la variante ajustada (sin atenuado).
-          [`${color}/solid`, surface, token(theme.css, color, '-solid')],
+          // solid: texto de máximo contraste sobre el color del tema (sin ajustar).
+          [`${color}/solid`, token(theme.css, color, '-solid-text'), token(theme.css, color, '-solid')],
         ]
         for (const [label, fg, bg] of pairs) {
           const ratio = contrastRatio(fg, bg)

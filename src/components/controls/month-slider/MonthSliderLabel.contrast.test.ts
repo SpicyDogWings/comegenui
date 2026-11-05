@@ -63,19 +63,25 @@ describe('MonthSliderLabel — contraste del label en los 15 temas', () => {
       const surface = surfaceOf(theme.css)
       for (const color of COLORS) {
         const text = token(theme.css, color, '-text')
+        const textGhost = token(theme.css, color, '-text-on-ghost')
+        const textSoft = token(theme.css, color, '-text-on-soft')
+        const textSubtle = token(theme.css, color, '-text-on-subtle')
+        const solidText = token(theme.css, color, '-solid-text')
         const soft = (alpha: number) => compositeOver(token(theme.css, color, '-soft'), surface, alpha)
         const subtle = (alpha: number) => compositeOver(token(theme.css, color, '-subtle'), surface, alpha)
+        const ghost = (alpha: number) => compositeOver(token(theme.css, color, '-ghost-hover'), surface, alpha)
         const pairs: Array<[string, string, string, number]> = [
-          [`${color}/soft`, text, soft(0.15), MIN_TEXT_CONTRAST],
-          [`${color}/soft:hover`, text, soft(0.25), MIN_TEXT_CONTRAST],
-          [`${color}/soft:active`, text, soft(0.35), MIN_TEXT_CONTRAST],
-          [`${color}/subtle`, text, subtle(0.1), MIN_TEXT_CONTRAST],
-          [`${color}/subtle:hover`, text, subtle(0.2), MIN_TEXT_CONTRAST],
-          [`${color}/subtle:active`, text, subtle(0.3), MIN_TEXT_CONTRAST],
+          [`${color}/soft`, textSoft, soft(0.15), MIN_TEXT_CONTRAST],
+          [`${color}/soft:hover`, textSoft, soft(0.25), MIN_TEXT_CONTRAST],
+          [`${color}/soft:active`, textSoft, soft(0.35), MIN_TEXT_CONTRAST],
+          [`${color}/subtle`, textSubtle, subtle(0.1), MIN_TEXT_CONTRAST],
+          [`${color}/subtle:hover`, textSubtle, subtle(0.2), MIN_TEXT_CONTRAST],
+          [`${color}/subtle:active`, textSubtle, subtle(0.3), MIN_TEXT_CONTRAST],
           [`${color}/outlined`, text, surface, MIN_TEXT_CONTRAST],
           [`${color}/ghost`, text, surface, MIN_TEXT_CONTRAST],
-          [`${color}/solid`, surface, token(theme.css, color, '-solid'), MIN_TEXT_CONTRAST],
-          [`${color}/solid:hover`, surface, token(theme.css, color, '-solid-hover'), MIN_TEXT_CONTRAST],
+          [`${color}/ghost:hover`, textGhost, ghost(0.1), MIN_TEXT_CONTRAST],
+          [`${color}/solid`, solidText, token(theme.css, color, '-solid'), MIN_TEXT_CONTRAST],
+          [`${color}/solid:hover`, solidText, token(theme.css, color, '-solid-hover'), MIN_TEXT_CONTRAST],
           [`${color}/outlined:border`, token(theme.css, color, '-border'), surface, MIN_BORDER_CONTRAST],
         ]
         for (const [label, fg, bg, min] of pairs) {
@@ -91,20 +97,39 @@ describe('MonthSliderLabel — contraste del label en los 15 temas', () => {
   })
 
   it('el CSS del label usa los tokens de texto accesibles (no el color base)', () => {
-    // Texto de las variantes: siempre `-text` (o `surface` sobre solid).
-    expect(LABEL_CSS).toContain('color: var(--ms-accent-text);')
+    // Cada variante usa el token medido contra su propio fondo.
+    expect(LABEL_CSS).toContain('color: var(--ms-accent-text);') // outlined/ghost (superficie)
+    expect(LABEL_CSS).toContain('color: var(--ms-text-soft);')
+    expect(LABEL_CSS).toContain('color: var(--ms-text-subtle);')
+    expect(LABEL_CSS).toContain('color: var(--ms-text-ghost);')
+    expect(LABEL_CSS).toContain('color: var(--ms-solid-text);')
     expect(LABEL_CSS).not.toContain('color: var(--ms-accent);')
-    // Fondo del solid: la variante ajustada, no el color base.
+    // El texto del label solid no es el `surface`: es el polo de máximo contraste.
+    expect(LABEL_CSS).not.toMatch(/--solid\s*\{[^}]*color:\s*var\(--ms-surface\)/)
+    // Fondo del solid: el color del tema (sin ajustar), no el acento crudo.
     expect(LABEL_CSS).toContain('background-color: var(--ms-solid);')
     expect(LABEL_CSS).not.toContain('background-color: var(--ms-accent);')
-    // Borde del outlined: el token de borde (≥3:1).
+    // Borde del outlined y anillo del solid: el token de borde (≥3:1).
     expect(LABEL_CSS).toContain('border: var(--cu-border-thin) solid var(--ms-accent-border);')
+    expect(LABEL_CSS).toContain('box-shadow: inset 0 0 0 var(--cu-border-thin) var(--ms-accent-border);')
   })
 })
 
 describe('MonthSliderLabel — variables que declaran sus hosts', () => {
   it('MonthSlider y YearSlider declaran las variables que el label usa', () => {
-    const required = ['--ms-accent-text', '--ms-accent-border', '--ms-solid', '--ms-solid-hover', '--ms-soft', '--ms-subtle', '--ms-surface']
+    const required = [
+      '--ms-accent-text',
+      '--ms-accent-border',
+      '--ms-text-ghost',
+      '--ms-text-soft',
+      '--ms-text-subtle',
+      '--ms-solid',
+      '--ms-solid-hover',
+      '--ms-solid-text',
+      '--ms-soft',
+      '--ms-subtle',
+      '--ms-surface',
+    ]
     for (const host of HOSTS) {
       for (const variable of required) {
         expect(host.css, `${host.name} sin ${variable}`).toContain(`'${variable}':`)

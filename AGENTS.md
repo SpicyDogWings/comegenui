@@ -34,6 +34,14 @@ git config core.hooksPath .githooks   # una sola vez por clon
 
 **La prueba de fuego**: `scripts/mutation-check.mjs` (`pnpm mutation`) aplica bugs conocidos y **falla si algún test sigue verde**. Cada test de comportamiento nuevo debe venir con su mutación en `scripts/mutation-check.mjs`. Correr `./scripts/guard.sh --mutacion` después de agregar un test.
 
+### Subagentes y gate
+
+- Las ramas de feature **no** ejecutan `guard.sh --full`.
+- Verificación de rama: tests del archivo tocado, `node scripts/mutation-check.mjs --solo <ids>` y type-check.
+- El `guard.sh --full` lo corre **solo el agente de integración**, una vez, sobre el árbol unido antes del push.
+- No ejecutar guards/mutaciones en paralelo.
+- El hook `pre-commit` (`--fast`) se mantiene; no usar `--no-verify` sin autorización.
+
 ## Estructura de directorios
 
 ```
@@ -41,7 +49,7 @@ src/
 ├── components/
 │   ├── {category}/MiComponente.vue        # Lógica real del componente
 │   ├── customElements/{category}/MiComponente.ce.vue  # Wrapper CE (thin)
-│   └── ...otrascarpetas (icons, theme, lab, archived, legacy)
+│   └── ...otrascarpetas (icons, theme, lab, archived)
 ├── lib/
 │   └── {category}/mi-componente.ts        # Entry point: defineComegenElement + registro
 ├── plugins/
@@ -93,10 +101,6 @@ Algunos componentes van directo de `.vue` a `.ts` sin `.ce.vue`:
 - `icons/*.vue` — Iconos
 - `theme/ThemeManagerModal.vue` — Modal de configuración
 - `lab/` — Componentes experimentales
-
-### Legacy
-
-`src/components/legacy/` contiene versiones anteriores que usan `getBgClasses`/`getBgClasses` de `palette.ts`. No usar como referencia para componentes nuevos.
 
 ### Notas de componentes específicos
 

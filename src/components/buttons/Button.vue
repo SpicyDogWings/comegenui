@@ -148,16 +148,19 @@ const colorStyles = computed(() => ({
   '--btn-subtle-hover': `var(--cu-color-${safeColor.value}-subtle-hover)`,
   '--btn-subtle-active': `var(--cu-color-${safeColor.value}-subtle-active)`,
   '--btn-subtle-border': `var(--cu-color-${safeColor.value}-subtle-border)`,
-  // Solid/none: el fondo es la variante segura (ajustada por el generador) y el
-  // texto sigue siendo el del tema — nunca un negro/blanco elegido por color.
+  // Solid/none: el fondo conserva el color del tema y el texto lo elige el
+  // generador por máximo contraste (negro/blanco) contra el fondo y sus estados.
   '--btn-solid': `var(--cu-color-${safeColor.value}-solid)`,
   '--btn-solid-hover': `var(--cu-color-${safeColor.value}-solid-hover)`,
   '--btn-solid-active': `var(--cu-color-${safeColor.value}-solid-active)`,
-  '--btn-solid-text': `var(--cu-color-surface)`,
-  // Texto sobre superficie o tintes (ghost/soft/subtle/outlined/link): el color
-  // adaptado al tema, no el color crudo.
+  '--btn-solid-text': `var(--cu-color-${safeColor.value}-solid-text)`,
+  // Texto sobre superficie (ghost/outlined/link) y sobre cada tinte
+  // (soft/subtle): cada token está medido contra su propio peor fondo.
   '--btn-text': `var(--cu-color-${safeColor.value}-text)`,
-  // Borde de outlined sobre superficie (>= 3:1).
+  '--btn-text-ghost': `var(--cu-color-${safeColor.value}-text-on-ghost)`,
+  '--btn-text-soft': `var(--cu-color-${safeColor.value}-text-on-soft)`,
+  '--btn-text-subtle': `var(--cu-color-${safeColor.value}-text-on-subtle)`,
+  // Borde de outlined sobre superficie y anillo del solid (>= 3:1).
   '--btn-border': `var(--cu-color-${safeColor.value}-border)`,
 }))
 
@@ -256,9 +259,12 @@ const rootClasses = computed(() => [
 }
 
 /* solid */
+/* El relleno conserva el color del tema; el borde (`-border`, ≥3:1 contra la
+   superficie) dibuja el límite del control cuando el relleno no llega solo. */
 .cu-button.cu-button--solid {
   background-color: var(--btn-solid);
   color: var(--btn-solid-text);
+  border: var(--cu-border-thin) solid var(--btn-border);
 }
 .cu-button.cu-button--solid:hover:not(.cu-button--disabled) {
   background-color: var(--btn-solid-hover);
@@ -274,15 +280,17 @@ const rootClasses = computed(() => [
 }
 .cu-button.cu-button--ghost:hover:not(.cu-button--disabled) {
   background-color: var(--btn-ghost-hover);
+  color: var(--btn-text-ghost);
 }
 .cu-button.cu-button--ghost:active:not(.cu-button--disabled) {
   background-color: var(--btn-ghost-active);
+  color: var(--btn-text-ghost);
 }
 
 /* soft */
 .cu-button.cu-button--soft {
   background-color: var(--btn-soft);
-  color: var(--btn-text);
+  color: var(--btn-text-soft);
 }
 .cu-button.cu-button--soft:hover:not(.cu-button--disabled) {
   background-color: var(--btn-soft-hover);
@@ -294,7 +302,7 @@ const rootClasses = computed(() => [
 /* subtle */
 .cu-button.cu-button--subtle {
   background-color: var(--btn-subtle);
-  color: var(--btn-text);
+  color: var(--btn-text-subtle);
   border: var(--cu-border-thin) solid var(--btn-subtle-border);
 }
 .cu-button.cu-button--subtle:hover:not(.cu-button--disabled) {
@@ -312,9 +320,11 @@ const rootClasses = computed(() => [
 }
 .cu-button.cu-button--outlined:hover:not(.cu-button--disabled) {
   background-color: var(--btn-ghost-hover);
+  color: var(--btn-text-ghost);
 }
 .cu-button.cu-button--outlined:active:not(.cu-button--disabled) {
   background-color: var(--btn-ghost-active);
+  color: var(--btn-text-ghost);
 }
 
 /* link */
@@ -334,6 +344,7 @@ const rootClasses = computed(() => [
 .cu-button.cu-button--none {
   background-color: var(--btn-solid);
   color: var(--btn-solid-text);
+  border: var(--cu-border-thin) solid var(--btn-border);
 }
 .cu-button.cu-button--none:hover:not(.cu-button--disabled) {
   background-color: var(--btn-solid-hover);

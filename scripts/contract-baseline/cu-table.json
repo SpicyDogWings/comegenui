@@ -8,6 +8,8 @@
     "compact",
     "data",
     "empty",
+    "exportButton",
+    "exportEnabled",
     "filters",
     "footer",
     "inlineEditing",
@@ -26,7 +28,9 @@
   ],
   "methods": [
     "addRow",
+    "exportToExcel",
     "getData",
+    "getExportData",
     "getRow",
     "pushData",
     "removeRow",

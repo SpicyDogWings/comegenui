@@ -135,7 +135,7 @@ function panelIdOf(index: number): string {
 /* Item activo con submenú: el mismo lenguaje que el Button `primary`+`soft` del
    nivel raíz. Antes la clase se aplicaba al wrapper pero no tenía estilo propio. */
 .cu-navbar :deep(.cu-navbar-item--active) .cu-navbar-dropdown-trigger {
-  color: var(--cu-color-primary-text);
+  color: var(--cu-color-primary-text-on-soft);
   background-color: var(--cu-color-primary-soft);
 }
 

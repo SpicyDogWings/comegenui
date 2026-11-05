@@ -26,8 +26,10 @@ const safeColor = computed(() => (isColor(props.color) ? props.color : 'neutral'
 const badgeStyles = computed(() => ({
   '--badge-solid': `var(--cu-color-${safeColor.value}-solid)`,
   '--badge-border': `var(--cu-color-${safeColor.value}-border)`,
-  '--badge-solid-text': `var(--cu-color-surface)`,
+  '--badge-solid-text': `var(--cu-color-${safeColor.value}-solid-text)`,
   '--badge-text': `var(--cu-color-${safeColor.value}-text)`,
+  '--badge-text-soft': `var(--cu-color-${safeColor.value}-text-on-soft)`,
+  '--badge-text-subtle': `var(--cu-color-${safeColor.value}-text-on-subtle)`,
   '--badge-soft': `var(--cu-color-${safeColor.value}-soft)`,
   '--badge-soft-hover': `var(--cu-color-${safeColor.value}-soft-hover)`,
   '--badge-ghost-hover': `var(--cu-color-${safeColor.value}-ghost-hover)`,
@@ -60,16 +62,18 @@ const badgeStyles = computed(() => ({
   border: var(--cu-border-thin) solid transparent;
 }
 
-/* solid */
+/* solid: el borde (`-border`, ≥3:1 contra la superficie) delimita el badge
+   cuando el relleno por sí solo no alcanza ese piso. */
 .cu-badge.cu-badge--solid {
   background-color: var(--badge-solid);
   color: var(--badge-solid-text);
+  border-color: var(--badge-border);
 }
 
 /* soft */
 .cu-badge.cu-badge--soft {
   background-color: var(--badge-soft);
-  color: var(--badge-text);
+  color: var(--badge-text-soft);
 }
 
 /* ghost */
@@ -81,7 +85,7 @@ const badgeStyles = computed(() => ({
 /* subtle */
 .cu-badge.cu-badge--subtle {
   background-color: var(--badge-subtle);
-  color: var(--badge-text);
+  color: var(--badge-text-subtle);
   border-color: var(--badge-subtle-border);
 }
 

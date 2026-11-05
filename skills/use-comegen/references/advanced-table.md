@@ -10,6 +10,7 @@ celda. Para una grilla estática alcanza un `<table>` de HTML.
 - Cada columna es `{ key, label, ... }`. Edición: `editable: true` (se abre con click) o `inlineEdit: true` (editor siempre visible); el editor se elige con `inputType` (`input`, `textarea`, `select`, `autocomplete`, `date`, `switch`).
 - Escuchá `edit-save` para persistir y `edit-error` para validar; los clicks de fila se leen del `click` nativo.
 - `actions` acepta un array **o** `(row) => [...]`; cada botón/acción acepta `disabled` (booleano o `(row) => boolean`) y `hidden(row)` para decidir **por fila**.
+- Exportación: `exportable: false` saca la columna. `getExportData({ scope })` devuelve `{ columns, rows }` crudos (`'all'` default, `'visible'` = página/filtro actual). `exportToExcel({ scope, format, filename, … })` **genera y descarga** el archivo (xlsx o csv) y emite `before-download` (cancelable), `export-click` y `export-heavy` (≥ `heavyThreshold`, 10 000 celdas) con `{ scope, format, fileName, rowCount, columnCount, cellCount, heavy }`. Funciona con la toolbar apagada.
 - Programático: `updateRow(index, patch)`, `getData()`, `getRow(index)`, `removeRow(index)`, `addRow(row)`, `pushData(rows)`.
 
 ```html
@@ -33,9 +34,20 @@ tabla.actions = (row) => [
 ];
 ```
 
+Exportación (genera y descarga el archivo; `before-download` puede cancelarla):
+
+```js
+tabla.columns = [{ key: 'nombre' }, { key: 'interno', exportable: false }];
+tabla.addEventListener('before-download', (e) => { if (e.detail.heavy) e.detail.cancel(); });
+tabla.exportToExcel({ format: 'csv', filename: 'socios' }); // descarga socios.csv
+const { rows } = tabla.getExportData({ scope: 'visible' }); // sin descargar
+```
+
+En Vue: `<AdvancedTable export-enabled :columns="columns" :data="data" @before-download="onBefore" @export-click="onExport" />`.
+
 ## Límites
 
-- Las props complejas van sólo por JS (`columns`, `data`, `filters`, `actions`, `footer`, `pageSizeOptions`, `rowDisabled`); la única excepción es `search-fields` (JSON string: `search-fields='["nombre","email"]'`).
+- Las props complejas van sólo por JS (`columns`, `data`, `filters`, `actions`, `footer`, `pageSizeOptions`, `rowDisabled`, `exportButton`); la única excepción es `search-fields` (JSON string: `search-fields='["nombre","email"]'`).
 - `row-click`, `row-dblclick` y `cell-click` están declarados y el CE los bridgea, pero nadie los dispara: usá el `click` nativo con `e.composedPath()` o resolvé con `buttons`/`badges`/`actions`.
 - No hay "lápiz": la celda editable se abre con click (doble click si `singleClick: false`); el estado inline sólo deja el editor siempre visible.
 - `inputType: 'switch'` es la excepción: siempre visible, sin pasar por `validator`/`regex`, y al alternarlo emite `edit-save` con `value` booleano.
@@ -69,6 +81,8 @@ tabla.actions = (row) => [
 | `search-placeholder` | `string` | `"Buscar..."` | Placeholder del input de búsqueda (atributo HTML: `search-placeholder`) |
 | `search-fields` | `string[]` | `[]` | Columnas donde buscar (atributo HTML: `search-fields`). Vacío = todas |
 | `search-value` | `string` | `""` | Valor controlado del buscador (atributo HTML: `search-value`) |
+| `export-enabled` | `boolean` | `false` | Muestra el botón de exportación (XLSX/CSV). El botón descarga; `exportToExcel()` funciona aunque esté apagado (atributo HTML: `export-enabled`) |
+| `export-button` | `ExportButtonConfig \| null` | `{}` | Configuración visual del botón de exportación. Defaults: `label` «Descargar Excel», `color` `success`, `variant` `solid`, `size` `md`, `disabled` `false`, más `format`, `filename`, `sheetName`, `delimiter`, `config` y `heavyThreshold`. Con `label: ""` queda sólo el ícono. `disabled` sólo apaga el botón: `exportToExcel()` sigue disponible. Se asigna como propiedad JS |
 | `filters` | `Record<string, any>` | `{}` | Filtros por columna. Se asigna como propiedad JS |
 | `loading` | `boolean` | `false` | Muestra una barra de carga animada en el tope |
 | `actions` | `ButtonConfig[] \| ((row: Record<string, any>) => ButtonConfig[])` | `[]` | Acciones de fila (botón "..." al final de cada fila). Array estático o función `(row) => acciones` para decidirlas por fila. Se asigna como propiedad JS |
@@ -85,13 +99,16 @@ tabla.actions = (row) => [
 <!-- @api:eventos -->
 | Evento | Payload (`e.detail`) | Descripción |
 | ------ | ------ | ------ |
-| `update:currentPage` | — | — |
-| `update:itemsPerPage` | — | — |
-| `update:search` | — | — |
-| `edit-start` | — | — |
-| `edit-save` | — | — |
-| `edit-cancel` | — | — |
-| `edit-error` | — | — |
+| `before-download` | `ExportBeforeDownloadPayload` | Se emite antes de generar el archivo; llamá `cancel()` para evitar la descarga. |
+| `export-click` | `ExportPayload` | Se emite al exportar, con el resumen (`scope`, archivo y conteos). |
+| `export-heavy` | `ExportPayload` | Se emite además de `export-click` cuando la exportación llega a `heavyThreshold` celdas o más (10 000 por defecto). |
+| `update:currentPage` | `number` | — |
+| `update:itemsPerPage` | `number` | — |
+| `update:search` | `string` | — |
+| `edit-start` | `any` | — |
+| `edit-save` | `any` | — |
+| `edit-cancel` | `any` | — |
+| `edit-error` | `any` | — |
 <!-- /@api:eventos -->
 
 ### Slots
@@ -111,6 +128,8 @@ Ninguno.
 | `removeRow` | Elimina la fila en el índice indicado. |
 | `addRow` | Agrega una fila al final si respeta las columnas existentes. |
 | `pushData` | Agrega varias filas al final si respetan las columnas existentes. |
+| `getExportData` | Columnas exportables y **valores crudos** de las filas (sin `cell`, badges ni botones). `scope: "all"` (default) usa todas las filas de `data`; `"visible"` usa lo renderizado ahora (página y filtros/búsqueda actuales). |
+| `exportToExcel` | Exporta y descarga el archivo (xlsx por defecto, o csv). Emite `before-download` (cancelable con `e.detail.cancel()`), `export-click` y `export-heavy`; funciona aunque `exportEnabled` sea `false`. Devuelve el payload. |
 <!-- /@api:metodos -->
 
 ## API del componente Vue
@@ -133,6 +152,8 @@ Ninguno.
 | `searchPlaceholder` | `string` | `"Buscar..."` | — |
 | `searchFields` | `string[]` | `[]` | — |
 | `searchValue` | `string` | `""` | — |
+| `exportEnabled` | `boolean` | `false` | Muestra el botón de exportación (XLSX/CSV). El botón descarga; `exportToExcel()` funciona aunque esté apagado |
+| `exportButton` | `ExportButtonConfig \| null` | `{}` | Configuración visual y de archivo del botón: `label` (default según `format`), `color` `success`, `variant` `solid`, `size` `md`, `disabled` `false`, más `format`, `filename`, `sheetName`, `delimiter`, `config` y `heavyThreshold`. Con `label: ""` queda sólo el ícono. `disabled` sólo apaga el botón: `exportToExcel()` sigue disponible |
 | `filters` | `Record<string, any>` | `{}` | — |
 | `loading` | `boolean` | `false` | — |
 | `actions` | `ButtonConfig[] \| ((row: Record<string, any>) => ButtonConfig[])` | `[]` | — |
@@ -149,13 +170,16 @@ Ninguno.
 <!-- @api:emits -->
 | Evento | Payload | Descripción |
 | ------ | ------ | ------ |
-| `update:currentPage` | — | — |
-| `update:itemsPerPage` | — | — |
-| `update:search` | — | — |
-| `edit-start` | — | — |
-| `edit-save` | — | — |
-| `edit-cancel` | — | — |
-| `edit-error` | — | — |
+| `before-download` | `ExportBeforeDownloadPayload` | Se emite antes de generar el archivo; llamá `cancel()` para evitar la descarga. |
+| `export-click` | `ExportPayload` | Se emite al exportar, con el resumen (`scope`, archivo y conteos). |
+| `export-heavy` | `ExportPayload` | Se emite además de `export-click` cuando la exportación llega a `heavyThreshold` celdas o más (10 000 por defecto). |
+| `update:currentPage` | `number` | — |
+| `update:itemsPerPage` | `number` | — |
+| `update:search` | `string` | — |
+| `edit-start` | `any` | — |
+| `edit-save` | `any` | — |
+| `edit-cancel` | `any` | — |
+| `edit-error` | `any` | — |
 <!-- /@api:emits -->
 
 ### Slots
@@ -177,4 +201,6 @@ Ninguno.
 | `removeRow` | Elimina la fila en el índice indicado. |
 | `addRow` | Agrega una fila al final si respeta las columnas existentes. |
 | `pushData` | Agrega varias filas al final si respetan las columnas existentes. |
+| `getExportData` | Columnas exportables y **valores crudos** de las filas (sin `cell`, badges ni botones). `scope: "all"` (default) usa todas las filas de `data`; `"visible"` usa lo renderizado ahora (página y filtros/búsqueda actuales). |
+| `exportToExcel` | Exporta y descarga el archivo. No depende de que el botón esté visible: funciona con `exportEnabled: false` y sin instanciar `<ExportButton>`. Emite `before-download` (cancelable), `export-click` y `export-heavy`; recién después genera y descarga el archivo, salvo que un listener haya cancelado. |
 <!-- /@api:expose -->

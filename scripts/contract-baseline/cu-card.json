@@ -2,6 +2,7 @@
   "tag": "cu-card",
   "props": [
     "color",
+    "heading",
     "image",
     "layout",
     "subtitle",

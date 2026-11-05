@@ -117,6 +117,27 @@ function registerTheme(name: string, colors: Record<string, string>, opts?: { op
   regenerateCSS()
 }
 
+// Quita un tema registrado en runtime (rename / limpieza del custom). Los
+// temas incluidos en comegen.config.json son la base del proyecto: no se
+// quitan aunque se pidan por nombre.
+function removeTheme(name: string): boolean {
+  if (builtInNames.value.includes(name)) return false
+  if (!themeNames.value.includes(name)) return false
+
+  delete themes.value[name]
+  themeNames.value = themeNames.value.filter((item) => item !== name)
+  if (opacities.value[name]) {
+    const nextOpacities = { ...opacities.value }
+    delete nextOpacities[name]
+    opacities.value = nextOpacities
+  }
+  if (theme.value === name) {
+    applyTheme(themeNames.value[0] || 'light')
+  }
+  regenerateCSS()
+  return true
+}
+
 // Actualiza los tokens compartidos (tipografía, spacing, etc) y regenera CSS.
 function setShared(patch: any) {
   shared.value = { ...shared.value, ...patch }
@@ -170,6 +191,6 @@ export default {
   }
 }
 
-export { theme, loaded, setTheme, getThemeNames, registerTheme, setShared, getShared, getThemeCSS, applyFullConfig, themes as allThemes, builtInNames, opacities, init }
+export { theme, loaded, setTheme, getThemeNames, registerTheme, removeTheme, setShared, getShared, getThemeCSS, applyFullConfig, themes as allThemes, builtInNames, opacities, init }
 export { stripShadowColor, parseShadow, composeShadow, normalizeShadow, normalizeShadowLength } from './shadow'
 export type { ShadowGeometry } from './shadow'

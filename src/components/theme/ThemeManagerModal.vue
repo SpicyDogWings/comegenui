@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import { ref } from 'vue'
+import { nextTick, ref, watch } from 'vue'
 import Modal from '@/components/overlay/Modal.vue'
 import Button from '@/components/buttons/Button.vue'
 import Input from '@/components/form/Input.vue'
@@ -19,6 +19,8 @@ interface ThemeConfig {
 const props = defineProps<{
   /** Nombre del tema que se está editando. */
   themeName: string
+  /** Motivo por el que el último nombre propuesto fue rechazado (si lo hubo). */
+  nameError?: string
   /** CSS generado del tema, para previsualizar y exportar. */
   cssOutput: string
 }>()
@@ -40,6 +42,21 @@ const emit = defineEmits<{
 
 const modalRef = ref<InstanceType<typeof Modal> | null>(null)
 const fileInputRef = ref<InstanceType<typeof FileInput> | null>(null)
+
+/**
+ * Borrador del nombre: se emite al tipear, pero si el padre no lo acepta
+ * (nombre vacío, tema incluido) el campo vuelve al nombre vigente.
+ */
+const nameDraft = ref(props.themeName)
+watch(() => props.themeName, (value) => { nameDraft.value = value })
+
+function onNameInput(value: string) {
+  nameDraft.value = value
+  emit('update:themeName', value)
+  nextTick(() => {
+    if (props.themeName !== nameDraft.value) nameDraft.value = props.themeName
+  })
+}
 
 /** Abre el modal. */
 function open() {
@@ -78,10 +95,14 @@ defineExpose({ open, close })
         <div class="tm-section">
           <h3>Theme Name</h3>
           <Input
-            :model-value="themeName"
-            @update:model-value="emit('update:themeName', $event)"
+            :model-value="nameDraft"
+            @update:model-value="onNameInput"
             placeholder="my-theme"
           />
+          <p v-if="nameError" class="tm-name-error">{{ nameError }}</p>
+          <p v-else class="tm-name-hint">
+            Renombra el tema custom. Se exporta como <code>[data-theme="…"]</code>.
+          </p>
         </div>
 
         <div class="tm-section">
@@ -153,6 +174,27 @@ defineExpose({ open, close })
   font-weight: var(--cu-font-weight-semibold);
   margin: 0 0 0.5rem 0;
   color: var(--cu-color-neutral);
+}
+
+.tm-name-hint,
+.tm-name-error {
+  margin: 0.375rem 0 0;
+  font-size: var(--cu-font-size-xs);
+  line-height: var(--cu-line-height-normal);
+}
+
+.tm-name-hint {
+  color: var(--cu-color-neutral);
+  opacity: 0.7;
+}
+
+.tm-name-hint code {
+  font-family: var(--cu-font-mono);
+  font-size: 0.95em;
+}
+
+.tm-name-error {
+  color: var(--cu-color-danger-text);
 }
 
 .tm-actions {

@@ -36,7 +36,11 @@ El [Theme Builder](/theme-builder) es un laboratorio en vivo sobre los component
 - elegís un tema y ves cómo queda todo de una;
 - **editás los colores** (primary, neutral —la tinta—, surface, tipografía…) y el resultado se
   actualiza al instante, sin tocar código;
-- guardás el tema en el gestor de temas y lo seguís usando ahí mismo.
+- junto a cada color ves el **`solid`** y el **`text`** que realmente se aplican (el hex del picker
+  es el valor crudo del tema; esos dos son los que pintan);
+- guardás el tema en el gestor de temas y lo seguís usando ahí mismo. El **Theme Name** del gestor
+  es el nombre del tema custom: se exporta como `[data-theme="…"]` y en el archivo descargado.
+  Un nombre ya usado por un tema incluido se rechaza.
 
 Para probar un tema en **toda esta documentación**, usá el selector de tema del topbar: lo aplica
 en `<html>` igual que lo haría tu app.
@@ -72,6 +76,8 @@ Un tema puede definir **sólo** los colores que cambia: el resto sale del tema `
 ::: tip
 Los bundles **no traen tokens**: definí `[data-theme="…"] { --cu-color-*: … }` con los hex de
 `comegen.config.json`. Este sitio ya los tiene; en tu app, ver [Configuración](/configuracion).
+El CSS que exporta el Theme Builder de un tema trae `:root` (aplica el tema sin atributo) además
+de `[data-theme="…"]`.
 :::
 
 ## Agregar un tema nuevo

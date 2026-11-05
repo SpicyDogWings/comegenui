@@ -1698,6 +1698,41 @@ const MUTATIONS = [
     replace: `  displayIndex;`,
   },
   {
+    id: "advanced-table-export-enabled-ignorado",
+    file: "src/components/data/AdvancedTable.vue",
+    expect: "`exportEnabled` solo (sin buscador) muestra la toolbar y el botón",
+    find: `props.searchEnabled || props.exportEnabled`,
+    replace: `props.searchEnabled`,
+  },
+  {
+    id: "advanced-table-export-default-soft",
+    file: "src/components/data/AdvancedTable.vue",
+    expect: "el variant por defecto del botón de exportación es `solid`",
+    find: `const exportVariant = computed<VariantFull>(() => exportConfig.value.variant ?? "solid");`,
+    replace: `const exportVariant = computed<VariantFull>(() => exportConfig.value.variant ?? "soft");`,
+  },
+  {
+    id: "cu-table-export-ignora-exportable",
+    file: "src/components/data/AdvancedTable.vue",
+    expect: "`getExportData` excluye las columnas con `exportable: false` (y `__actions__`)",
+    find: `    .filter((col) => col.key !== "__actions__" && col.exportable !== false)`,
+    replace: `    .filter((col) => col.key !== "__actions__")`,
+  },
+  {
+    id: "cu-table-export-scope-visible-ignorado",
+    file: "src/components/data/AdvancedTable.vue",
+    expect: "`getExportData({ scope: 'visible' })` usa la página/filtro actual y no todas las filas",
+    find: `  const source = scope === "visible" ? renderedData.value : localData.value;`,
+    replace: `  const source = localData.value;`,
+  },
+  {
+    id: "cu-table-export-heavy-nunca",
+    file: "src/components/data/AdvancedTable.vue",
+    expect: "`export-heavy` (y `heavy: true`) a partir de 10 000 celdas",
+    find: `      options.heavyThreshold ?? exportConfig.value.heavyThreshold ?? EXPORT_HEAVY_CELLS,`,
+    replace: `      Number.POSITIVE_INFINITY,`,
+  },
+  {
     id: "number-input-clamp-max-ignorado",
     file: "src/components/form/NumberInput.vue",
     expect: "confirmar por encima de max recorta al máximo",
@@ -1941,8 +1976,15 @@ const MUTATIONS = [
     id: "card-header-sin-prioridad",
     file: "src/components/information/Card.vue",
     expect: "el slot header tiene prioridad sobre title/subtitle",
-    find: `        <h3 v-if="props.title && !hasHeaderSlot" class="cu-card-title">{{ props.title }}</h3>`,
-    replace: `        <h3 v-if="props.title" class="cu-card-title">{{ props.title }}</h3>`,
+    find: `        <h3 v-if="visibleTitle && !hasHeaderSlot" class="cu-card-title">{{ visibleTitle }}</h3>`,
+    replace: `        <h3 v-if="visibleTitle" class="cu-card-title">{{ visibleTitle }}</h3>`,
+  },
+  {
+    id: "card-heading-sin-precedencia",
+    file: "src/components/information/Card.vue",
+    expect: "heading pisa a title en el encabezado (heading ?? title)",
+    find: `const visibleTitle = computed(() => props.heading ?? props.title);`,
+    replace: `const visibleTitle = computed(() => props.title);`,
   },
   {
     id: "date-picker-label-no-enfoca",
@@ -2075,8 +2117,8 @@ const MUTATIONS = [
   {
     id: "button-solid-texto-negro",
     file: "src/components/buttons/Button.vue",
-    expect: "solid/none conservan el texto del tema (nunca negro por color)",
-    find: "  '--btn-solid-text': `var(--cu-color-surface)`,",
+    expect: "solid/none usan -solid-text (el polo de máximo contraste), nunca un negro fijo",
+    find: "  '--btn-solid-text': `var(--cu-color-${safeColor.value}-solid-text)`,",
     replace: "  '--btn-solid-text': '#000000',",
   },
   {
@@ -2104,25 +2146,27 @@ const MUTATIONS = [
     id: "token-text-no-adapta",
     file: "src/plugins/cu-tokens/css.ts",
     test: "src/plugins/cu-tokens/contrast.test.ts",
-    expect: "el texto de las variantes tintadas garantiza 4.5:1 en los 15 temas",
-    find: "  return ensureContrast(value, compositeOver(value, surface, 0.35), MIN_TEXT_CONTRAST)",
-    replace: "  return toHex(darken(value, 0.25))",
+    expect: "el texto de las variantes tintadas se ajusta contra su propio tinte (4.5:1)",
+    find: "  const textSoft = ensureContrast(value, compositeOver(value, surface, SOFT_TINT_ALPHA), MIN_TEXT_CONTRAST)",
+    replace: "  const textSoft = '#808080'",
   },
   {
-    id: "token-solid-sin-ajuste",
+    id: "token-solid-texto-fijo",
     file: "src/plugins/cu-tokens/css.ts",
     test: "src/plugins/cu-tokens/contrast.test.ts",
-    expect: "solid ajusta el fondo hasta que el texto del tema alcanza 4.5:1",
-    find: "  if (contrastRatio(value, surface) >= MIN_TEXT_CONTRAST) return toHex(value)",
-    replace: "  return toHex(value)",
+    expect: "-solid-text es negro o blanco, el de máximo contraste sobre el fondo y sus estados",
+    find: "  return contrastRatio(solid, '#ffffff') >= contrastRatio(solid, '#000000') ? '#ffffff' : '#000000'",
+    replace: "  return '#ffffff'",
   },
   {
     id: "token-solid-hover-hacia-superficie",
     file: "src/plugins/cu-tokens/css.ts",
     test: "src/plugins/cu-tokens/contrast.test.ts",
     expect: "hover/active de solid se alejan del texto (siguen en 4.5:1)",
-    find: "  return toHex(relLuma(surface) < 0.5 ? lighten(solid, amount) : darken(solid, amount))",
-    replace: "  return toHex(relLuma(surface) < 0.5 ? darken(solid, amount) : lighten(solid, amount))",
+    find: `  const solidHover = toHex(solidText === '#ffffff' ? darken(solid, 0.1) : lighten(solid, 0.1))
+  const solidActive = toHex(solidText === '#ffffff' ? darken(solid, 0.2) : lighten(solid, 0.2))`,
+    replace: `  const solidHover = '#ffffff'
+  const solidActive = '#ffffff'`,
   },
   {
     id: "token-borde-sin-contraste",
@@ -2590,10 +2634,10 @@ const MUTATIONS = [
     id: "month-slider-label-contraste",
     file: "src/components/controls/month-slider/MonthSliderLabel.vue",
     test: "src/components/controls/month-slider/MonthSliderLabel.contrast.test.ts",
-    expect: "el label usa el tono de texto accesible (-text), no el color base",
+    expect: "el label soft usa el tono de texto del tinte (-text-on-soft), no el color base",
     find: `.cu-month-slider-label.cu-month-slider-label--soft {
   background-color: var(--ms-soft);
-  color: var(--ms-accent-text);
+  color: var(--ms-text-soft);
 }`,
     replace: `.cu-month-slider-label.cu-month-slider-label--soft {
   background-color: var(--ms-soft);
@@ -3574,6 +3618,79 @@ const MUTATIONS = [
     replace: `  <Card
     @click="(e) => e.target.getRootNode().host.dispatchEvent(new CustomEvent('click', { bubbles: true, composed: true }))"
     :color="props.color"`,
+  },
+  {
+    id: "sheet-csv-sin-escape",
+    file: "src/utils/sheet.ts",
+    expect: "el CSV entrecomilla comillas, saltos y el separador",
+    find: `  const needsQuotes =
+    text.includes('"') ||
+    text.includes('\\n') ||
+    text.includes('\\r') ||
+    text.includes(delimiter)`,
+    replace: `  const needsQuotes = false`,
+  },
+  {
+    id: "sheet-cancel-ignorado",
+    file: "src/utils/sheet.ts",
+    expect: "`beforeDownload` que devuelve false evita la descarga",
+    find: `  if (beforeDownload?.(prepared.payload) === false) return null\n`,
+    replace: ``,
+  },
+  {
+    id: "sheet-exporta-columnas-no-exportables",
+    file: "src/utils/sheet.ts",
+    expect: "las columnas con exportable:false no entran al archivo",
+    find: `  const active = columns.filter((column) => column.exportable !== false)`,
+    replace: `  const active = columns.slice()`,
+  },
+  {
+    id: "export-button-manual-descarga",
+    file: "src/components/buttons/ExportButton.vue",
+    expect: "en modo manual el click sólo emite trigger (no descarga)",
+    find: `  if (props.manual) {
+    emit("trigger", getPayload());
+    return;
+  }
+  download();`,
+    replace: `  download();`,
+  },
+  {
+    id: "export-button-label-csv",
+    file: "src/components/buttons/ExportButton.vue",
+    expect: "el label por defecto cambia con el formato csv",
+    find: `  format.value === "csv" ? "Descargar CSV" : "Descargar Excel",`,
+    replace: `  "Descargar Excel",`,
+  },
+  {
+    id: "cu-export-button-sin-bridge-download",
+    file: "src/components/customElements/buttons/ExportButton.ce.vue",
+    test: "src/components/customElements/buttons/ExportButton.ce.test.ts",
+    expect: "el evento `download` del Vue llega al host como CustomEvent",
+    find: `    @download="ceEmit('download', $event as SheetPayload)"`,
+    replace: ``,
+  },
+  {
+    id: "advanced-table-cancel-ignorado",
+    file: "src/components/data/AdvancedTable.vue",
+    expect: "`before-download` cancelado evita que exportToExcel descargue",
+    find: `  if (!cancelled) downloadSheet(rows, exportSheetColumns.value, sheetOptions);`,
+    replace: `  downloadSheet(rows, exportSheetColumns.value, sheetOptions);`,
+  },
+  {
+    id: "advanced-table-boton-duplica-descarga",
+    file: "src/components/data/AdvancedTable.vue",
+    expect: "el botón de la toolbar exporta en modo manual (una sola descarga)",
+    find: `          manual\n          @trigger=`,
+    replace: `          @trigger=`,
+  },
+  {
+    id: "cells-importer-plantilla-sin-separador",
+    file: "src/utils/cellsImporter.ts",
+    test: "src/components/form/CellsImporter.test.ts",
+    expect: "la plantilla CSV usa el separator con el que se importa",
+    find: `    delimiter: options.delimiter ?? ',',`,
+    replace: `    delimiter: ',',`,
   },
 ];
 

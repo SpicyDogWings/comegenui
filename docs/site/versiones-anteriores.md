@@ -39,8 +39,8 @@ del mismo tag (`docs/versiones/<id>/componentes/`), que son las que renderiza `p
 
 | Versión | Tag | Dónde está su doc |
 |---|---|---|
-| 5.2.3 | `v5.2.3` | publicada en este sitio |
-| 5.2.2 | `v5.2.2` | reemplazada por 5.2.3; sólo en el tag |
+| 5.2.4 | `v5.2.4` | publicada en este sitio |
+| 5.2.3 | `v5.2.3` | reemplazada por 5.2.4; sólo en el tag |
 | 5.2.1 | `v5.2.1` | reemplazada por 5.2.2; sólo en el tag |
 | 5.2.0 | `v5.2.0` | reemplazada por 5.2.1; sólo en el tag |
 | 5.1.1 | `v5.1.1` | sólo en el tag |

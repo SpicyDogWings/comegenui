@@ -42,7 +42,8 @@ import ThemeEditorial from '@/templates/playground/ThemeEditorial.vue'
 import { useThemeBuilder } from '@/composables/useThemeBuilder'
 
 const {
-  themeName, showEditBtn, isEditing, enableEditing,
+  themeName, themeNameError, activeThemeName, appliedTokens,
+  showEditBtn, isEditing, enableEditing,
   colors, shadowOpacityRaw, typography, spacing, borderRadius, borders,
   shadowRows, updateShadow, commitShadow, modal, sideover,
   cssExport, resetToDefaults,
@@ -70,6 +71,13 @@ const tableColumns = [
 ]
 
 const modalRef = ref<InstanceType<typeof ThemeManagerModal> | null>(null)
+
+/** Abre el gestor limpio: el error de un nombre rechazado no sobrevive al cierre. */
+function openThemeManager() {
+  themeNameError.value = ''
+  modalRef.value?.open()
+}
+
 const modalPreviewRef = ref<InstanceType<typeof Modal> | null>(null)
 const isSaving = ref(false)
 const showSaveSuccess = ref(false)
@@ -259,7 +267,7 @@ function handleImport(config: any) {
     <div class="tb-layout">
       <aside class="tb-controls">
         <div class="tb-controls-header">
-          <span class="tb-controls-theme-name">{{ themeName }}</span>
+          <span class="tb-controls-theme-name">{{ activeThemeName }}</span>
           <Button
             v-if="showEditBtn"
             color="primary"
@@ -277,10 +285,32 @@ function handleImport(config: any) {
             <div v-for="(value, key) in colors" :key="key" class="tb-color-row">
               <Label :label="key === 'neutral' ? 'neutral (texto/títulos)' : key" color="var(--cu-color-neutral)" />
               <ColorPicker :model-value="value" :disabled="!isEditing" @update:model-value="colors[key] = $event" />
+              <div v-if="appliedTokens[key]" class="tb-color-applied">
+                <span class="tb-color-applied-item">
+                  <span
+                    class="tb-color-applied-swatch"
+                    :style="{ backgroundColor: appliedTokens[key].solid }"
+                    aria-hidden="true"
+                  />
+                  <span class="tb-color-applied-name">solid</span>
+                  <code class="tb-color-applied-value">{{ appliedTokens[key].solid }}</code>
+                </span>
+                <span class="tb-color-applied-item">
+                  <span
+                    class="tb-color-applied-swatch"
+                    :style="{ backgroundColor: appliedTokens[key].text }"
+                    aria-hidden="true"
+                  />
+                  <span class="tb-color-applied-name">text</span>
+                  <code class="tb-color-applied-value">{{ appliedTokens[key].text }}</code>
+                </span>
+              </div>
             </div>
           </div>
           <p class="tb-hint">
             <strong>neutral</strong> es la tinta: títulos, labels y texto del layout. En temas oscuros debe ser un color claro (se invierte solo al oscurecer el surface).
+            <br />
+            <strong>solid</strong> es el fondo sólido (ajustado a 4.5:1 contra surface) y <strong>text</strong> el color de texto seguro del tema.
           </p>
         </Collapse>
 
@@ -397,39 +427,6 @@ function handleImport(config: any) {
           </AdvancedTable>
         </Collapse>
 
-        <Collapse label="Modal" :default-open="false">
-          <div class="tb-group">
-            <h3>Size</h3>
-            <div class="tb-grid">
-              <div v-for="(value, key) in modal.size" :key="key" class="tb-field">
-                <Label :label="key" color="var(--cu-color-neutral)" />
-                <Input v-model="modal.size[key]" :disabled="!isEditing" />
-              </div>
-            </div>
-          </div>
-          <div class="tb-group">
-            <h3>Height</h3>
-            <div class="tb-grid">
-              <div v-for="(value, key) in modal.height" :key="key" class="tb-field">
-                <Label :label="key" color="var(--cu-color-neutral)" />
-                <Input v-model="modal.height[key]" :disabled="!isEditing" />
-              </div>
-            </div>
-          </div>
-        </Collapse>
-
-        <Collapse label="Side Over" :default-open="false">
-          <div class="tb-group">
-            <h3>Size</h3>
-            <div class="tb-grid">
-              <div v-for="(value, key) in sideover.size" :key="key" class="tb-field">
-                <Label :label="key" color="var(--cu-color-neutral)" />
-                <Input v-model="sideover.size[key]" :disabled="!isEditing" />
-              </div>
-            </div>
-          </div>
-        </Collapse>
-
         <Collapse label="Opacities" :default-open="false">
           <div class="tb-colors-list">
             <div class="tb-field">
@@ -437,6 +434,41 @@ function handleImport(config: any) {
               <Input v-model="shadowOpacityRaw" :disabled="!isEditing" />
             </div>
           </div>
+        </Collapse>
+
+        <Collapse label="Avanzado" :default-open="false">
+          <Collapse label="Modal" :default-open="false">
+            <div class="tb-group">
+              <h3>Size</h3>
+              <div class="tb-grid">
+                <div v-for="(value, key) in modal.size" :key="key" class="tb-field">
+                  <Label :label="key" color="var(--cu-color-neutral)" />
+                  <Input v-model="modal.size[key]" :disabled="!isEditing" />
+                </div>
+              </div>
+            </div>
+            <div class="tb-group">
+              <h3>Height</h3>
+              <div class="tb-grid">
+                <div v-for="(value, key) in modal.height" :key="key" class="tb-field">
+                  <Label :label="key" color="var(--cu-color-neutral)" />
+                  <Input v-model="modal.height[key]" :disabled="!isEditing" />
+                </div>
+              </div>
+            </div>
+          </Collapse>
+
+          <Collapse label="Side Over" :default-open="false">
+            <div class="tb-group">
+              <h3>Size</h3>
+              <div class="tb-grid">
+                <div v-for="(value, key) in sideover.size" :key="key" class="tb-field">
+                  <Label :label="key" color="var(--cu-color-neutral)" />
+                  <Input v-model="sideover.size[key]" :disabled="!isEditing" />
+                </div>
+              </div>
+            </div>
+          </Collapse>
         </Collapse>
       </aside>
 
@@ -517,6 +549,7 @@ function handleImport(config: any) {
     <ThemeManagerModal
       ref="modalRef"
       v-model:theme-name="themeName"
+      :name-error="themeNameError"
       :css-output="cssExport"
       @import="handleImport"
       @export="handleExport"
@@ -525,7 +558,7 @@ function handleImport(config: any) {
       @download-css="handleDownloadCSS"
     />
 
-    <FloatingButton color="primary" @click="modalRef?.open()">
+    <FloatingButton color="primary" @click="openThemeManager">
       <LucidePalette :width="20" :height="20" />
     </FloatingButton>
 
@@ -1267,7 +1300,12 @@ function handleImport(config: any) {
 }
 
 .tb-toast--success .tb-toast-icon { background-color: var(--cu-color-success); }
-.tb-toast--warning .tb-toast-icon { background-color: var(--cu-color-warning); }
+/* Warning usa el fondo sólido del tema y su texto seguro (con fallback a
+   surface): el amber crudo con blanco queda en 2.15:1. */
+.tb-toast--warning .tb-toast-icon {
+  background-color: var(--cu-color-warning-solid);
+  color: var(--cu-color-warning-solid-text, var(--cu-color-surface));
+}
 .tb-toast--danger .tb-toast-icon { background-color: var(--cu-color-danger); }
 .tb-toast--primary .tb-toast-icon { background-color: var(--cu-color-primary); }
 
@@ -1454,6 +1492,44 @@ function handleImport(config: any) {
   display: flex;
   flex-direction: column;
   gap: 0.125rem;
+}
+
+/* Valores aplicados (tokens -solid / -text) bajo el picker: el hex crudo del
+   input es la fuente; acá se ve en qué se convierte al pintar. */
+.tb-color-applied {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.75rem;
+  padding-left: calc(var(--cu-space-2xl) + var(--cu-space-sm));
+  margin-top: 0.125rem;
+}
+
+.tb-color-applied-item {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.25rem;
+  min-width: 0;
+}
+
+.tb-color-applied-swatch {
+  width: 0.75rem;
+  height: 0.75rem;
+  border-radius: var(--cu-radius-sm);
+  border: var(--cu-border-thin) solid var(--cu-border-color);
+  flex-shrink: 0;
+}
+
+.tb-color-applied-name {
+  font-size: var(--cu-font-size-xs);
+  color: var(--cu-color-neutral);
+  opacity: 0.6;
+}
+
+.tb-color-applied-value {
+  font-family: var(--cu-font-mono);
+  font-size: var(--cu-font-size-xs);
+  color: var(--cu-color-neutral);
+  white-space: nowrap;
 }
 
 .tb-hint {

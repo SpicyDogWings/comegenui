@@ -37,11 +37,21 @@ usar las mismas en tu propio CSS:
 
 Por cada color (`primary`, `secondary`, `neutral`, `success`, `warning`, `danger`):
 
-- `--cu-color-{nombre}` — color base
-- `--cu-color-{nombre}-text` — texto sobre ese color
+- `--cu-color-{nombre}` — color base del tema
+- `--cu-color-{nombre}-solid` / `-solid-hover` / `-solid-active` — relleno de `solid` y `none`.
+  **Conserva el color del tema** (no se oscurece ni aclara); hover y active se alejan del texto
+- `--cu-color-{nombre}-solid-text` — texto sobre `solid`/`none`: el polo (negro o blanco) con más
+  contraste contra el relleno **y sus estados** (≥ 4.5:1 en los 15 temas)
+- `--cu-color-{nombre}-border` — borde de `outlined`, del sólido y del foco: ≥ 3:1 contra la
+  superficie. Las variantes `solid` lo dibujan como límite cuando el relleno no llega solo
+- `--cu-color-{nombre}-text` — texto sobre la superficie (`ghost`, `outlined`, `link`), medido
+  **sólo** contra `--cu-color-surface`
+- `--cu-color-{nombre}-text-on-ghost` / `-text-on-soft` / `-text-on-subtle` — texto sobre el tinte
+  de cada variante, medido contra su peor tinte (ghost-active 20 %, soft-active 35 %,
+  subtle-active 30 %): estado base y hover/active de las variantes tintadas
 - `--cu-color-{nombre}-text-muted` / `-text-subtle` — texto atenuado con contraste real
-  (≥ 4.5:1 y hasta 6:1 cuando el texto base lo permite, sobre la superficie y los tintes
-  `ghost-hover`/`soft`); son colores opacos, no `opacity`
+  (≥ 4.5:1 y hasta 6:1, sobre la superficie y los tintes `ghost-hover`/`ghost-active`); son
+  colores opacos, no `opacity`
 - `--cu-color-{nombre}-hover` / `-active` — estados interactivos
 - `--cu-color-{nombre}-soft` / `-soft-hover` / `-soft-active`
 - `--cu-color-{nombre}-subtle` / `-subtle-hover` / `-subtle-active` / `-subtle-border`
@@ -51,6 +61,19 @@ Por cada color (`primary`, `secondary`, `neutral`, `success`, `warning`, `danger
 Compartidos: tipografía (`--cu-font-*`, `--cu-line-height-*`), espaciado (`--cu-space-*`), radios
 (`--cu-radius*`), bordes (`--cu-border-*`), sombras (`--cu-shadow-*`) y alpha de estado
 (`--cu-alpha-*`). El esquema de código usa `--cu-code-bg`, `--cu-code-text` y `--cu-code-faded`.
+
+### Texto sobre relleno y sobre tintes
+
+El generador no cambia los colores del tema para hacerlos legibles: elige el **texto**.
+
+- En `solid` y `none` el fondo es el color base tal cual y `-solid-text` es el polo (negro o blanco)
+  con más contraste contra ese fondo y sus estados `-solid-hover` / `-solid-active` — siempre
+  ≥ 4.5:1. Si el relleno queda a menos de 3:1 de la superficie, las variantes dibujan el borde
+  `-border` para delimitar el control.
+- En `ghost`, `outlined` y `link` el texto (`-text`) se mide contra la superficie.
+- En las variantes tintadas el texto se mide contra el tinte que realmente pinta cada una:
+  `-text-on-ghost` (hasta 20 %), `-text-on-soft` (hasta 35 %) y `-text-on-subtle` (hasta 30 %).
+  Así el texto no se sobre-corrige en los temas oscuros ni baja de 4.5:1 en ningún tema.
 
 ### Bordes y foco
 
@@ -100,7 +123,9 @@ la descripción del Modal.
 
 Los tokens los aporta el CSS del host: este sitio los genera de `comegen.config.json` (`:root` con
 el tema default y cada tema bajo su `[data-theme="…"]`). En tu app definí `:root` / `[data-theme="…"]`
-con los colores que uses; los bundles no traen tokens.
+con los colores que uses; los bundles no traen tokens. El CSS que exporta el **Theme Builder** de un
+tema incluye ambos selectores: `:root` (el tema se aplica sin atributo) y `[data-theme="…"]` (para
+cambiar de tema).
 
 ```css
 :root { --cu-color-primary: #0f62fe; }

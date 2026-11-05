@@ -6,11 +6,19 @@ import Pagination from "../controls/Pagination.vue";
 import Input from "../form/Input.vue";
 import EditableTableCell from "./EditableTableCell.vue";
 import Button from "../buttons/Button.vue";
+import ExportButton from "../buttons/ExportButton.vue";
 import Badge from "../information/Badge.vue";
 import DropdownMenu from "../controls/DropdownMenu.vue";
 import { usePagination } from "../../composables/usePagination";
 import { useSearch } from "../../composables/useSearch";
 import { useTableData } from "../../composables/useTableData";
+import {
+  downloadSheet,
+  getSheetPayload,
+  type SheetColumn,
+  type SheetOptions,
+  type SheetPayload,
+} from "../../utils/sheet";
 import DOMPurify from "dompurify";
 
 // `ButtonConfig.icon` puede ser un SVG/HTML del consumidor: se sanitiza antes
@@ -128,6 +136,45 @@ interface ButtonConfig {
   divider?: boolean; // Ítem divisor (solo en el dropdown de `actions`)
 }
 
+/** Configuración visual y de archivo del botón de exportación de la tabla. */
+interface ExportButtonConfig extends SheetOptions {
+  label?: string;
+  color?: Color;
+  variant?: VariantFull;
+  size?: "sm" | "md" | "lg";
+  disabled?: boolean;
+}
+
+/** Alcance de la exportación: todas las filas o sólo lo que se está viendo. */
+type ExportScope = "all" | "visible";
+
+/** Opciones de `getExportData`/`exportToExcel`: `scope` + las del core de archivo. */
+interface ExportOptions extends SheetOptions {
+  scope?: ExportScope;
+}
+
+/** Columna que participa de la exportación: la key y su label legible (si tiene). */
+interface ExportColumn {
+  key: string;
+  label?: string;
+}
+
+/** Columnas exportables y valores crudos de las filas (sin formato de celda). */
+interface ExportData {
+  columns: ExportColumn[];
+  rows: Record<string, any>[];
+}
+
+/** Resumen que viaja en `export-click`/`export-heavy`: no incluye los datos. */
+interface ExportPayload extends SheetPayload {
+  scope: ExportScope;
+}
+
+/** Payload de `before-download`: además del resumen, el cancelador sincrónico. */
+interface ExportBeforeDownloadPayload extends ExportPayload {
+  cancel: () => void;
+}
+
 interface AutocompleteItem {
   label: string;
   value?: string;
@@ -219,10 +266,17 @@ interface Column {
   buttons?: (row: Record<string, any>) => ButtonConfig[];
   disabled?: boolean | ((row: Record<string, any>) => boolean); // Columna deshabilitada (opcional por fila)
   cellDisabled?: (row: Record<string, any>) => boolean; // Celda deshabilitada (intersección fila × columna)
+  exportable?: boolean; // Participa de `getExportData` (default: true)
 }
 
 /** Tamaño de página que se usa cuando `itemsPerPage` no es un entero ≥ 1. */
 const DEFAULT_ITEMS_PER_PAGE = 10;
+
+/**
+ * Celdas (filas × columnas exportables) a partir de las cuales la exportación
+ * se considera pesada y `exportToExcel` emite además `export-heavy`.
+ */
+const EXPORT_HEAVY_CELLS = 10_000;
 
 // `itemsPerPage` llega del consumidor (y del selector de página): un 0, un
 // negativo, un NaN o un decimal dejan el paginador en un estado imposible
@@ -257,6 +311,19 @@ const props = defineProps({
   searchPlaceholder: { type: String, required: false, default: "Buscar..." },
   searchFields: { type: Array as () => string[], required: false, default: () => [] },
   searchValue: { type: String, required: false, default: "" },
+  /** Muestra el botón de exportación (XLSX/CSV). El botón descarga; `exportToExcel()` funciona aunque esté apagado */
+  exportEnabled: { type: Boolean, required: false, default: false },
+  /**
+   * Configuración visual y de archivo del botón: `label` (default según `format`),
+   * `color` `success`, `variant` `solid`, `size` `md`, `disabled` `false`, más `format`,
+   * `filename`, `sheetName`, `delimiter`, `config` y `heavyThreshold`. Con `label: ""`
+   * queda sólo el ícono. `disabled` sólo apaga el botón: `exportToExcel()` sigue disponible
+   */
+  exportButton: {
+    type: Object as PropType<ExportButtonConfig | null>,
+    required: false,
+    default: () => ({}),
+  },
   tableMaxHeight: { type: String, required: false, default: "" },
   filters: { type: Object as () => Record<string, any>, required: false, default: () => ({}) },
   loading: { type: Boolean, required: false, default: false },
@@ -288,10 +355,21 @@ const props = defineProps({
   },
 });
 
-const emit = defineEmits([
-  "update:currentPage", "update:itemsPerPage", "update:search",
-  "edit-start", "edit-save", "edit-cancel", "edit-error",
-]);
+const emit = defineEmits<{
+  "update:currentPage": [page: number]
+  "update:itemsPerPage": [size: number]
+  "update:search": [query: string]
+  "edit-start": [payload: any]
+  "edit-save": [payload: any]
+  "edit-cancel": [payload: any]
+  "edit-error": [payload: any]
+  /** Se emite antes de generar el archivo; llamá `cancel()` para evitar la descarga. */
+  "before-download": [payload: ExportBeforeDownloadPayload]
+  /** Se emite al exportar, con el resumen (`scope`, archivo y conteos). */
+  "export-click": [payload: ExportPayload]
+  /** Se emite además de `export-click` cuando la exportación llega a `heavyThreshold` celdas o más (10 000 por defecto). */
+  "export-heavy": [payload: ExportPayload]
+}>();
 
 const searchQuery = ref("");
 
@@ -448,13 +526,111 @@ const tableProps = computed(() => ({
 
 const tableStyles = computed(() => ({
   '--table-bg': `var(--cu-color-${props.color}-soft)`,
-  '--table-fg': `var(--cu-color-${props.color}-text)`,
+  '--table-fg': `var(--cu-color-${props.color}-text-on-soft)`,
   '--table-bg-hover': `var(--cu-color-${props.color}-soft-hover)`,
   '--table-bd': `var(--cu-color-${props.color}-subtle-border)`,
-}));
+}))
+
+/** Texto del botón de ordenar sobre el header: cada variante pinta un fondo
+ *  distinto y el token se elige contra ese fondo. */
+const headerButtonStyle = computed(() => {
+  const suffix = props.variant === 'solid'
+    ? 'solid-text'
+    : props.variant === 'soft'
+      ? 'text-on-soft'
+      : props.variant === 'subtle'
+        ? 'text-on-subtle'
+        : 'text'
+  const token = `var(--cu-color-${props.color}-${suffix})`
+  return { '--btn-text': token, '--btn-text-ghost': token }
+});
 
 const inputVariant = computed(() => props.variant === 'solid' ? 'soft' : props.variant);
 const paginationVariant = computed(() => props.variant === 'solid' ? 'soft' : props.variant);
+
+// `exportButton` acepta `null`: se normaliza acá para que los defaults no dependan
+// de que el consumidor pase un objeto.
+const exportConfig = computed<ExportButtonConfig>(() => props.exportButton ?? {});
+const exportLabel = computed(
+  () =>
+    exportConfig.value.label ??
+    (exportConfig.value.format === "csv" ? "Descargar CSV" : "Descargar Excel"),
+);
+const exportColor = computed<Color>(() => exportConfig.value.color ?? "success");
+const exportVariant = computed<VariantFull>(() => exportConfig.value.variant ?? "solid");
+const exportSize = computed(() => exportConfig.value.size ?? "md");
+const exportDisabled = computed(() => exportConfig.value.disabled ?? false);
+
+// Columnas que entran en la exportación: fuera `__actions__` (columna sintética
+// de acciones) y las que el consumidor marcó `exportable: false`.
+const exportColumns = computed<ExportColumn[]>(() =>
+  props.columns
+    .filter((col) => col.key !== "__actions__" && col.exportable !== false)
+    .map((col) => (col.label === undefined ? { key: col.key } : { key: col.key, label: col.label }))
+);
+
+// Columnas para el botón y el core de archivo: mismo filtro que la exportación,
+// con label legible para el encabezado.
+const exportSheetColumns = computed<SheetColumn[]>(() =>
+  exportColumns.value.map((col) => ({ key: col.key, label: col.label ?? col.key }))
+);
+
+/**
+ * Columnas exportables y **valores crudos** de las filas (sin `cell`, badges ni
+ * botones). `scope: "all"` (default) usa todas las filas de `data`; `"visible"`
+ * usa lo renderizado ahora (página y filtros/búsqueda actuales).
+ */
+function getExportData(options: ExportOptions = {}): ExportData {
+  const scope = options.scope ?? "all";
+  const source = scope === "visible" ? renderedData.value : localData.value;
+  const columns = exportColumns.value.map((col) => ({ ...col }));
+  const keys = columns.map((col) => col.key);
+  const rows = source.map((row) => {
+    const exported: Record<string, any> = {};
+    for (const key of keys) exported[key] = row[key];
+    return exported;
+  });
+  return { columns, rows };
+}
+
+/**
+ * Exporta y descarga el archivo. No depende de que el botón esté visible:
+ * funciona con `exportEnabled: false` y sin instanciar `<ExportButton>`.
+ *
+ * Emite `before-download` (cancelable), `export-click` y `export-heavy`; recién
+ * después genera y descarga el archivo, salvo que un listener haya cancelado.
+ */
+function exportToExcel(options: ExportOptions = {}): ExportPayload {
+  const scope: ExportScope = options.scope ?? "all";
+  const { rows } = getExportData({ scope });
+  const sheetOptions: SheetOptions = {
+    format: options.format ?? exportConfig.value.format,
+    filename: options.filename ?? exportConfig.value.filename,
+    sheetName: options.sheetName ?? exportConfig.value.sheetName,
+    delimiter: options.delimiter ?? exportConfig.value.delimiter,
+    config: options.config ?? exportConfig.value.config,
+    heavyThreshold:
+      options.heavyThreshold ?? exportConfig.value.heavyThreshold ?? EXPORT_HEAVY_CELLS,
+  };
+
+  let cancelled = false;
+  // El resumen se calcula una vez y es el mismo que viaja en los eventos y en el
+  // retorno; la descarga sólo ocurre si ningún listener canceló.
+  const payload: ExportPayload = {
+    scope,
+    ...getSheetPayload(rows, exportSheetColumns.value, sheetOptions),
+  };
+  emit("before-download", {
+    ...payload,
+    cancel: () => {
+      cancelled = true;
+    },
+  });
+  emit("export-click", payload);
+  if (payload.heavy) emit("export-heavy", payload);
+  if (!cancelled) downloadSheet(rows, exportSheetColumns.value, sheetOptions);
+  return payload;
+}
 
 defineExpose({
   /** Actualiza una fila por índice con los campos indicados. */
@@ -469,21 +645,50 @@ defineExpose({
   addRow,
   /** Agrega varias filas al final si respetan las columnas existentes. */
   pushData,
+  /** Columnas exportables y valores crudos de las filas (`all` todas, `visible` la página/filtro actual). */
+  getExportData,
+  /** Exporta y descarga (xlsx/csv). Emite `before-download`/`export-click`/`export-heavy`; no depende del botón. */
+  exportToExcel,
 });
 </script>
 
 <template>
   <div class="cu-advanced-table" :style="tableStyles">
-    <div v-if="props.searchEnabled" class="cu-advanced-table-search">
-      <slot name="search" :query="searchQuery" :update="handleSearchUpdate">
-        <Input
-          :placeholder="props.searchPlaceholder"
-          :model-value="searchQuery"
-          @update:modelValue="handleSearchUpdate"
-          :color="props.color"
-          :variant="inputVariant"
+    <div
+      v-if="props.searchEnabled || props.exportEnabled"
+      class="cu-advanced-table-toolbar"
+    >
+      <div v-if="props.searchEnabled" class="cu-advanced-table-search">
+        <slot name="search" :query="searchQuery" :update="handleSearchUpdate">
+          <Input
+            :placeholder="props.searchPlaceholder"
+            :model-value="searchQuery"
+            @update:modelValue="handleSearchUpdate"
+            :color="props.color"
+            :variant="inputVariant"
+          />
+        </slot>
+      </div>
+
+      <div v-if="props.exportEnabled" class="cu-advanced-table-export">
+        <ExportButton
+          :data="localData"
+          :columns="exportSheetColumns"
+          :format="exportConfig.format ?? 'xlsx'"
+          :filename="exportConfig.filename"
+          :sheet-name="exportConfig.sheetName"
+          :delimiter="exportConfig.delimiter"
+          :config="exportConfig.config"
+          :heavy-threshold="exportConfig.heavyThreshold"
+          :label="exportLabel"
+          :color="exportColor"
+          :variant="exportVariant"
+          :size="exportSize"
+          :disabled="exportDisabled"
+          manual
+          @trigger="exportToExcel({ scope: 'all' })"
         />
-      </slot>
+      </div>
     </div>
 
     <Table v-bind="tableProps">
@@ -497,7 +702,7 @@ defineExpose({
             <Button
               v-if="column.sortable"
               :color="props.color"
-              :style="props.variant === 'solid' ? { '--btn-text': 'var(--cu-color-surface)' } : {}"
+              :style="headerButtonStyle"
               variant="ghost"
               :aria-label="`Ordenar por ${column.label ?? column.key}`"
               @click.stop="handleSort(column.key)"
@@ -637,8 +842,22 @@ defineExpose({
   max-width: 100%;
 }
 
-.cu-advanced-table-search {
+.cu-advanced-table-toolbar {
+  display: flex;
+  align-items: center;
+  gap: var(--cu-space-md);
   padding: var(--cu-space-md);
+}
+
+.cu-advanced-table-search {
+  flex: 1 1 auto;
+  min-width: 0;
+}
+
+/* Siempre a la derecha, incluso cuando no hay buscador. */
+.cu-advanced-table-export {
+  flex: 0 0 auto;
+  margin-left: auto;
 }
 
 .cu-advanced-table-cell-buttons {

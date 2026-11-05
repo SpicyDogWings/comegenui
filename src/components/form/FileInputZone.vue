@@ -71,6 +71,7 @@ const zoneStyles = computed(() => ({
   '--zone-bg': `var(--cu-color-${props.color})`,
   '--zone-ghost-hover': `var(--cu-color-${props.color}-ghost-hover)`,
   '--zone-text': `var(--cu-color-${props.color}-text)`,
+  '--zone-text-ghost': `var(--cu-color-${props.color}-text-on-ghost)`,
   '--zone-text-muted': `var(--cu-color-${props.color}-text-muted)`,
 }));
 
@@ -422,9 +423,11 @@ defineExpose({ get, set, reset, focus, trigger });
   box-sizing: border-box;
 }
 
+/* Anillo de foco de toda la zona: borde y sombra con el token de foco para
+   que se lea como un solo anillo. */
 .cu-file-zone:focus-within {
-  border-color: var(--zone-bg);
-  box-shadow: 0 0 0 var(--cu-border-thin) var(--zone-bg);
+  border-color: var(--cu-border-color-focus);
+  box-shadow: 0 0 0 var(--cu-border-thin) var(--cu-border-color-focus);
 }
 
 /* Control de selección: cubre la zona, sin contenido ni estilos propios. */
@@ -467,6 +470,7 @@ defineExpose({ get, set, reset, focus, trigger });
 .cu-file-zone:hover:not(.cu-file-zone--disabled) {
   border-color: var(--zone-bg);
   background-color: var(--zone-ghost-hover);
+  color: var(--zone-text-ghost);
 }
 
 .cu-file-zone--disabled {
@@ -477,6 +481,7 @@ defineExpose({ get, set, reset, focus, trigger });
 .cu-file-zone--drag-over {
   border-color: var(--zone-bg);
   background-color: var(--zone-ghost-hover);
+  color: var(--zone-text-ghost);
 }
 
 .cu-file-zone--empty {
@@ -507,6 +512,12 @@ defineExpose({ get, set, reset, focus, trigger });
   font-weight: var(--cu-font-weight-medium);
   color: var(--zone-text);
   margin: 0;
+}
+
+/* Sobre el tinte ghost (hover/drag) el placeholder usa el token de ese fondo. */
+.cu-file-zone:hover .cu-file-zone-placeholder,
+.cu-file-zone--drag-over .cu-file-zone-placeholder {
+  color: var(--zone-text-ghost);
 }
 
 .cu-file-zone-formats {

@@ -189,11 +189,13 @@ function endDrag() {
 }
 
 /* solid: doble clase para ganarle a reglas globales del consumidor (convención del repo).
-   Fondo `-solid` (la variante ajustada del generador) y texto `surface`: el par que
-   los tokens garantizan ≥4.5:1 en los 15 temas. */
+   Fondo `-solid` (el color del tema, sin ajustar) y texto `-solid-text`: el par que el
+   generador garantiza ≥4.5:1 en los 15 temas. El anillo `-border` (≥3:1 contra la
+   superficie) dibuja el límite cuando el relleno no llega solo. */
 .cu-month-slider-label.cu-month-slider-label--solid {
   background-color: var(--ms-solid);
-  color: var(--ms-surface);
+  color: var(--ms-solid-text);
+  box-shadow: inset 0 0 0 var(--cu-border-thin) var(--ms-accent-border);
 }
 .cu-month-slider-label.cu-month-slider-label--solid:hover {
   background-color: var(--ms-solid-hover);
@@ -207,13 +209,14 @@ function endDrag() {
 }
 .cu-month-slider-label.cu-month-slider-label--outlined:hover {
   background-color: var(--ms-ghost-hover);
+  color: var(--ms-text-ghost);
 }
 
-/* soft (default). El texto va con `-text` (contraste AA sobre el tinte); con el
-   color base (`--ms-accent`) quedaba en 1.57–4.25:1 según el tema. */
+/* soft (default). El texto va con `-text-on-soft` (contraste AA contra el tinte
+   soft-active, 35 %); con el color base (`--ms-accent`) quedaba en 1.57–4.25:1. */
 .cu-month-slider-label.cu-month-slider-label--soft {
   background-color: var(--ms-soft);
-  color: var(--ms-accent-text);
+  color: var(--ms-text-soft);
 }
 .cu-month-slider-label.cu-month-slider-label--soft:hover {
   background-color: var(--ms-soft-hover);
@@ -226,12 +229,13 @@ function endDrag() {
 }
 .cu-month-slider-label.cu-month-slider-label--ghost:hover {
   background-color: var(--ms-ghost-hover);
+  color: var(--ms-text-ghost);
 }
 
 /* subtle */
 .cu-month-slider-label.cu-month-slider-label--subtle {
   background-color: var(--ms-subtle);
-  color: var(--ms-accent-text);
+  color: var(--ms-text-subtle);
   border: var(--cu-border-thin) solid var(--ms-subtle-border);
 }
 .cu-month-slider-label.cu-month-slider-label--subtle:hover {

@@ -27,9 +27,12 @@ describe("Badge — variantes y color", () => {
     expect(style).toContain("--badge-border: var(--cu-color-danger-border)");
     expect(style).toContain("--badge-subtle: var(--cu-color-danger-subtle)");
     expect(style).toContain("--badge-subtle-border: var(--cu-color-danger-subtle-border)");
-    // Solid: fondo ajustado por el generador y texto del tema (nunca negro por color).
+    // Solid: el color del tema se conserva y el texto lo elige el generador
+    // (negro/blanco por máximo contraste), nunca `surface` ni un `-on` fijo.
     expect(style).toContain("--badge-solid: var(--cu-color-danger-solid)");
-    expect(style).toContain("--badge-solid-text: var(--cu-color-surface)");
+    expect(style).toContain("--badge-solid-text: var(--cu-color-danger-solid-text)");
+    expect(style).toContain("--badge-text-soft: var(--cu-color-danger-text-on-soft)");
+    expect(style).toContain("--badge-text-subtle: var(--cu-color-danger-text-on-subtle)");
     expect(style).not.toContain("--badge-on");
   });
 

@@ -64,6 +64,8 @@ const inputStyles = computed(() => ({
   '--input-ghost-hover': `var(--cu-color-${props.color}-ghost-hover)`,
   '--input-soft-hover': `var(--cu-color-${props.color}-soft-hover)`,
   '--input-text': `var(--cu-color-${props.color}-text)`,
+  '--input-text-ghost': `var(--cu-color-${props.color}-text-on-ghost)`,
+  '--input-text-soft': `var(--cu-color-${props.color}-text-on-soft)`,
   '--input-text-muted': `var(--cu-color-${props.color}-text-muted)`,
 }));
 
@@ -329,12 +331,14 @@ defineExpose({ get, set, reset, focus, trigger });
 .cu-file-input--outlined:hover:not(.cu-file-input--disabled) {
   border-color: var(--input-bg);
   background-color: var(--input-ghost-hover);
+  color: var(--input-text-ghost);
 }
 
 /* soft */
 .cu-file-input--soft {
   border: var(--cu-border-thin) solid transparent;
   background-color: var(--input-soft);
+  color: var(--input-text-soft);
 }
 
 .cu-file-input--soft:hover:not(.cu-file-input--disabled) {
@@ -349,6 +353,7 @@ defineExpose({ get, set, reset, focus, trigger });
 
 .cu-file-input--ghost:hover:not(.cu-file-input--disabled) {
   background-color: var(--input-ghost-hover);
+  color: var(--input-text-ghost);
 }
 
 /* subtle */
@@ -360,11 +365,14 @@ defineExpose({ get, set, reset, focus, trigger });
 .cu-file-input--subtle:hover:not(.cu-file-input--disabled) {
   border-color: var(--input-bg);
   background-color: var(--input-ghost-hover);
+  color: var(--input-text-ghost);
 }
 
+/* Anillo de foco de todo el campo: borde y sombra comparten el token de foco
+   para que se lea como un solo anillo (nunca dos colores distintos). */
 .cu-file-input:focus-within {
-  border-color: var(--input-bg);
-  box-shadow: 0 0 0 var(--cu-border-thin) var(--input-bg);
+  border-color: var(--cu-border-color-focus);
+  box-shadow: 0 0 0 var(--cu-border-thin) var(--cu-border-color-focus);
 }
 
 /* Control de selección: botón real, sin estilos propios; el foco se ve en el campo. */
@@ -408,6 +416,7 @@ defineExpose({ get, set, reset, focus, trigger });
 .cu-file-input--drag-over {
   border-color: var(--input-bg);
   background-color: var(--input-ghost-hover);
+  color: var(--input-text-ghost);
 }
 
 .cu-file-input-hidden {
@@ -438,6 +447,19 @@ defineExpose({ get, set, reset, focus, trigger });
 
 .cu-file-input-link:hover {
   text-decoration: underline;
+}
+
+/* El nombre es el único texto que fija el acento: sobre el tinte ghost del
+   hover/active/drag usa el token medido contra ese tinte. */
+.cu-file-input--outlined:hover .cu-file-input-link,
+.cu-file-input--ghost:hover .cu-file-input-link,
+.cu-file-input--subtle:hover .cu-file-input-link,
+.cu-file-input--drag-over .cu-file-input-link {
+  color: var(--input-text-ghost);
+}
+
+.cu-file-input--soft:hover .cu-file-input-link {
+  color: var(--input-text-soft);
 }
 
 .cu-file-input-size {
