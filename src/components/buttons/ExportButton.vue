@@ -29,6 +29,8 @@ const props = defineProps({
   delimiter: { type: String, required: false },
   /** Opciones de escritura de SheetJS. Se asigna como propiedad JS. */
   config: { type: Object as PropType<XLSX.WritingOptions>, required: false },
+  /** Celdas (filas × columnas) desde las que la exportación se considera `heavy`. Default: `10 000`. */
+  heavyThreshold: { type: Number, required: false },
   /** Texto visible. Default según formato: «Descargar Excel» / «Descargar CSV». Con `""` queda sólo el ícono. */
   label: { type: String, required: false },
   /** Color semántico del botón. Default: `success`. */
@@ -85,6 +87,7 @@ const options = computed<SheetOptions>(() => ({
   sheetName: props.sheetName,
   delimiter: props.delimiter,
   config: props.config,
+  heavyThreshold: props.heavyThreshold,
   ...optionsOverride.value,
 }));
 

@@ -49,6 +49,7 @@ Los valores de `color` / `variant` / `mode` / `position` / `align` están en «A
 | ------ | ------ | ------ | ------ |
 | `color` | `"primary" \| "secondary" \| "neutral" \| "success" \| "warning" \| "danger"` | `'neutral'` | Color semántico del trigger y del día seleccionado del calendario interno (se pasa tal cual; `neutral` = neutral, ya no mapea a primary) |
 | `variant` | `"outlined" \| "soft" \| "ghost" \| "subtle"` | `'soft'` | Variante del trigger: `outlined`, `soft`, `ghost`, `subtle`. En el calendario interno `ghost` se mapea a `soft` (el calendario ya no tiene ghost) |
+| `label` | `string` | `''` | Texto del label sobre el picker |
 | `mode` | `"single" \| "range"` | `'single'` | Tipo de calendario: `single` (una fecha) o `range` (inicio + fin). Con `dual-calendar` el tipo es dual (range, 2 meses) |
 | `disabled` | `boolean` | `false` | Deshabilita el picker completo |
 | `placeholder` | `string` | `''` | Texto cuando no hay fecha (default: `"Seleccionar fecha..."`, rango: `"Seleccionar rango..."`) |
@@ -56,7 +57,6 @@ Los valores de `color` / `variant` / `mode` / `position` / `align` están en «A
 | `align` | `"center" \| "start" \| "end"` | `'start'` | Alineación respecto al trigger: `start`, `center`, `end` |
 | `fixed` | `boolean` | `false` | Panel en `position: fixed` (útil en contenedores con overflow) |
 | `model-value` | `string \| number \| Date \| null` | `null` | Fecha seleccionada (calendario `single`) |
-| `label` | `string` | `''` | Texto del label sobre el picker |
 | `min` | `string \| number \| Date \| null` | `null` | Fecha mínima seleccionable |
 | `max` | `string \| number \| Date \| null` | `null` | Fecha máxima seleccionable |
 | `disabled-weekdays` | `string \| number[]` | `''` | Días de la semana no seleccionables (`0`=domingo … `6`=sábado). En HTML: `disabled-weekdays="0,6"` |
@@ -132,6 +132,7 @@ Ninguno.
 | ------ | ------ | ------ | ------ |
 | `color` | `"primary" \| "secondary" \| "neutral" \| "success" \| "warning" \| "danger"` | `'neutral'` | — |
 | `variant` | `"outlined" \| "soft" \| "ghost" \| "subtle"` | `'soft'` | — |
+| `label` | `string` | `''` | — |
 | `mode` | `"single" \| "range"` | `'single'` | Tipo de calendario: `single` (una fecha, `Calendar`) o `range` (inicio + fin, `Calendar` en modo rango). Con `dualCalendar` el tipo es dual (range, 2 meses) |
 | `disabled` | `boolean` | `false` | — |
 | `placeholder` | `string` | `''` | — |
@@ -139,7 +140,6 @@ Ninguno.
 | `align` | `"center" \| "start" \| "end"` | `'start'` | — |
 | `fixed` | `boolean` | `false` | — |
 | `modelValue` | `string \| number \| Date \| null` | `null` | Fecha seleccionada (calendario `single`) |
-| `label` | `string` | `''` | — |
 | `min` | `string \| number \| Date \| null` | `null` | — |
 | `max` | `string \| number \| Date \| null` | `null` | — |
 | `disabledWeekdays` | `string \| number[]` | `''` | — |

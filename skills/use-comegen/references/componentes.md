@@ -15,6 +15,7 @@ más se consulta— **qué no se puede esperar de él**.
 | Button | `cu-button` | Botón con `color`/`variant`/`size`, modo link (`to`) y estados `disabled`/`loading` | — |
 | FloatingButton | `cu-floating-button` | Botón flotante fijo abajo a la derecha | — |
 | CopyButton | sólo Vue | Copia `text` al portapapeles y confirma | — |
+| ExportButton | `cu-export-button` | Exporta `data` a XLSX/CSV y descarga; modo manual con `trigger` | `data`, `columns`, `config` |
 | ToggleColorSheme | sólo Vue | Alterna el esquema de color (claro/oscuro) | — |
 
 **Límites**
@@ -22,6 +23,7 @@ más se consulta— **qué no se puede esperar de él**.
 - `cu-button`: con `variant="link"` el padding queda fijo en `0` (el `size` no lo pisa). No expone métodos.
 - `cu-floating-button`: no acepta `theme` ni `hightContrast`; no fija tamaño ni forma (crece con el contenido); no emite eventos propios (sólo el `click` nativo); sin métodos.
 - `CopyButton` / `ToggleColorSheme`: sin emits, slots ni métodos.
+- `cu-export-button`: sin `columns` el archivo sale vacío; no aplica `cell`/badges; no sube el archivo a ningún lado.
 
 ## Controles
 

@@ -215,11 +215,12 @@ const props = defineProps({
   searchFields: { type: Array as () => string[], required: false, default: () => [] },
   /** Valor controlado del buscador (atributo HTML: `search-value`) */
   searchValue: { type: String, required: false, default: "" },
-  /** Muestra el botón de exportación a Excel. No descarga un archivo: emite `export-click` con el resumen de los datos (atributo HTML: `export-enabled`) */
+  /** Muestra el botón de exportación (XLSX/CSV). El botón descarga; `exportToExcel()` funciona aunque esté apagado (atributo HTML: `export-enabled`) */
   exportEnabled: { type: Boolean, required: false, default: false },
   /**
    * Configuración visual del botón de exportación. Defaults: `label` «Descargar Excel»,
-   * `color` `success`, `variant` `solid`, `disabled` `false`. Con `label: ""` queda
+   * `color` `success`, `variant` `solid`, `size` `md`, `disabled` `false`, más `format`,
+   * `filename`, `sheetName`, `delimiter`, `config` y `heavyThreshold`. Con `label: ""` queda
    * sólo el ícono. `disabled` sólo apaga el botón: `exportToExcel()` sigue disponible.
    * Se asigna como propiedad JS
    */

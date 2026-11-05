@@ -311,13 +311,13 @@ const props = defineProps({
   searchPlaceholder: { type: String, required: false, default: "Buscar..." },
   searchFields: { type: Array as () => string[], required: false, default: () => [] },
   searchValue: { type: String, required: false, default: "" },
-  /** Muestra el botón de exportación a Excel. No descarga un archivo: emite `export-click` con el resumen de los datos */
+  /** Muestra el botón de exportación (XLSX/CSV). El botón descarga; `exportToExcel()` funciona aunque esté apagado */
   exportEnabled: { type: Boolean, required: false, default: false },
   /**
-   * Configuración visual del botón de exportación. Defaults: `label` «Descargar Excel»,
-   * `color` `success`, `variant` `solid`, `disabled` `false`. Con `label: ""` queda
-   * sólo el ícono (nombre accesible «Descargar Excel»). `disabled` sólo apaga el
-   * botón: `exportToExcel()` sigue disponible por método
+   * Configuración visual y de archivo del botón: `label` (default según `format`),
+   * `color` `success`, `variant` `solid`, `size` `md`, `disabled` `false`, más `format`,
+   * `filename`, `sheetName`, `delimiter`, `config` y `heavyThreshold`. Con `label: ""`
+   * queda sólo el ícono. `disabled` sólo apaga el botón: `exportToExcel()` sigue disponible
    */
   exportButton: {
     type: Object as PropType<ExportButtonConfig | null>,
@@ -367,7 +367,7 @@ const emit = defineEmits<{
   "before-download": [payload: ExportBeforeDownloadPayload]
   /** Se emite al exportar, con el resumen (`scope`, archivo y conteos). */
   "export-click": [payload: ExportPayload]
-  /** Se emite además de `export-click` cuando la exportación llega a `EXPORT_HEAVY_CELLS` celdas o más. */
+  /** Se emite además de `export-click` cuando la exportación llega a `heavyThreshold` celdas o más (10 000 por defecto). */
   "export-heavy": [payload: ExportPayload]
 }>();
 
@@ -665,6 +665,7 @@ defineExpose({
           :sheet-name="exportConfig.sheetName"
           :delimiter="exportConfig.delimiter"
           :config="exportConfig.config"
+          :heavy-threshold="exportConfig.heavyThreshold"
           :label="exportLabel"
           :color="exportColor"
           :variant="exportVariant"
