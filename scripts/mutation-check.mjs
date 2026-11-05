@@ -1729,8 +1729,8 @@ const MUTATIONS = [
     id: "cu-table-export-heavy-nunca",
     file: "src/components/data/AdvancedTable.vue",
     expect: "`export-heavy` (y `heavy: true`) a partir de 10 000 celdas",
-    find: `    heavy: cellCount >= EXPORT_HEAVY_CELLS,`,
-    replace: `    heavy: false,`,
+    find: `      options.heavyThreshold ?? exportConfig.value.heavyThreshold ?? EXPORT_HEAVY_CELLS,`,
+    replace: `      Number.POSITIVE_INFINITY,`,
   },
   {
     id: "number-input-clamp-max-ignorado",

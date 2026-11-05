@@ -118,7 +118,7 @@ describe("ExportButton — descarga directa", () => {
 
 describe("ExportButton — eventos de control", () => {
   it("before-download recibe el resumen y puede cancelar la descarga", async () => {
-    const w = mountButton({ filename: "cancelada" });
+    const w = mountButton({ filename: "cancelada", heavyThreshold: 4 });
     const onBefore = (payload: { cancel: () => void }) => payload.cancel();
     w.vm.$.vnode.props = { ...w.vm.$.vnode.props, onBeforeDownload: onBefore };
     await w.find("button").trigger("click");
@@ -126,6 +126,8 @@ describe("ExportButton — eventos de control", () => {
     expect(clicks).toHaveLength(0);
     expect(w.emitted("download")).toBeUndefined();
     expect(w.emitted("before-download")).toHaveLength(1);
+    // `heavy` describe una descarga concreta: si se canceló, no sale.
+    expect(w.emitted("heavy")).toBeUndefined();
   });
 
   it("heavy se emite cuando se pasa el umbral y la descarga sigue", async () => {

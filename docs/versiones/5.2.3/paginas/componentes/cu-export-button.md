@@ -1,5 +1,5 @@
 ---
-title: ExportButton (custom element)
+title: ExportButton
 group: Buttons
 ---
 

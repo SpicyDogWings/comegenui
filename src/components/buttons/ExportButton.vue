@@ -116,8 +116,10 @@ function download(): SheetPayload | null {
           cancelled = true;
         },
       });
+      if (cancelled) return false;
+      // `heavy` sólo si el archivo se va a generar: describe una descarga real.
       if (payload.heavy) emit("heavy", payload);
-      return !cancelled;
+      return true;
     });
     if (result) emit("download", result);
     return result;
