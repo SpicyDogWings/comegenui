@@ -34,6 +34,7 @@ const emit = defineEmits<{
 const listStyles = computed(() => ({
   '--list-ghost-hover': `var(--cu-color-${props.color}-ghost-hover)`,
   '--list-text': `var(--cu-color-${props.color}-text)`,
+  '--list-text-ghost': `var(--cu-color-${props.color}-text-on-ghost)`,
 }));
 
 const fileList = computed(() => {
@@ -108,6 +109,12 @@ const fileList = computed(() => {
 
 .cu-file-list-item:hover {
   background-color: var(--list-ghost-hover);
+}
+
+/* Sobre el tinte ghost (10 %) el texto usa el token medido contra ese tinte. */
+.cu-file-list-item:hover .cu-file-list-name,
+.cu-file-list-item:hover .cu-file-list-size {
+  color: var(--list-text-ghost);
 }
 
 .cu-file-list-icon {

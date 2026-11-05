@@ -90,7 +90,7 @@ const props = defineProps({
 });
 
 const tableStyles = computed(() => ({
-  '--table-fg': `var(--cu-color-${props.color}-text)`,
+  '--table-fg': `var(--cu-color-${props.color}-text-on-soft)`,
   '--table-bg-hover': `var(--cu-color-${props.color}-ghost-hover)`,
   '--table-bd': `var(--cu-color-${props.color}-subtle-border)`,
   '--table-bg-solid': `var(--cu-color-${props.color})`,
@@ -101,7 +101,7 @@ const thStyle = computed(() => {
   const base: Record<string, string> = {
     'width': '',
     'background-color': `var(--cu-color-${props.color}-soft)`,
-    'color': `var(--cu-color-${props.color}-text)`,
+    'color': `var(--cu-color-${props.color}-text-on-soft)`,
     'border-bottom': `var(--cu-border-thin) solid var(--cu-color-neutral-subtle-border)`,
   };
 
@@ -111,7 +111,7 @@ const thStyle = computed(() => {
 
   if (props.variant === 'solid') {
     base['background-color'] = `var(--cu-color-${props.color}-solid)`;
-    base['color'] = 'var(--cu-color-surface)';
+    base['color'] = `var(--cu-color-${props.color}-solid-text)`;
     base['border-bottom'] = 'none';
     base['backdrop-filter'] = 'none';
   } else if (props.variant === 'ghost' || props.variant === 'outlined') {

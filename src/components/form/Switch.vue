@@ -50,11 +50,13 @@ const safeColor = computed(() => (isColor(props.color) ? props.color : 'neutral'
 const safeSize = computed(() => (isSizeSm(props.size) ? props.size : 'md'));
 
 const switchStyles = computed(() => ({
-  // Track encendido con la variante sólida (el thumb es `surface`): la tonalidad
-  // plana no llega a 3:1 en varios temas/colores. Igual que Checkbox.
+  // Track encendido con el color del tema y texto del thumb vía `surface`: el
+  // relleno plano no llega a 3:1 en varios temas/colores, así que el límite del
+  // control lo dibuja el anillo `-border` (≥3:1 contra la superficie).
   '--switch-bg': `var(--cu-color-${safeColor.value}-solid)`,
   '--switch-hover': `var(--cu-color-${safeColor.value}-solid-hover)`,
   '--switch-active': `var(--cu-color-${safeColor.value}-solid-active)`,
+  '--switch-border': `var(--cu-color-${safeColor.value}-border)`,
 }));
 
 const toggle = (next?: boolean) => {
@@ -172,6 +174,7 @@ defineExpose({
 
 .cu-switch-track.cu-switch--checked {
   background-color: var(--switch-bg);
+  box-shadow: inset 0 0 0 var(--cu-border-thin) var(--switch-border);
 }
 
 .cu-switch-track:not(.cu-switch--checked) {

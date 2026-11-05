@@ -76,6 +76,8 @@ Un tema puede definir **sólo** los colores que cambia: el resto sale del tema `
 ::: tip
 Los bundles **no traen tokens**: definí `[data-theme="…"] { --cu-color-*: … }` con los hex de
 `comegen.config.json`. Este sitio ya los tiene; en tu app, ver [Configuración](/configuracion).
+El CSS que exporta el Theme Builder de un tema trae `:root` (aplica el tema sin atributo) además
+de `[data-theme="…"]`.
 :::
 
 ## Agregar un tema nuevo

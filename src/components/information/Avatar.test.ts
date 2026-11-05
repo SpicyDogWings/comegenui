@@ -110,13 +110,13 @@ describe("Avatar — color", () => {
     expect(root(a).attributes("style")).toBe(root(b).attributes("style"));
   });
 
-  it("el fondo sale del token `-solid` y el texto del polo del tema", () => {
+  it("el fondo sale del token `-solid` y el texto de `-solid-text`", () => {
     const w = mount(Avatar, { props: { initials: "JP", color: "success" } });
     const style = root(w).attributes("style") ?? "";
 
     // El par fondo/texto lo resuelve el tema activo, no un blanco fijo.
     expect(style).toContain("--avatar-bg: var(--cu-color-success-solid");
-    expect(style).toContain("--avatar-fg: var(--cu-color-surface");
+    expect(style).toContain("--avatar-fg: var(--cu-color-success-solid-text");
   });
 
   it("un color fuera del set cae al color por hash (con token), no a un valor crudo", () => {

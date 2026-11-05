@@ -33,8 +33,10 @@ const props = defineProps({
 const safeColor = computed(() => (isColor(props.color) ? props.color : 'neutral'));
 
 const tooltipStyles = computed(() => ({
-  // El fondo es la variante segura; el texto sigue siendo el del tema.
+  // El fondo es el color del tema y el texto, el extremo de máximo contraste
+  // contra ese fondo (`-solid-text`): no siempre es el `surface` del tema.
   '--cu-popover-bg': `var(--cu-color-${safeColor.value}-solid)`,
+  '--cu-popover-fg': `var(--cu-color-${safeColor.value}-solid-text)`,
 }));
 
 const popover = ref<InstanceType<typeof Popover> | null>(null);
@@ -180,7 +182,7 @@ onBeforeUnmount(restoreDescription);
 }
 
 .cu-tooltip :deep(.cu-tooltip-panel) {
-  color: var(--cu-color-surface);
+  color: var(--cu-popover-fg, var(--cu-color-surface));
   font-size: var(--cu-font-size-xs);
   font-weight: var(--cu-font-weight-medium);
   padding: var(--cu-space-xs) var(--cu-space-sm);

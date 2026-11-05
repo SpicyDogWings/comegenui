@@ -7,6 +7,7 @@
 // adyacentes. Texto normal 12–18px: 4.5:1. Bordes no textuales: 3:1.
 import { readFileSync } from 'node:fs'
 import { resolve } from 'node:path'
+import { toHex } from 'color2k'
 import { globSync } from 'glob'
 import { describe, expect, it } from 'vitest'
 import {
@@ -64,31 +65,35 @@ interface Pair {
 
 function pairsOf(css: string, color: string): Pair[] {
   const surface = themeSurface(css)
-  const base = token(css, color, '')
   const text = token(css, color, '-text')
   const tint = (tokenSuffix: string, alpha: number) =>
     compositeOver(token(css, color, tokenSuffix), surface, alpha)
 
   const pairs: Pair[] = [
-    // solid / none: el texto es SIEMPRE el del tema (`surface`) y el fondo es
-    // la variante ajustada por el generador.
-    { label: `${color}/solid`, fg: surface, bg: token(css, color, '-solid'), min: MIN_TEXT_CONTRAST },
-    { label: `${color}/solid:hover`, fg: surface, bg: token(css, color, '-solid-hover'), min: MIN_TEXT_CONTRAST },
-    { label: `${color}/solid:active`, fg: surface, bg: token(css, color, '-solid-active'), min: MIN_TEXT_CONTRAST },
-    // ghost / outlined / link: texto sobre la superficie
+    // solid / none: el fondo conserva el color del tema y el texto es el polo
+    // (negro/blanco) de máximo contraste, también en hover/active.
+    { label: `${color}/solid`, fg: token(css, color, '-solid-text'), bg: token(css, color, '-solid'), min: MIN_TEXT_CONTRAST },
+    { label: `${color}/solid:hover`, fg: token(css, color, '-solid-text'), bg: token(css, color, '-solid-hover'), min: MIN_TEXT_CONTRAST },
+    { label: `${color}/solid:active`, fg: token(css, color, '-solid-text'), bg: token(css, color, '-solid-active'), min: MIN_TEXT_CONTRAST },
+    // ghost / outlined / link: `-text` sobre la superficie (estado base).
     { label: `${color}/ghost`, fg: text, bg: surface, min: MIN_TEXT_CONTRAST },
     { label: `${color}/outlined`, fg: text, bg: surface, min: MIN_TEXT_CONTRAST },
     { label: `${color}/link`, fg: text, bg: surface, min: MIN_TEXT_CONTRAST },
+    // ghost/outlined hover y active: el fondo es el tinte ghost (10 % / 20 %),
+    // así que el texto usa `-text-on-ghost`, medido contra ese tinte.
+    { label: `${color}/ghost:hover`, fg: token(css, color, '-text-on-ghost'), bg: tint('-ghost-hover', 0.1), min: MIN_TEXT_CONTRAST },
+    { label: `${color}/ghost:active`, fg: token(css, color, '-text-on-ghost'), bg: tint('-ghost-active', 0.2), min: MIN_TEXT_CONTRAST },
     // soft: texto sobre cada tinte (soft, hover, active)
-    { label: `${color}/soft`, fg: text, bg: tint('-soft', 0.15), min: MIN_TEXT_CONTRAST },
-    { label: `${color}/soft:hover`, fg: text, bg: tint('-soft-hover', 0.25), min: MIN_TEXT_CONTRAST },
-    { label: `${color}/soft:active`, fg: text, bg: tint('-soft-active', 0.35), min: MIN_TEXT_CONTRAST },
+    { label: `${color}/soft`, fg: token(css, color, '-text-on-soft'), bg: tint('-soft', 0.15), min: MIN_TEXT_CONTRAST },
+    { label: `${color}/soft:hover`, fg: token(css, color, '-text-on-soft'), bg: tint('-soft-hover', 0.25), min: MIN_TEXT_CONTRAST },
+    { label: `${color}/soft:active`, fg: token(css, color, '-text-on-soft'), bg: tint('-soft-active', 0.35), min: MIN_TEXT_CONTRAST },
     // subtle: texto sobre cada tinte
-    { label: `${color}/subtle`, fg: text, bg: tint('-subtle', 0.1), min: MIN_TEXT_CONTRAST },
-    { label: `${color}/subtle:hover`, fg: text, bg: tint('-subtle-hover', 0.2), min: MIN_TEXT_CONTRAST },
-    { label: `${color}/subtle:active`, fg: text, bg: tint('-subtle-active', 0.3), min: MIN_TEXT_CONTRAST },
-    // bordes: outlined sobre superficie; subtle contra el tinte y la superficie
+    { label: `${color}/subtle`, fg: token(css, color, '-text-on-subtle'), bg: tint('-subtle', 0.1), min: MIN_TEXT_CONTRAST },
+    { label: `${color}/subtle:hover`, fg: token(css, color, '-text-on-subtle'), bg: tint('-subtle-hover', 0.2), min: MIN_TEXT_CONTRAST },
+    { label: `${color}/subtle:active`, fg: token(css, color, '-text-on-subtle'), bg: tint('-subtle-active', 0.3), min: MIN_TEXT_CONTRAST },
+    // bordes: outlined y el límite del solid sobre la superficie.
     { label: `${color}/outlined:border`, fg: token(css, color, '-border'), bg: surface, min: MIN_BORDER_CONTRAST },
+    { label: `${color}/solid:border`, fg: token(css, color, '-border'), bg: surface, min: MIN_BORDER_CONTRAST },
     { label: `${color}/subtle:border`, fg: token(css, color, '-subtle-border'), bg: tint('-subtle', 0.1), min: MIN_BORDER_CONTRAST },
     { label: `${color}/subtle:border-hover`, fg: token(css, color, '-subtle-border'), bg: tint('-subtle-hover', 0.2), min: MIN_BORDER_CONTRAST },
     { label: `${color}/subtle:border-active`, fg: token(css, color, '-subtle-border'), bg: tint('-subtle-active', 0.3), min: MIN_BORDER_CONTRAST },
@@ -138,44 +143,96 @@ describe('contraste de tokens en los 15 temas', () => {
     expect(failures).toEqual([])
   })
 
-  it('solid/none no eligen un texto negro/blanco por color (no existe -on)', () => {
+  it('`-solid` conserva el color del tema (el fondo ya no se ajusta)', () => {
     for (const theme of THEMES) {
       for (const color of COLORS) {
-        expect(theme.css, `${theme.name}/${color}`).not.toContain(`--cu-color-${color}-on:`)
+        const expected = toHex(theme.merged[color] as string)
+        expect(token(theme.css, color, '-solid'), `${theme.name}/${color}`).toBe(expected)
       }
     }
   })
 
-  it('en temas claros, success/warning oscurecen el fondo y conservan el texto del tema', () => {
-    const lightThemes = THEMES.filter((t) => relativeLuminance(themeSurface(t.css)) > 0.5)
-    expect(lightThemes.length).toBeGreaterThanOrEqual(5)
-
-    for (const theme of lightThemes) {
-      const surface = themeSurface(theme.css)
-      // El anti-patrón prohibido era voltear el texto a negro sobre success/warning.
-      expect(surface, theme.name).not.toBe('#000000')
-      expect(relativeLuminance(surface), theme.name).toBeGreaterThan(0.5)
-
-      for (const color of ['success', 'warning']) {
+  it('`-solid-text` es negro o blanco, el de máximo contraste sobre el fondo y sus estados', () => {
+    for (const theme of THEMES) {
+      for (const color of COLORS) {
         const solid = token(theme.css, color, '-solid')
-        expect(contrastRatio(surface, solid), `${theme.name}/${color}`).toBeGreaterThanOrEqual(MIN_TEXT_CONTRAST)
-        // Se ajustó el color (no el texto): el fondo queda más oscuro.
-        expect(relativeLuminance(solid), `${theme.name}/${color}`).toBeLessThan(relativeLuminance(surface))
+        const text = token(theme.css, color, '-solid-text')
+        const hover = token(theme.css, color, '-solid-hover')
+        const active = token(theme.css, color, '-solid-active')
+        const label = `${theme.name}/${color}`
+
+        // Ya no se usa el `surface` del tema: el polo lo elige el contraste.
+        expect(['#ffffff', '#000000'], label).toContain(text)
+        const best = Math.max(contrastRatio(solid, '#ffffff'), contrastRatio(solid, '#000000'))
+        expect(contrastRatio(solid, text), label).toBeGreaterThanOrEqual(best - 1e-9)
+
+        // Hover/active se alejan del texto: no pierden contraste.
+        expect(contrastRatio(hover, text), `${label}:hover`).toBeGreaterThanOrEqual(contrastRatio(solid, text) - 1e-9)
+        expect(contrastRatio(active, text), `${label}:active`).toBeGreaterThanOrEqual(contrastRatio(hover, text) - 1e-9)
+        expect(contrastRatio(solid, text), label).toBeGreaterThanOrEqual(MIN_TEXT_CONTRAST)
       }
     }
   })
 
-  it('el fondo sólido se aclara en temas oscuros', () => {
+  it('cuando el solid no llega a 3:1 contra la superficie, el token `-border` lo delimita', () => {
+    for (const theme of THEMES) {
+      const surface = themeSurface(theme.css)
+      for (const color of COLORS) {
+        const solid = token(theme.css, color, '-solid')
+        const border = token(theme.css, color, '-border')
+        const label = `${theme.name}/${color}`
+
+        // El borde siempre tiene piso 3:1 contra la superficie (lo dibujan los
+        // componentes en la variante solid, sin tocar el color de relleno).
+        expect(contrastRatio(border, surface), label).toBeGreaterThanOrEqual(MIN_BORDER_CONTRAST - 1e-9)
+
+        if (contrastRatio(solid, surface) < MIN_BORDER_CONTRAST) {
+          expect(border, `${label}: el borde debe diferir del relleno`).not.toBe(solid)
+        }
+      }
+    }
+  })
+
+  it('los consumidores de solid dibujan el límite con su token `-border`', () => {
+    const root = resolve(import.meta.dirname, '../../..')
+    /** Cada variante solid y el token de borde que la delimita. */
+    const consumers: Array<[string, RegExp]> = [
+      ['src/components/buttons/Button.vue', /\.cu-button\.cu-button--solid\s*\{[^}]*var\(--btn-border\)/],
+      ['src/components/buttons/Button.vue', /\.cu-button\.cu-button--none\s*\{[^}]*var\(--btn-border\)/],
+      ['src/components/information/Badge.vue', /\.cu-badge\.cu-badge--solid\s*\{[^}]*border-color:\s*var\(--badge-border\)/],
+      ['src/components/information/Alert.vue', /\.cu-alert\.cu-alert--solid\s*\{[^}]*var\(--alert-border\)/],
+      ['src/components/information/Card.vue', /\.cu-card\.cu-card--solid\s*\{[^}]*border-color:\s*var\(--card-border\)/],
+      ['src/components/Tabs.vue', /\.cu-tabs--(?:solid|boxed|soft) \.cu-tabs-tab\.cu-tabs-tab--active\s*\{[^}]*var\(--tabs-border\)/],
+      ['src/components/controls/Calendar.vue', /\.cu-calendar-day--selected\.cu-calendar-day--solid\s*\{[^}]*var\(--cal-accent-border\)/],
+      ['src/components/controls/month-slider/MonthSliderLabel.vue', /--solid\s*\{[^}]*var\(--ms-accent-border\)/],
+      ['src/components/form/Checkbox.vue', /\.cu-checkbox-box--checked\s*\{[^}]*border-color:\s*var\(--cb-border\)/],
+      ['src/components/form/Switch.vue', /\.cu-switch-track\.cu-switch--checked\s*\{[^}]*var\(--switch-border\)/],
+    ]
+    const failures = consumers
+      .filter(([file, pattern]) => !pattern.test(readFileSync(resolve(root, file), 'utf8').replace(/\s+/g, ' ')))
+      .map(([file, pattern]) => `${file}: falta ${pattern}`)
+
+    expect(failures).toEqual([])
+  })
+
+  it('en temas oscuros el texto ya no se sobre-corrige: si el base supera 4.5:1, se usa tal cual', () => {
     const darkThemes = THEMES.filter((t) => relativeLuminance(themeSurface(t.css)) < 0.5)
     expect(darkThemes.length).toBeGreaterThan(0)
+
+    const respected: string[] = []
     for (const theme of darkThemes) {
       const surface = themeSurface(theme.css)
       for (const color of COLORS) {
-        const solid = token(theme.css, color, '-solid')
-        expect(contrastRatio(surface, solid), `${theme.name}/${color}`).toBeGreaterThanOrEqual(MIN_TEXT_CONTRAST)
-        expect(relativeLuminance(solid), `${theme.name}/${color}`).toBeGreaterThanOrEqual(relativeLuminance(surface))
+        const base = toHex(theme.merged[color] as string)
+        const text = token(theme.css, color, '-text')
+        if (contrastRatio(base, surface) >= MIN_TEXT_CONTRAST) {
+          // Antes se medía contra el tinte soft-active (35 %) y se aclaraba de más.
+          expect(text, `${theme.name}/${color}`).toBe(base)
+          respected.push(`${theme.name}/${color}`)
+        }
       }
     }
+    expect(respected.length).toBeGreaterThan(0)
   })
 })
 
@@ -315,21 +372,19 @@ describe('texto atenuado: color con contraste real, no `opacity`', () => {
     return [surface, compositeOver(base, surface, 0.1), compositeOver(base, surface, 0.2)]
   }
 
-  it('`-text-muted` llega a 4.5:1 y `-text-subtle` a 6:1 (o al máximo del texto) en los 15 temas', () => {
+  it('`-text-muted` llega a 4.5:1 y `-text-subtle` a 6:1 en los 15 temas', () => {
     const failures: string[] = []
 
     for (const theme of THEMES) {
       const surface = themeSurface(theme.css)
       for (const color of COLORS) {
-        const text = token(theme.css, color, '-text')
         const tints = tintsOf(theme.css, color)
         const muted = token(theme.css, color, '-text-muted')
         const subtle = token(theme.css, color, '-text-subtle')
-        const worstText = Math.min(...tints.map((bg) => contrastRatio(text, bg)))
 
         for (const [label, fg, min] of [
           ['muted', muted, MIN_TEXT_CONTRAST],
-          ['subtle', subtle, Math.min(MIN_SUBTLE_CONTRAST, worstText)],
+          ['subtle', subtle, MIN_SUBTLE_CONTRAST],
         ] as const) {
           const ratio = Math.min(...tints.map((bg) => contrastRatio(fg, bg)))
           if (ratio + 1e-9 < min) {
