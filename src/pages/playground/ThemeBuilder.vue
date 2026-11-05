@@ -397,7 +397,16 @@ function handleImport(config: any) {
           </AdvancedTable>
         </Collapse>
 
-        <Collapse label="Componentes" :default-open="false">
+        <Collapse label="Opacities" :default-open="false">
+          <div class="tb-colors-list">
+            <div class="tb-field">
+              <Label label="shadow opacity" color="var(--cu-color-neutral)" />
+              <Input v-model="shadowOpacityRaw" :disabled="!isEditing" />
+            </div>
+          </div>
+        </Collapse>
+
+        <Collapse label="Avanzado" :default-open="false">
           <Collapse label="Modal" :default-open="false">
             <div class="tb-group">
               <h3>Size</h3>
@@ -430,15 +439,6 @@ function handleImport(config: any) {
               </div>
             </div>
           </Collapse>
-        </Collapse>
-
-        <Collapse label="Opacities" :default-open="false">
-          <div class="tb-colors-list">
-            <div class="tb-field">
-              <Label label="shadow opacity" color="var(--cu-color-neutral)" />
-              <Input v-model="shadowOpacityRaw" :disabled="!isEditing" />
-            </div>
-          </div>
         </Collapse>
       </aside>
 
