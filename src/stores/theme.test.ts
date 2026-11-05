@@ -193,4 +193,73 @@ describe('persistencia del tema custom (store)', () => {
 
     expect(store.customConfig).toBeNull()
   })
+
+  it('renombrar el custom lo registra con ese nombre y lo exporta igual', async () => {
+    const { plugin, store } = await boot()
+
+    store.registerCustom({ primary: '#123456' }, FULL_SHARED, 42)
+    const result = store.renameCustom('Mi Marca')
+
+    expect(result).toEqual({ ok: true, name: 'mi-marca' })
+    expect(store.customName).toBe('mi-marca')
+    expect(store.current).toBe('mi-marca')
+    expect(plugin.getThemeNames()).toContain('mi-marca')
+    // El slot reservado no queda duplicado en el chooser.
+    expect(plugin.getThemeNames()).not.toContain('custom')
+    expect(plugin.allThemes.value['mi-marca'].colors.primary).toBe('#123456')
+    expect(plugin.getThemeCSS('mi-marca')).toContain('[data-theme="mi-marca"]')
+
+    const raw = JSON.parse(localStorage.getItem('cu-custom-themes') as string)
+    expect(raw.custom.name).toBe('mi-marca')
+  })
+
+  it('registrar después de renombrar conserva el nombre nuevo', async () => {
+    const { plugin, store } = await boot()
+
+    store.registerCustom({ primary: '#123456' }, FULL_SHARED, 42)
+    store.renameCustom('mi-marca')
+    store.registerCustom({ primary: '#abcdef' }, FULL_SHARED, 30)
+
+    expect(store.current).toBe('mi-marca')
+    expect(plugin.allThemes.value['mi-marca'].colors.primary).toBe('#abcdef')
+    expect(plugin.opacities.value['mi-marca']?.shadow).toBe(30)
+  })
+
+  it('no renombra sobre un tema incluido', async () => {
+    const { plugin, store } = await boot()
+
+    store.registerCustom({ primary: '#123456' }, FULL_SHARED, 42)
+    const darkPrimary = plugin.allThemes.value.dark.colors.primary
+    const result = store.renameCustom('Dark')
+
+    expect(result.ok).toBe(false)
+    expect(store.customName).toBe('custom')
+    expect(store.current).toBe('custom')
+    expect(plugin.allThemes.value.dark.colors.primary).toBe(darkPrimary)
+  })
+
+  it('hidrata el custom con su nombre y restaura el tema activo', async () => {
+    localStorage.setItem('cu-theme', 'mi-marca')
+    localStorage.setItem(
+      'cu-custom-themes',
+      JSON.stringify({
+        custom: {
+          name: 'mi-marca',
+          colors: { primary: '#123456' },
+          opacity: 42,
+          shared: { spacing: { md: '20px' } },
+        },
+      }),
+    )
+
+    const { plugin, store } = await boot()
+
+    expect(store.customName).toBe('mi-marca')
+    expect(store.isCustom).toBe(true)
+    expect(store.current).toBe('mi-marca')
+    expect(plugin.getThemeNames()).toContain('mi-marca')
+    expect(plugin.getThemeNames()).not.toContain('custom')
+    expect(plugin.allThemes.value['mi-marca'].colors.primary).toBe('#123456')
+    expect(plugin.getThemeCSS('mi-marca')).toContain('[data-theme="mi-marca"]')
+  })
 })

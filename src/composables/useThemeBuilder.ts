@@ -1,4 +1,4 @@
-import { ref, computed, watch, onMounted } from 'vue'
+import { ref, computed, watch, onMounted, nextTick } from 'vue'
 import {
   allThemes, opacities, loaded, parseShadow, composeShadow, normalizeShadow,
 } from '@/plugins/cu-tokens'
@@ -11,10 +11,18 @@ import { DEFAULTS, DEFAULT_COLORS } from '@/plugins/cu-tokens/defaults'
 export function useThemeBuilder() {
   const store = useThemeStore()
 
+  // Nombre del tema custom: escribirlo lo renombra (o lo duplica desde el tema
+  // activo si todavía no se editó). El export usa exactamente ese nombre.
+  const themeNameError = ref('')
   const themeName = computed({
-    get: () => store.current,
-    set: (name: string) => store.setTheme(name),
+    get: () => store.customName,
+    set: (value: string) => {
+      const result = store.renameCustom(value)
+      themeNameError.value = result.ok ? '' : result.error
+    },
   })
+
+  const activeThemeName = computed(() => store.current)
 
   const showEditBtn = computed(() => store.showEditBtn)
   const isEditing = ref(false)
@@ -34,6 +42,24 @@ export function useThemeBuilder() {
   const colors = ref({ ...DEFAULT_COLORS })
 
   initColorsFromTheme('light')
+
+  // Valores aplicados de `-solid` y `-text` por color, leídos del CSS vigente
+  // (el mismo que pinta el preview). El hex del picker es el crudo del tema;
+  // estos son los que realmente se usan como fondo/texto.
+  const tokenColorNames = ['primary', 'secondary', 'neutral', 'success', 'warning', 'danger'] as const
+  const appliedTokens = ref<Record<string, { solid: string; text: string }>>({})
+
+  function readAppliedTokens() {
+    if (typeof window === 'undefined' || typeof document === 'undefined') return
+    const styles = getComputedStyle(document.documentElement)
+    const next: Record<string, { solid: string; text: string }> = {}
+    for (const key of tokenColorNames) {
+      const solid = styles.getPropertyValue(`--cu-color-${key}-solid`).trim()
+      const text = styles.getPropertyValue(`--cu-color-${key}-text`).trim()
+      if (solid) next[key] = { solid, text }
+    }
+    appliedTokens.value = next
+  }
 
   const shadowOpacityRaw = ref(String(opacities.value.default?.shadow ?? 10))
   const typography = ref({ ...DEFAULTS.typography, ...store.getShared()?.typography })
@@ -105,12 +131,12 @@ export function useThemeBuilder() {
   }
 
   function enableEditing() {
-    const current = themeName.value
-    const sourceColors = allThemes.value[current]?.colors
+    const active = store.current
+    const sourceColors = allThemes.value[active]?.colors
     if (sourceColors) {
       const { shadowOpacity, ...rest } = sourceColors
       colors.value = { ...colors.value, ...rest }
-      shadowOpacityRaw.value = String(resolveOpacity(current))
+      shadowOpacityRaw.value = String(resolveOpacity(active))
     }
     isEditing.value = true
     store.registerCustom(
@@ -118,7 +144,6 @@ export function useThemeBuilder() {
       sharedSnapshot(),
       parseInt(shadowOpacityRaw.value) || 10,
     )
-    themeName.value = 'custom'
   }
 
   function resetToDefaults() {
@@ -297,9 +322,10 @@ export function useThemeBuilder() {
   // Sin esto el form arranca en defaults aunque el tema ya esté aplicado.
   function syncFromPlugin() {
     syncSharedFromPlugin()
-    initColorsFromTheme(themeName.value || 'light')
-    shadowOpacityRaw.value = String(resolveOpacity(themeName.value))
+    initColorsFromTheme(store.current || 'light')
+    shadowOpacityRaw.value = String(resolveOpacity(store.current))
     isEditing.value = store.isCustom
+    nextTick(readAppliedTokens)
   }
 
   onMounted(syncFromPlugin)
@@ -307,7 +333,8 @@ export function useThemeBuilder() {
     if (value) syncFromPlugin()
   })
 
-  // Detectar cambios → solo cuando está editando (isEditing)
+  // Detectar cambios → solo cuando está editando (isEditing). El nombre del
+  // custom es independiente: renombrar no vuelve a `custom` ni cambia de tema.
   watch([colors, shadowOpacityRaw, typography, spacing, borderRadius, borders, shadows, modal, sideover], () => {
     if (!isEditing.value) return
     store.registerCustom(
@@ -315,13 +342,18 @@ export function useThemeBuilder() {
       sharedSnapshot(),
       parseInt(shadowOpacityRaw.value) || 10,
     )
-    if (themeName.value !== 'custom') {
-      themeName.value = 'custom'
-    }
+    nextTick(readAppliedTokens)
   }, { deep: true })
+
+  // El preview cambia de tokens al editar o al aplicar otro tema: releer
+  // después del re-render que regenera el CSS.
+  watch([themeName, activeThemeName, isEditing], () => nextTick(readAppliedTokens))
 
   return {
     themeName,
+    themeNameError,
+    activeThemeName,
+    appliedTokens,
     showEditBtn,
     isEditing,
     enableEditing,
