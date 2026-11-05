@@ -3692,6 +3692,22 @@ const MUTATIONS = [
     find: `    delimiter: options.delimiter ?? ',',`,
     replace: `    delimiter: ',',`,
   },
+  {
+    id: "theme-builder-no-sync-on-theme-change",
+    file: "src/composables/useThemeBuilder.ts",
+    expect: "cambiar de tema re-sincroniza los colores del form",
+    find: `    isEditing.value = store.isCustom
+    initColorsFromTheme(name)`,
+    replace: `    isEditing.value = store.isCustom`,
+  },
+  {
+    id: "theme-builder-edita-tras-cambiar-tema",
+    file: "src/composables/useThemeBuilder.ts",
+    expect: "cambiar a un tema incluido sale del modo edición",
+    find: `    isEditing.value = store.isCustom
+    initColorsFromTheme(name)`,
+    replace: `    initColorsFromTheme(name)`,
+  },
 ];
 
 export { MUTATIONS };

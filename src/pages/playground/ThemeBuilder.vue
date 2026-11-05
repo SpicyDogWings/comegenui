@@ -310,7 +310,9 @@ function handleImport(config: any) {
           <p class="tb-hint">
             <strong>neutral</strong> es la tinta: títulos, labels y texto del layout. En temas oscuros debe ser un color claro (se invierte solo al oscurecer el surface).
             <br />
-            <strong>solid</strong> es el fondo sólido (ajustado a 4.5:1 contra surface) y <strong>text</strong> el color de texto seguro del tema.
+            <strong>solid</strong> es el fondo sólido: el color del tema tal cual, sin ajustar (el texto sobre ese fondo sale de <strong>solid-text</strong>, negro o blanco por contraste).
+            <br />
+            <strong>text</strong> es el texto medido contra la superficie (variantes ghost, outlined y link).
           </p>
         </Collapse>
 
