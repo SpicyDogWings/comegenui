@@ -371,7 +371,7 @@ function prettyTheme(value: string) {
 }
 
 .home-theme:focus-visible {
-  outline: 2px solid var(--cu-color-primary);
+  outline: 2px solid var(--cu-border-color-focus);
   outline-offset: 2px;
 }
 

@@ -152,8 +152,9 @@ defineExpose({
   color: var(--cu-color-neutral-text-muted);
 }
 
+/* Anillo de foco: token con piso 3:1 contra `surface` (el acento crudo no lo tiene). */
 .cu-input:focus {
-  box-shadow: 0 0 0 var(--cu-border-thin) var(--btn-subtle-border);
+  box-shadow: 0 0 0 var(--cu-border-thin) var(--cu-border-color-focus);
 }
 
 /* subtle */

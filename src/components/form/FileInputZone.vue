@@ -422,9 +422,11 @@ defineExpose({ get, set, reset, focus, trigger });
   box-sizing: border-box;
 }
 
+/* Anillo de foco de toda la zona: borde y sombra con el token de foco para
+   que se lea como un solo anillo. */
 .cu-file-zone:focus-within {
-  border-color: var(--zone-bg);
-  box-shadow: 0 0 0 var(--cu-border-thin) var(--zone-bg);
+  border-color: var(--cu-border-color-focus);
+  box-shadow: 0 0 0 var(--cu-border-thin) var(--cu-border-color-focus);
 }
 
 /* Control de selección: cubre la zona, sin contenido ni estilos propios. */

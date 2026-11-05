@@ -432,9 +432,13 @@ defineExpose({
 }
 
 /* Anillo de focus del trigger (como .cu-input:focus) — focus() enfoca el botón
-   de verdad: visible para el usuario y para teclado */
+   de verdad: visible para el usuario y para teclado. Usa el token de foco, no
+   el borde de la variante (que no tiene piso de contraste). */
 .cu-select-toggle:focus {
-  box-shadow: 0 0 0 var(--cu-border-thin) var(--btn-subtle-border);
+  /* Sin el `outline` automático del navegador: el anillo es el `box-shadow` de
+     abajo, y dibujar los dos se ve como un doble anillo. */
+  outline: none;
+  box-shadow: 0 0 0 var(--cu-border-thin) var(--cu-border-color-focus);
 }
 
 .cu-select--readonly .cu-select-toggle {
