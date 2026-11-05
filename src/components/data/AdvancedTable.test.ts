@@ -1,4 +1,4 @@
-import { describe, expect, it } from "vitest";
+import { afterEach, beforeEach, describe, expect, it, vi } from "vitest";
 import { flushPromises, mount, type VueWrapper } from "@vue/test-utils";
 import { defineCustomElement, nextTick } from "vue";
 
@@ -14,6 +14,22 @@ const columns = [
 ];
 const data = [{ nombre: "Juan", rol: "Admin" }];
 const actions = [{ label: "Editar", onClick: () => {} }];
+
+let downloads: HTMLAnchorElement[];
+beforeEach(() => {
+  downloads = [];
+  URL.createObjectURL = vi.fn(() => "blob:mock") as unknown as typeof URL.createObjectURL;
+  URL.revokeObjectURL = vi.fn() as unknown as typeof URL.revokeObjectURL;
+  vi.spyOn(HTMLAnchorElement.prototype, "click").mockImplementation(function (
+    this: HTMLAnchorElement,
+  ) {
+    downloads.push(this);
+  });
+});
+afterEach(() => {
+  vi.restoreAllMocks();
+  document.body.innerHTML = "";
+});
 
 describe("AdvancedTable (Vue)", () => {
   it("default: el header de acciones queda vacío (no cae a `__actions__`)", () => {
@@ -148,6 +164,8 @@ describe("AdvancedTable — API de exportación (datos y eventos)", () => {
   }
   interface ExportPayloadLike {
     scope: ExportScope;
+    format: "xlsx" | "csv";
+    fileName: string;
     rowCount: number;
     columnCount: number;
     cellCount: number;
@@ -235,11 +253,15 @@ describe("AdvancedTable — API de exportación (datos y eventos)", () => {
     const payload = api(w).exportToExcel();
     expect(payload).toEqual({
       scope: "all",
+      format: "xlsx",
+      fileName: expect.stringMatching(/^export-\d{4}-\d{2}-\d{2}\.xlsx$/),
       rowCount: 3,
       columnCount: 2,
       cellCount: 6,
       heavy: false,
     });
+    expect(downloads).toHaveLength(1);
+    expect(downloads[0]!.download).toBe(payload.fileName);
     expect(w.emitted("export-click")).toHaveLength(1);
     expect(w.emitted("export-click")![0]![0]).toEqual(payload);
     expect(w.emitted("export-heavy")).toBeFalsy();
@@ -302,6 +324,66 @@ describe("AdvancedTable — API de exportación (datos y eventos)", () => {
       cellCount: 2,
     });
   });
+  it("`exportToExcel` descarga sin botón: funciona con `exportEnabled: false`", () => {
+    const w = mount(AdvancedTable, {
+      props: {
+        columns,
+        data,
+        exportButton: { filename: "sin-boton" },
+      },
+    });
+    expect(w.find(".cu-advanced-table-export").exists()).toBe(false);
+
+    const payload = api(w).exportToExcel();
+    expect(payload.fileName).toBe("sin-boton.xlsx");
+    expect(downloads).toHaveLength(1);
+    expect(downloads[0]!.download).toBe("sin-boton.xlsx");
+  });
+
+  it("`exportButton.format: 'csv'` descarga CSV y el payload lo refleja", () => {
+    const w = mount(AdvancedTable, {
+      props: {
+        columns,
+        data,
+        exportButton: { format: "csv", filename: "planilla" },
+      },
+    });
+    const payload = api(w).exportToExcel();
+    expect(payload).toMatchObject({ format: "csv", fileName: "planilla.csv" });
+    expect(downloads[0]!.download).toBe("planilla.csv");
+    expect(w.emitted("export-click")![0]![0]).toMatchObject({ format: "csv" });
+  });
+
+  it("`before-download` cancelable evita la descarga pero conserva el resumen", () => {
+    const w = mount(AdvancedTable, { props: { columns, data } });
+    let cancelledPayload: unknown = null;
+    w.vm.$.vnode.props = {
+      ...w.vm.$.vnode.props,
+      onBeforeDownload: (payload: { cancel: () => void }) => {
+        cancelledPayload = payload;
+        payload.cancel();
+      },
+    };
+
+    const payload = api(w).exportToExcel();
+    expect(downloads).toHaveLength(0);
+    expect(cancelledPayload).toMatchObject({ cellCount: payload.cellCount });
+    // El resumen y el evento siguen saliendo: lo cancelado es el archivo.
+    expect(w.emitted("export-click")).toHaveLength(1);
+  });
+
+  it("el botón manual no duplica eventos: un click, una descarga y un `export-click`", async () => {
+    const w = mount(AdvancedTable, {
+      props: { columns, data, exportEnabled: true, exportButton: { filename: "toolbar" } },
+    });
+    await w.find(".cu-advanced-table-export .cu-button").trigger("click");
+
+    expect(downloads).toHaveLength(1);
+    expect(downloads[0]!.download).toBe("toolbar.xlsx");
+    expect(w.emitted("before-download")).toHaveLength(1);
+    expect(w.emitted("export-click")).toHaveLength(1);
+    expect(w.emitted("download")).toBeUndefined();
+  });
 });
 
 describe("AdvancedTable.ce (cu-table vanilla) — API de exportación", () => {
@@ -315,12 +397,15 @@ describe("AdvancedTable.ce (cu-table vanilla) — API de exportación", () => {
     columns: Record<string, any>[];
     data: Record<string, any>[];
     pagination: boolean;
+    exportButton: Record<string, unknown>;
     getExportData: (options?: { scope?: ExportScope }) => {
       columns: { key: string; label?: string }[];
       rows: Record<string, any>[];
     };
     exportToExcel: (options?: { scope?: ExportScope }) => {
       scope: ExportScope;
+      format: "xlsx" | "csv";
+      fileName: string;
       rowCount: number;
       columnCount: number;
       cellCount: number;
@@ -356,11 +441,14 @@ describe("AdvancedTable.ce (cu-table vanilla) — API de exportación", () => {
     const payload = el.exportToExcel({ scope: "all" });
     expect(payload).toEqual({
       scope: "all",
+      format: "xlsx",
+      fileName: expect.stringMatching(/^export-\d{4}-\d{2}-\d{2}\.xlsx$/),
       rowCount: 2,
       columnCount: 1,
       cellCount: 2,
       heavy: false,
     });
+    expect(downloads).toHaveLength(1);
     expect(clicks).toEqual([payload]);
     el.remove();
   });
@@ -382,6 +470,8 @@ describe("AdvancedTable.ce (cu-table vanilla) — API de exportación", () => {
     const payload = el.exportToExcel();
     expect(payload).toEqual({
       scope: "all",
+      format: "xlsx",
+      fileName: expect.stringMatching(/^export-\d{4}-\d{2}-\d{2}\.xlsx$/),
       rowCount: 5000,
       columnCount: 2,
       cellCount: 10_000,
@@ -389,6 +479,37 @@ describe("AdvancedTable.ce (cu-table vanilla) — API de exportación", () => {
     });
     expect(clicks).toEqual([payload]);
     expect(heavies).toEqual([payload]);
+    el.remove();
+  });
+  it("el host recibe `before-download` y `cancel()` evita la descarga", async () => {
+    const el = document.createElement(TAG) as ExportCeElement;
+    el.columns = [{ key: "nombre", label: "Nombre" }];
+    el.data = [{ nombre: "A" }];
+    const payloads: unknown[] = [];
+    el.addEventListener("before-download", (event) => {
+      const detail = (event as CustomEvent).detail;
+      payloads.push(detail);
+      detail.cancel();
+    });
+    await mountCe(el);
+
+    el.exportToExcel();
+    expect(payloads).toHaveLength(1);
+    expect(payloads[0]).toMatchObject({ scope: "all", rowCount: 1, columnCount: 1 });
+    expect(downloads).toHaveLength(0);
+    el.remove();
+  });
+
+  it("`exportButton.format` viaja al archivo: csv con separador", async () => {
+    const el = document.createElement(TAG) as ExportCeElement;
+    el.columns = [{ key: "nombre", label: "Nombre" }];
+    el.data = [{ nombre: "A" }];
+    el.exportButton = { format: "csv", filename: "vanilla" };
+    await mountCe(el);
+
+    const payload = el.exportToExcel();
+    expect(payload).toMatchObject({ format: "csv", fileName: "vanilla.csv" });
+    expect(downloads[0]!.download).toBe("vanilla.csv");
     el.remove();
   });
 });

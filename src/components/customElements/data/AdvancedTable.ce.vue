@@ -255,7 +255,7 @@ const props = defineProps({
 const tableRef = ref<InstanceType<typeof AdvancedTable> | null>(null);
 
 // Eventos del host: `ceEmit` despacha CustomEvent con el payload en `e.detail`.
-defineEmits(["export-click", "export-heavy"]);
+defineEmits(["before-download", "export-click", "export-heavy"]);
 
 defineExpose({
   updateRow: (rowIndex: number, newData: Record<string, any>) => tableRef.value?.updateRow(rowIndex, newData),
@@ -266,7 +266,7 @@ defineExpose({
   pushData: (newData: Record<string, any>[]) => tableRef.value?.pushData(newData),
   /** Columnas exportables y **valores crudos** de las filas (sin `cell`, badges ni botones). `scope: "all"` (default) usa todas las filas de `data`; `"visible"` usa lo renderizado ahora (página y filtros/búsqueda actuales). */
   getExportData: (options?: ExportOptions) => tableRef.value?.getExportData(options),
-  /** Punto de entrada de la exportación (lo usa el botón y lo pueden llamar los consumidores). Calcula `getExportData`, emite `export-click` siempre y `export-heavy` si `cellCount >= EXPORT_HEAVY_CELLS`, y devuelve el payload. **No genera ni descarga ningún archivo.** */
+  /** Exporta y descarga el archivo (xlsx por defecto, o csv). Emite `before-download` (cancelable con `e.detail.cancel()`), `export-click` y `export-heavy`; funciona aunque `exportEnabled` sea `false`. Devuelve el payload. */
   exportToExcel: (options?: ExportOptions) => tableRef.value?.exportToExcel(options),
 });
 </script>
@@ -299,6 +299,7 @@ defineExpose({
     :inline-editing="props.inlineEditing"
     :compact="props.compact"
 
+    @before-download="ceEmit('before-download', $event)"
     @export-click="ceEmit('export-click', $event)"
     @export-heavy="ceEmit('export-heavy', $event)"
     @update:current-page="ceEmit('update:currentPage', $event)"

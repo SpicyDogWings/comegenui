@@ -599,23 +599,23 @@ function exportToExcel(options: ExportOptions = {}): ExportPayload {
       options.heavyThreshold ?? exportConfig.value.heavyThreshold ?? EXPORT_HEAVY_CELLS,
   };
 
-  let payload: ExportPayload | null = null;
   let cancelled = false;
-  downloadSheet(rows, exportSheetColumns.value, sheetOptions, (sheetPayload) => {
-    payload = { scope, ...sheetPayload };
-    emit("before-download", {
-      ...payload,
-      cancel: () => {
-        cancelled = true;
-      },
-    });
-    emit("export-click", payload);
-    if (payload.heavy) emit("export-heavy", payload);
-    return !cancelled;
+  // El resumen se calcula una vez y es el mismo que viaja en los eventos y en el
+  // retorno; la descarga sólo ocurre si ningún listener canceló.
+  const payload: ExportPayload = {
+    scope,
+    ...getSheetPayload(rows, exportSheetColumns.value, sheetOptions),
+  };
+  emit("before-download", {
+    ...payload,
+    cancel: () => {
+      cancelled = true;
+    },
   });
-
-  // El core siempre invoca el hook; el fallback sólo cubre un cambio futuro.
-  return payload ?? { scope, ...getSheetPayload(rows, exportSheetColumns.value, sheetOptions) };
+  emit("export-click", payload);
+  if (payload.heavy) emit("export-heavy", payload);
+  if (!cancelled) downloadSheet(rows, exportSheetColumns.value, sheetOptions);
+  return payload;
 }
 
 defineExpose({
