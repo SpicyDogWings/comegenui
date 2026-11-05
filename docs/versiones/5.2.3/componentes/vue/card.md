@@ -24,6 +24,23 @@ import Button from "@/components/buttons/Button.vue";
 
 En HTML plano, cargá el bundle `CuCard` (ver [ficha vanilla](/componentes/cu-card)).
 
+## Título: `heading` o `title`
+
+`heading` es el alias preferido: pinta el título del header y, en el custom element, **no** deja
+el atributo `title` en el host (el navegador no muestra su tooltip nativo sobre la tarjeta).
+`title` sigue funcionando y en Vue se comporta igual (es una prop, no un atributo del DOM); se
+conserva por compatibilidad. Si llegan ambos, gana `heading`.
+
+```vue
+<template>
+  <Card heading="Resumen" subtitle="Último corte">Contenido.</Card>
+  <Card title="Resumen" subtitle="Último corte">Equivalente en Vue.</Card>
+</template>
+```
+
+> En `<cu-card>` sí hay diferencia: `title` queda como atributo del host y el navegador muestra
+> su tooltip nativo sobre toda la tarjeta. Ver [la ficha vanilla](/componentes/cu-card#heading-vs-title).
+
 ## Variantes visuales
 
 `variant` decide el aspecto: `ghost` (**default**; superficie + sombra), `outlined` (solo borde), `soft` (fondo tenue), `subtle` (tenue con borde) y `solid` (relleno con el color).

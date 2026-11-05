@@ -21,6 +21,16 @@ const props = defineProps({
     default: "vertical",
     validator: isCardLayout,
   },
+  /** Título visible del header (alias preferido de `title`). Si vienen ambos, gana `heading`. */
+  heading: {
+    type: String,
+    required: false,
+  },
+  /**
+   * Título visible del header. Se mantiene por compatibilidad: en el custom element el
+   * atributo `title` queda en el host y el navegador muestra su tooltip nativo sobre toda
+   * la tarjeta. Usá `heading` para evitarlo.
+   */
   title: {
     type: String,
     required: false,
@@ -34,6 +44,9 @@ const props = defineProps({
     required: false,
   },
 });
+
+/** Título del header: `heading` es el alias preferido y pisa a `title`. */
+const visibleTitle = computed(() => props.heading ?? props.title);
 
 /** Un color fuera del set no tiene tokens: la variante solid quedaría sin fondo
  *  y con el texto del tema encima (invisible). Cae al color seguro. */
@@ -99,7 +112,7 @@ function detectSlots() {
   hasMediaSlot.value = wrapHasContent(mediaWrap.value);
   hasMedia.value = hasMediaSlot.value || !!props.image;
   hasHeaderSlot.value = wrapHasContent(headerWrap.value);
-  hasHeader.value = hasHeaderSlot.value || !!props.title || !!props.subtitle;
+  hasHeader.value = hasHeaderSlot.value || !!visibleTitle.value || !!props.subtitle;
   hasFooter.value = wrapHasContent(footerWrap.value);
 }
 
@@ -130,7 +143,7 @@ onBeforeUnmount(() => {
     <div class="cu-card-body">
       <header v-show="hasHeader" ref="headerWrap" class="cu-card-header">
         <slot name="header" />
-        <h3 v-if="props.title && !hasHeaderSlot" class="cu-card-title">{{ props.title }}</h3>
+        <h3 v-if="visibleTitle && !hasHeaderSlot" class="cu-card-title">{{ visibleTitle }}</h3>
         <p v-if="props.subtitle && !hasHeaderSlot" class="cu-card-subtitle">{{ props.subtitle }}</p>
       </header>
 
