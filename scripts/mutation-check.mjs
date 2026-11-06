@@ -220,6 +220,22 @@ const MUTATIONS = [
     replace: `  "--cu-loader-delay": \`2000ms\`,`,
   },
   {
+    id: "loader-ce-ignora-animation",
+    file: "src/components/customElements/information/Loader.ce.vue",
+    test: "src/components/information/Loader.test.ts",
+    expect: "el custom element reenvía `animation` (loading vs cooldown)",
+    find: `:animation="props.animation"`,
+    replace: `animation="loading"`,
+  },
+  {
+    id: "loader-ce-ignora-delay",
+    file: "src/components/customElements/information/Loader.ce.vue",
+    test: "src/components/information/Loader.test.ts",
+    expect: "el custom element reenvía `delay` numérico al componente",
+    find: `:delay="props.delay"`,
+    replace: `:delay="2000"`,
+  },
+  {
     id: "author-card-avatar-no-decorativo",
     file: "src/components/information/AuthorCard.vue",
     expect: "el avatar de la tarjeta es decorativo (el nombre ya está en texto)",

@@ -4,8 +4,10 @@
 // `animation` elige loading (barrido infinito) o cooldown (se consume en delay ms).
 // Aserciones escritas a mano desde la prosa de la ficha.
 import { describe, it, expect } from "vitest";
-import { mount } from "@vue/test-utils";
+import { defineCustomElement } from "vue";
+import { flushPromises, mount } from "@vue/test-utils";
 import Loader from "./Loader.vue";
+import LoaderCe from "../customElements/information/Loader.ce.vue";
 
 const bar = (w: ReturnType<typeof mount>) => w.find(".cu-loader-bar");
 
@@ -49,5 +51,41 @@ describe("Loader — animación y delay", () => {
   it("propaga delay en ms a la CSS var", () => {
     const w = mount(Loader, { props: { delay: 500 } });
     expect(bar(w).attributes("style") ?? "").toContain("--cu-loader-delay: 500ms");
+  });
+});
+
+describe("Loader — custom element", () => {
+  const CuLoaderTest = defineCustomElement(LoaderCe);
+  if (!customElements.get("cu-loader-test")) {
+    customElements.define("cu-loader-test", CuLoaderTest);
+  }
+
+  async function mountCe(html: string) {
+    document.body.innerHTML = html;
+    const host = document.body.firstElementChild as HTMLElement;
+    await flushPromises();
+    const inner = [...(host.shadowRoot?.children ?? [])].find(
+      (node) => node.tagName !== "STYLE",
+    ) as HTMLElement;
+    return { host, inner };
+  }
+
+  it("usa los defaults del componente cuando no hay atributos", async () => {
+    const { inner } = await mountCe("<cu-loader-test></cu-loader-test>");
+    const barEl = inner.querySelector(".cu-loader-bar") as HTMLElement;
+    expect(barEl.classList.contains("cu-loader-bar--loading")).toBe(true);
+    expect(barEl.style.getPropertyValue("--cu-loader-color")).toBe("var(--cu-color-primary)");
+    expect(barEl.style.getPropertyValue("--cu-loader-delay")).toBe("2000ms");
+  });
+
+  it("mapea color, animation y delay del host a la API del componente", async () => {
+    const { inner } = await mountCe(
+      '<cu-loader-test color="danger" animation="cooldown" delay="750"></cu-loader-test>',
+    );
+    const barEl = inner.querySelector(".cu-loader-bar") as HTMLElement;
+    expect(barEl.classList.contains("cu-loader-bar--cooldown")).toBe(true);
+    expect(barEl.classList.contains("cu-loader-bar--loading")).toBe(false);
+    expect(barEl.style.getPropertyValue("--cu-loader-color")).toBe("var(--cu-color-danger)");
+    expect(barEl.style.getPropertyValue("--cu-loader-delay")).toBe("750ms");
   });
 });

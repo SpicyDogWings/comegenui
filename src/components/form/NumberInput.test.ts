@@ -1,4 +1,4 @@
-// Comportamiento de NumberInput según sus fichas (docs/versiones/5.2.4/componentes/…).
+// Comportamiento de NumberInput según sus fichas (docs/versiones/5.2.6/componentes/…).
 //
 // Aserciones escritas a mano desde la prosa: por eso pueden fallar por un bug real
 // (ver scripts/mutation-check.mjs).

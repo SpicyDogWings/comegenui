@@ -2,8 +2,14 @@
 import { computed } from "vue";
 
 const props = defineProps({
+  /**
+   * Color semántico (`primary`, `secondary`, `neutral`, `success`, `warning`, `danger`) o
+   * sufijo de token (`neutral-ghost-hover`, usado por `Dropdown`).
+   */
   color: { type: String, required: false, default: "primary" },
+  /** `loading` (barrido infinito) o `cooldown` (se consume una vez en `delay` ms) */
   animation: { type: String, required: false, default: "loading" },
+  /** Milisegundos que tarda en vaciarse `cooldown` (se ignora en `loading`) */
   delay: { type: Number, required: false, default: 2000 },
 });
 

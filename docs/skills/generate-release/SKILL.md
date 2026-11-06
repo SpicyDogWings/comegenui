@@ -4,7 +4,7 @@ description: 'Receta para preparar la próxima release de ComegenUI (este repo):
 metadata:
   repository: https://github.com/SpicyDogWings/comegenui
   path: docs/skills/generate-release
-  version: 5.2.4
+  version: 5.2.6
 ---
 
 # `generate-release` — preparar la próxima release
@@ -29,7 +29,7 @@ Deja el repo listo para publicar: doc al día, gate verde, zips versionados, ver
   son **compuestos** (gitignored) por `pnpm docs:compose` (corre en `dev` y `build`). No los edites.
 
 > `<id>` = versión `latest` del manifiesto (`docs/versions.json`). `<version>` = `version` de
-> `package.json`. Hoy: `5.2.4`.
+> `package.json`. Hoy: `5.2.6`.
 
 ## Flujo
 

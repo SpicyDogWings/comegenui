@@ -1,0 +1,10 @@
+{
+  "tag": "cu-loader",
+  "props": [
+    "animation",
+    "color",
+    "delay"
+  ],
+  "methods": [],
+  "shadow": "div.cu-loader\n  div.cu-loader-bar.cu-loader-bar--loading[style]"
+}

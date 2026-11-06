@@ -1,0 +1,1335 @@
+/*! comegenui v5.2.6 · CuTooltip (cu-tooltip) · esm-shared · Vue externo (bare import) */
+import { computed, createBlock, createCommentVNode, createElementBlock, createSlots, createTextVNode, defineComponent, defineCustomElement, nextTick, normalizeClass, normalizeStyle, onBeforeUnmount, onMounted, onUnmounted, openBlock, ref, renderSlot, toDisplayString, useHost, useSlots, watch, withCtx } from "vue";
+//#region src/utils/comegen-element.ts
+var BUILD_META = {
+	"version": "5.2.6",
+	"format": "esm",
+	"variant": "shared",
+	"type": "esm-shared"
+};
+/** Valor de metadata con fallback `dev` (fuera de build no existe). */
+function metaText(value) {
+	return typeof value === "string" && value ? value : "dev";
+}
+/** `cu-alert` → `CuAlert` (nombre del bundle / global de la UMD). */
+function pascalCase(tag) {
+	return tag.split("-").map((part) => part.charAt(0).toUpperCase() + part.slice(1)).join("");
+}
+/** `cu-alert` + `5.0.0-alpha.3` → `cu-alert--v5-0-0-alpha-3`. */
+function toVersionedTag(tag, version) {
+	const slug = version.replace(/[^a-z0-9]+/gi, "-").replace(/^-+|-+$/g, "").toLowerCase();
+	return slug ? `${tag}--v${slug}` : tag;
+}
+function versionOf(ctor) {
+	return ctor.comegen?.version;
+}
+function attachMeta(ctor, meta) {
+	Object.defineProperty(ctor, "comegen", {
+		value: meta,
+		configurable: true
+	});
+	Object.defineProperty(ctor.prototype, "comegen", {
+		get: () => meta,
+		configurable: true
+	});
+	return ctor;
+}
+/** `aria-describedby` → `ariaDescribedby` (mismo algoritmo que Vue). */
+function camelize(name) {
+	return name.replace(/-(\w)/g, (_, char) => char ? char.toUpperCase() : "");
+}
+/** `Boolean`, `{ type: Boolean }` o `{ type: [String, Boolean] }` → tipos efectivos. */
+function typesOf(option) {
+	let raw = option;
+	if (typeof option === "object" && option !== null && !Array.isArray(option) && "type" in option) raw = option.type;
+	const list = Array.isArray(raw) ? raw : [raw];
+	return {
+		boolean: list.includes(Boolean),
+		number: list.includes(Number),
+		string: list.includes(String)
+	};
+}
+/** Tipos declarados por prop, en camelCase (cacheado por definición). */
+var PROP_TYPES = /* @__PURE__ */ new WeakMap();
+function propTypes(def) {
+	const cached = PROP_TYPES.get(def);
+	if (cached) return cached;
+	const map = /* @__PURE__ */ new Map();
+	const props = def.props;
+	if (props && !Array.isArray(props)) for (const [key, option] of Object.entries(props)) map.set(camelize(key), typesOf(option));
+	PROP_TYPES.set(def, map);
+	return map;
+}
+/**
+* Atributo del host → valor de la prop. Un atributo llega siempre como string:
+* `_setProp` con el string crudo dejaba `disabled="false"` deshabilitado (el
+* string es truthy) y `model-value="false"` marcado. Se castea con la misma
+* regla que HTML/Vue: un atributo Boolean presente es `true`, salvo el texto
+* explícito `"false"` (y `""`/`"true"` → `true`); Number se parsea. Sin tipos
+* declarados (`props: ['value']`) no se adivina: el valor queda string.
+*/
+function castPropValue(value, types) {
+	if (!types) return value;
+	if (types.boolean) return value.trim().toLowerCase() !== "false";
+	if (types.number && !types.string) {
+		const parsed = parseFloat(value);
+		if (!Number.isNaN(parsed)) return parsed;
+	}
+	return value;
+}
+/** Props declaradas por el componente, en camelCase (cacheado por definición). */
+var PROP_KEYS = /* @__PURE__ */ new WeakMap();
+function declaredProps(def) {
+	const cached = PROP_KEYS.get(def);
+	if (cached) return cached;
+	const props = def.props;
+	const keys = !props ? [] : Array.isArray(props) ? props : Object.keys(props);
+	const set = new Set(keys.map((key) => camelize(String(key))));
+	PROP_KEYS.set(def, set);
+	return set;
+}
+/** `tabindex` del host se reenvía al control real; en el host queda `-1`. */
+var FOCUS_ATTR = "tabindex";
+/**
+* ARIA que referencia elementos por id y el atributo textual con el que se
+* reemplaza cuando el id vive fuera del shadow tree. Los IDREF de ARIA se
+* resuelven por árbol: un `aria-labelledby` dentro del shadow que apunta al
+* documento queda inválido en Chrome (el nombre/descripción no llega al
+* control). El atributo original se copia igual, exacto, y además se sintetiza
+* el texto accesible desde los nodos referenciados.
+*/
+var IDREF_FALLBACK = {
+	"aria-labelledby": "aria-label",
+	"aria-describedby": "aria-description"
+};
+/** Busca un id en un árbol (documento o shadow root), sin cruzar de árbol. */
+function byId(tree, id) {
+	const lookup = tree;
+	if (typeof lookup.getElementById === "function") return lookup.getElementById(id);
+	if (tree instanceof Document || tree instanceof ShadowRoot) return tree.querySelector(`[id="${id.replace(/["\\]/g, "\\$&")}"]`);
+	return null;
+}
+/**
+* Constructor del custom element. Subclasea el que genera Vue para corregir el
+* único punto donde pierde información: `_setAttr`.
+*
+* Vue cameliza *todo* atributo del host antes de pasarlo como prop
+* (`aria-describedby` → `ariaDescribedby`). Como los atributos que no son props
+* caen al nodo raíz por fallthrough, el nodo interno terminaba con
+* `ariadescribedby`, `datatestid`, `foobar`… y el nombre accesible no resolvía.
+* Acá los atributos desconocidos se guardan con su nombre original exacto: Vue
+* los aplica tal cual al nodo raíz. Las props declaradas siguen yendo por su
+* nombre camelCase normal.
+*/
+function makeElement(component, meta) {
+	const Base = defineCustomElement(component);
+	class ComegenCustomElement extends Base {
+		/**
+		* Reflejos de `tabindex` que hicimos nosotros (host → `-1`). Se cuentan
+		* porque el MutationObserver de Vue puede entregar varias mutaciones en un
+		* mismo lote y no hay que confundir nuestra escritura con la del usuario.
+		* Empieza con `_` para que el contrato runtime no lo exponga como prop.
+		*/
+		_reflectedTabindex = 0;
+		/** Texto accesible sintetizado que escribimos en el nodo raíz (para no pisar al autor). */
+		_ariaFallbackValues = {};
+		_ariaObserver = null;
+		_setAttr(key) {
+			if (key.startsWith("data-v-")) return;
+			const self = this;
+			const camelKey = camelize(key);
+			const isProp = declaredProps(self._def).has(camelKey);
+			if (!isProp && key === "id") return;
+			if (!isProp && key === FOCUS_ATTR) {
+				const current = this.getAttribute(FOCUS_ATTR);
+				if (current === "-1" && this._reflectedTabindex > 0) {
+					this._reflectedTabindex -= 1;
+					return;
+				}
+				if (current !== null && current !== "-1") {
+					this._applyProp(key, current, camelKey);
+					this._reflectedTabindex += 1;
+					this.setAttribute(FOCUS_ATTR, "-1");
+					return;
+				}
+			}
+			this._applyProp(isProp ? camelKey : key, this.getAttribute(key), camelKey);
+		}
+		/** Aplica el atributo del host al vnode prop (o lo quita si ya no está). */
+		_applyProp(propKey, value, camelKey) {
+			const self = this;
+			if (value !== null) {
+				self._setProp(propKey, castPropValue(value, propTypes(self._def).get(camelKey)), false, true);
+				return;
+			}
+			if (!Object.prototype.hasOwnProperty.call(self._props, propKey)) return;
+			delete self._props[propKey];
+			self._dirty = true;
+			if (self._instance) self._update();
+		}
+		_mountComponent(def) {
+			super._mountComponent(def);
+			this._syncAriaFallback();
+		}
+		_update() {
+			super._update();
+			this._syncAriaFallback();
+		}
+		disconnectedCallback() {
+			super.disconnectedCallback();
+			this._ariaObserver?.disconnect();
+		}
+		/**
+		* Resuelve `aria-labelledby`/`aria-describedby` del host contra el nodo
+		* raíz. Cuando el id referenciado está fuera del shadow tree, el IDREF no
+		* puede resolver desde adentro: se sintetiza `aria-label`/`aria-description`
+		* con el texto de los elementos referenciados. El autor manda: si puso
+		* `aria-label`/`aria-description` explícito no se toca.
+		*/
+		_syncAriaFallback() {
+			const root = this._instance?.subTree?.el;
+			const entries = Object.entries(IDREF_FALLBACK);
+			const hasRefs = entries.some(([attr]) => this.hasAttribute(attr));
+			if (!(root instanceof HTMLElement) || !hasRefs && !Object.keys(this._ariaFallbackValues).length) {
+				this._ariaObserver?.disconnect();
+				return;
+			}
+			const rootTree = root.getRootNode();
+			const hostTree = this.getRootNode();
+			const observer = this._ensureAriaObserver();
+			observer?.disconnect();
+			let observing = 0;
+			for (const [attr, fallback] of entries) {
+				const authorSet = this.hasAttribute(fallback);
+				const written = this._ariaFallbackValues[fallback];
+				const value = this.getAttribute(attr);
+				let text;
+				if (value && !authorSet) {
+					const ids = value.split(/\s+/).filter(Boolean);
+					if (ids.some((id) => !byId(rootTree, id) && byId(hostTree, id))) {
+						const parts = ids.map((id) => byId(rootTree, id) ?? byId(hostTree, id)).map((el) => el?.textContent?.trim() ?? "").filter(Boolean);
+						if (parts.length) {
+							text = parts.join(" ");
+							for (const id of ids) {
+								const el = byId(hostTree, id);
+								if (!el || byId(rootTree, id)) continue;
+								observer?.observe(el, {
+									subtree: true,
+									childList: true,
+									characterData: true
+								});
+								observing += 1;
+							}
+						}
+					}
+				}
+				if (text === void 0) {
+					if (written !== void 0) {
+						if (!authorSet && root.getAttribute(fallback) === written) root.removeAttribute(fallback);
+						delete this._ariaFallbackValues[fallback];
+					}
+					continue;
+				}
+				if (!authorSet && root.getAttribute(fallback) !== text) root.setAttribute(fallback, text);
+				this._ariaFallbackValues[fallback] = text;
+			}
+			if (!observing) observer?.disconnect();
+		}
+		_ensureAriaObserver() {
+			if (typeof MutationObserver === "undefined") return null;
+			if (!this._ariaObserver) this._ariaObserver = new MutationObserver(() => this._syncAriaFallback());
+			return this._ariaObserver;
+		}
+	}
+	return attachMeta(ComegenCustomElement, meta);
+}
+/**
+* Registra el tag base con guarda: si ya lo tomó otra versión se conserva la
+* primera y se avisa. El tag versionado (`<cu-x--v…>`) se registra siempre, así
+* conviven versiones distintas del mismo componente en la misma página.
+*/
+function register(tag, component, meta) {
+	if (typeof customElements === "undefined") return null;
+	let base = null;
+	const current = customElements.get(tag);
+	if (!current) {
+		base = makeElement(component, meta);
+		customElements.define(tag, base);
+	} else if (versionOf(current) !== meta.version) {
+		const own = versionOf(current);
+		const detail = own ? `v${own}` : "una versión desconocida";
+		console.warn(`[comegenui] <${tag}> ya está registrado (${detail}); se mantiene esa versión. La v${meta.version} quedó disponible como <${meta.versionedTag}>.`);
+	}
+	if (!customElements.get(meta.versionedTag)) customElements.define(meta.versionedTag, makeElement(component, meta));
+	return base;
+}
+/**
+* Define y registra un custom element de ComegenUI adjuntándole sus metadatos de
+* bundle (`CuX.comegen` y `el.comegen`). Reemplaza al par
+* `defineCustomElement` + `customElements.define` en los entry points de `src/lib`.
+*/
+function defineComegenElement(tag, component) {
+	const version = typeof BUILD_META.version === "string" && BUILD_META.version ? BUILD_META.version : "dev";
+	const meta = Object.freeze({
+		lib: "comegenui",
+		name: pascalCase(tag),
+		tag,
+		version,
+		format: metaText(BUILD_META.format),
+		variant: metaText(BUILD_META.variant),
+		type: metaText(BUILD_META.type),
+		versionedTag: toVersionedTag(tag, version)
+	});
+	return register(tag, component, meta) ?? makeElement(component, meta);
+}
+//#endregion
+//#region src/utils/validators.ts
+/** Set cerrado de strings: devuelve un type-guard listo para `validator`. */
+function oneOf(values) {
+	const allowed = new Set(values);
+	return (value) => typeof value === "string" && allowed.has(value);
+}
+var COLORS = [
+	"primary",
+	"secondary",
+	"neutral",
+	"success",
+	"warning",
+	"danger"
+];
+var COLORS_BASE = [
+	"primary",
+	"neutral",
+	"success",
+	"warning",
+	"danger"
+];
+var VARIANTS = [
+	"solid",
+	"outlined",
+	"soft",
+	"ghost",
+	"subtle"
+];
+var VARIANTS_FULL = [
+	"solid",
+	"outlined",
+	"soft",
+	"ghost",
+	"subtle",
+	"link",
+	"none"
+];
+var VARIANTS_NO_GHOST = [
+	"solid",
+	"outlined",
+	"soft",
+	"subtle"
+];
+var VARIANTS_FIELD = [
+	"outlined",
+	"soft",
+	"ghost",
+	"subtle"
+];
+var VARIANTS_FIELD_NONE = [
+	"outlined",
+	"soft",
+	"ghost",
+	"subtle",
+	"none"
+];
+var VARIANTS_TABS = [
+	"ghost",
+	"solid",
+	"boxed",
+	"soft"
+];
+var SIZES = [
+	"sm",
+	"md",
+	"lg"
+];
+var SIZES_SM = ["sm", "md"];
+var MODAL_SIZES = [
+	"auto",
+	"sm",
+	"md",
+	"lg",
+	"xl",
+	"full"
+];
+var ALIGNS = [
+	"start",
+	"center",
+	"end"
+];
+var TEXT_ALIGNS = [
+	"left",
+	"center",
+	"right"
+];
+var POSITIONS = [
+	"bottom",
+	"top",
+	"left",
+	"right"
+];
+var POSITIONS_VERTICAL = ["bottom", "top"];
+var TRIGGERS = ["click", "hover"];
+var BUTTON_TYPES = [
+	"button",
+	"submit",
+	"reset"
+];
+var INPUT_TYPES = [
+	"text",
+	"password",
+	"email",
+	"number",
+	"tel",
+	"url",
+	"search"
+];
+var LABEL_POSITIONS = ["start", "end"];
+var TARGETS = [
+	"_self",
+	"_blank",
+	"_parent",
+	"_top"
+];
+var DATE_MODES = ["single", "range"];
+var CARD_LAYOUTS = ["vertical", "horizontal"];
+var ORIENTATIONS = ["horizontal", "vertical"];
+var DIVIDER_VARIANTS = [
+	"solid",
+	"dashed",
+	"dotted"
+];
+var SKELETON_SHAPES = [
+	"rect",
+	"circle",
+	"text"
+];
+var SKELETON_ANIMATIONS = [
+	"pulse",
+	"wave",
+	"none"
+];
+var SKELETON_RADII = [
+	"none",
+	"sm",
+	"md",
+	"lg",
+	"full"
+];
+var LOADER_ANIMATIONS = ["loading", "cooldown"];
+var NAVBAR_RESPONSIVE_MODES = [
+	"auto",
+	"side",
+	"fullscreen"
+];
+var NAVBAR_SEARCH_MODES = ["filter", "scroll"];
+var SELECT_SEARCH_MODES = ["startsWith", "includes"];
+var CELLS_IMPORTER_INPUT_TYPES = ["input", "zone"];
+var isColor = oneOf(COLORS);
+oneOf(COLORS_BASE);
+oneOf(VARIANTS);
+oneOf(VARIANTS_FULL);
+oneOf(VARIANTS_NO_GHOST);
+oneOf(VARIANTS_FIELD);
+oneOf(VARIANTS_FIELD_NONE);
+oneOf(VARIANTS_TABS);
+oneOf(SIZES);
+oneOf(SIZES_SM);
+oneOf(MODAL_SIZES);
+var isAlign = oneOf(ALIGNS);
+oneOf(TEXT_ALIGNS);
+var isPosition = oneOf(POSITIONS);
+oneOf(POSITIONS_VERTICAL);
+oneOf(TRIGGERS);
+oneOf(BUTTON_TYPES);
+oneOf(INPUT_TYPES);
+oneOf(LABEL_POSITIONS);
+oneOf(TARGETS);
+oneOf(DATE_MODES);
+oneOf(CARD_LAYOUTS);
+oneOf(ORIENTATIONS);
+oneOf(DIVIDER_VARIANTS);
+oneOf(SKELETON_SHAPES);
+oneOf(SKELETON_ANIMATIONS);
+oneOf(SKELETON_RADII);
+oneOf(LOADER_ANIMATIONS);
+oneOf(NAVBAR_RESPONSIVE_MODES);
+oneOf(NAVBAR_SEARCH_MODES);
+oneOf(SELECT_SEARCH_MODES);
+oneOf(CELLS_IMPORTER_INPUT_TYPES);
+//#endregion
+//#region src/utils/flatTree.ts
+/** Siguiente ancestro en el flat tree (cruza slots y shadow roots). */
+function parentInFlatTree(el) {
+	const slotted = el.assignedSlot;
+	if (slotted) return slotted;
+	if (el.parentElement) return el.parentElement;
+	const root = el.getRootNode();
+	return "host" in root ? root.host : null;
+}
+//#endregion
+//#region src/composables/useOverlayStack.ts
+var STACK_KEY = "__cu_overlay_stack__";
+function overlayStack() {
+	const g = globalThis;
+	return g[STACK_KEY] ??= {
+		entries: [],
+		scrollLocks: 0,
+		previousBodyOverflow: "",
+		listening: false
+	};
+}
+function lockScroll(stack) {
+	if (typeof document === "undefined") return;
+	if (stack.scrollLocks === 0) {
+		stack.previousBodyOverflow = document.body.style.overflow;
+		document.body.style.overflow = "hidden";
+	}
+	stack.scrollLocks += 1;
+}
+function unlockScroll(stack) {
+	if (stack.scrollLocks === 0) return;
+	stack.scrollLocks -= 1;
+	if (stack.scrollLocks === 0 && typeof document !== "undefined") document.body.style.overflow = stack.previousBodyOverflow;
+}
+/** Escape: sólo el overlay de arriba reacciona (y uno solo por pulsación). */
+function onEscape(event) {
+	if (event.key !== "Escape") return;
+	const stack = overlayStack();
+	stack.entries[stack.entries.length - 1]?.close();
+}
+/**
+* Suma un overlay abierto a la pila. Devuelve su id, que es lo que después se pasa a
+* `unregisterOverlay`/`isTopmostOverlay`.
+*/
+function registerOverlay(handle) {
+	const stack = overlayStack();
+	const id = Symbol("cu-overlay");
+	stack.entries.push({
+		...handle,
+		id
+	});
+	if (handle.lockScroll) lockScroll(stack);
+	if (!stack.listening && typeof document !== "undefined") {
+		document.addEventListener("keydown", onEscape);
+		stack.listening = true;
+	}
+	return id;
+}
+/** Saca un overlay de la pila (idempotente: cerrar dos veces no rompe nada). */
+function unregisterOverlay(id) {
+	const stack = overlayStack();
+	const index = stack.entries.findIndex((entry) => entry.id === id);
+	if (index === -1) return;
+	const [entry] = stack.entries.splice(index, 1);
+	if (entry?.lockScroll) unlockScroll(stack);
+	if (stack.entries.length === 0 && stack.listening && typeof document !== "undefined") {
+		document.removeEventListener("keydown", onEscape);
+		stack.listening = false;
+	}
+}
+//#endregion
+//#region src/components/overlay/Popover.vue?vue&type=script&setup=true&lang.ts
+var _hoisted_1 = [
+	"id",
+	"role",
+	"aria-label"
+];
+var VIEWPORT_MARGIN = 8;
+var HOVER_REGISTRY_KEY = "__cu_hover_registry__";
+var Popover_vue_vue_type_script_setup_true_lang_default = /*@__PURE__*/ defineComponent({
+	__name: "Popover",
+	props: {
+		position: {
+			type: String,
+			required: false,
+			default: "bottom",
+			validator: isPosition
+		},
+		align: {
+			type: String,
+			required: false,
+			default: "start",
+			validator: isAlign
+		},
+		offset: {
+			type: Number,
+			required: false,
+			default: 4
+		},
+		fixed: {
+			type: Boolean,
+			required: false,
+			default: false
+		},
+		panelWidth: {
+			type: String,
+			required: false,
+			default: ""
+		},
+		disabled: {
+			type: Boolean,
+			required: false,
+			default: false
+		},
+		hover: {
+			type: Boolean,
+			required: false,
+			default: false
+		},
+		hoverDelay: {
+			type: Number,
+			required: false,
+			default: 200
+		},
+		role: {
+			type: String,
+			required: false,
+			default: ""
+		},
+		/** `id` del panel: el trigger lo referencia con `aria-controls` (patrón combobox/listbox). */
+		panelId: {
+			type: String,
+			required: false,
+			default: ""
+		},
+		panelClass: {
+			type: [
+				String,
+				Array,
+				Object
+			],
+			required: false,
+			default: ""
+		}
+	},
+	emits: ["open", "close"],
+	setup(__props, { expose: __expose, emit: __emit }) {
+		const props = __props;
+		const emit = __emit;
+		const effectivePosition = computed(() => props.position);
+		const effectiveAlign = computed(() => props.align);
+		const panelPos = ref({
+			top: "0px",
+			left: "0px"
+		});
+		const autoFixed = ref(false);
+		const fixedMode = computed(() => props.fixed || autoFixed.value);
+		const panelStyle = computed(() => {
+			const base = {
+				backgroundColor: "var(--cu-popover-bg, var(--cu-color-surface))",
+				minWidth: "var(--cu-popover-min-width, 200px)",
+				maxWidth: "var(--cu-popover-max-width, 80vw)"
+			};
+			if (fixedMode.value) return {
+				...base,
+				position: "fixed",
+				...panelPos.value,
+				zIndex: "10000",
+				...props.panelWidth ? { width: props.panelWidth } : {}
+			};
+			base.position = "absolute";
+			base.zIndex = "1000";
+			base.width = props.panelWidth || "var(--cu-popover-width, 100%)";
+			const pos = effectivePosition.value;
+			if (pos === "bottom") {
+				base.top = "100%";
+				base.marginTop = `${props.offset}px`;
+			} else if (pos === "top") {
+				base.bottom = "100%";
+				base.marginBottom = `${props.offset}px`;
+			} else if (pos === "right") {
+				base.left = "100%";
+				base.marginLeft = `${props.offset}px`;
+			} else if (pos === "left") {
+				base.right = "100%";
+				base.marginRight = `${props.offset}px`;
+			}
+			if (pos === "left" || pos === "right") {
+				if (effectiveAlign.value === "start") base.top = "0";
+				else if (effectiveAlign.value === "end") base.bottom = "0";
+				else {
+					base.top = "50%";
+					base.transform = "translateY(-50%)";
+				}
+			} else if (effectiveAlign.value === "start") base.left = "0";
+			else if (effectiveAlign.value === "end") base.right = "0";
+			else {
+				base.left = "50%";
+				base.transform = "translateX(-50%)";
+			}
+			return base;
+		});
+		const isOpen = ref(false);
+		const popoverRef = ref(null);
+		const panelEl = ref(null);
+		const NAMED_ROLES = {
+			menu: true,
+			dialog: true,
+			alertdialog: true
+		};
+		const panelLabel = ref("");
+		/** Primer elemento del slot `toggle` (el ancla que el consumidor abre). */
+		function toggleElement() {
+			const root = popoverRef.value;
+			if (!root) return null;
+			for (const child of Array.from(root.children)) {
+				if (child === panelEl.value) continue;
+				if (child instanceof HTMLElement) return child;
+			}
+			return null;
+		}
+		/** Texto del trigger, con la misma precedencia que usa su nombre accesible. */
+		function triggerLabel(el) {
+			if (!el) return "";
+			return (el.getAttribute("aria-label") || el.getAttribute("title") || el.getAttribute("label") || el.textContent || "").replace(/\s+/g, " ").trim();
+		}
+		function namePanel() {
+			panelLabel.value = NAMED_ROLES[props.role] ? triggerLabel(toggleElement()) : "";
+		}
+		let overlayId = null;
+		function claimOverlay() {
+			if (overlayId) return;
+			overlayId = registerOverlay({ close });
+		}
+		function releaseOverlay() {
+			if (!overlayId) return;
+			unregisterOverlay(overlayId);
+			overlayId = null;
+		}
+		let focusBeforeOpen = null;
+		/**
+		* Elemento enfocado dentro del mismo árbol (shadow root o documento).
+		*
+		* Dentro de un shadow root `activeElement` es `null` cuando el foco está afuera: eso
+		* **no** significa "foco perdido" (puede estar en otro control del documento), así que
+		* se cae a `document.activeElement` y se descarta el host, que es un destino inútil.
+		*/
+		function activeInTree() {
+			const root = popoverRef.value?.getRootNode();
+			const inRoot = root?.activeElement ?? null;
+			if (inRoot) return inRoot;
+			if (!root || !(root instanceof ShadowRoot)) return null;
+			const host = root.host;
+			const docActive = document.activeElement;
+			if (docActive && docActive !== document.body && docActive !== host) return docActive;
+			return null;
+		}
+		/** Primer elemento enfocable del trigger (slot `#toggle`). */
+		function triggerElement() {
+			const root = popoverRef.value;
+			if (!root) return null;
+			const focusables = root.querySelectorAll("button, a[href], input, select, textarea, [tabindex]:not([tabindex=\"-1\"])");
+			for (const el of focusables) if (!panelEl.value?.contains(el)) return el;
+			return null;
+		}
+		function rememberFocus() {
+			const active = activeInTree();
+			focusBeforeOpen = active && active !== document.body && !panelEl.value?.contains(active) ? active : null;
+		}
+		function restoreFocus() {
+			if (props.hover) return;
+			const panel = panelEl.value;
+			const active = activeInTree();
+			const insidePanel = !!panel && !!active && panel.contains(active);
+			const lost = !active || active === document.body;
+			const target = insidePanel ? focusBeforeOpen ?? triggerElement() : lost ? focusBeforeOpen : null;
+			focusBeforeOpen = null;
+			if (!target || !target.isConnected) return;
+			target.focus();
+		}
+		let closedByOutsideClick = false;
+		function onDocumentClick(e) {
+			if (!isOpen.value || !popoverRef.value) return;
+			if (!(e instanceof MouseEvent)) return;
+			if (!e.composedPath().includes(popoverRef.value)) {
+				closedByOutsideClick = true;
+				isOpen.value = false;
+				emit("close");
+				restoreFocus();
+				setTimeout(() => {
+					closedByOutsideClick = false;
+				}, 0);
+			}
+		}
+		const SCROLL_OPTS = {
+			capture: true,
+			passive: true
+		};
+		let mountedRoot = null;
+		onMounted(() => {
+			mountedRoot = popoverRef.value;
+			document.addEventListener("click", onDocumentClick, true);
+			window.addEventListener("resize", onViewportChange);
+			document.addEventListener("scroll", onViewportChange, SCROLL_OPTS);
+		});
+		onUnmounted(() => {
+			clearHoverTimers();
+			unregisterHover();
+			releaseOverlay();
+			document.removeEventListener("click", onDocumentClick, true);
+			window.removeEventListener("resize", onViewportChange);
+			document.removeEventListener("scroll", onViewportChange, SCROLL_OPTS);
+			document.removeEventListener("mousemove", onPointerMove, true);
+			pointerListening = false;
+			mountedRoot = null;
+		});
+		function crossAxisStart(anchorStart, anchorSize, panelSize, align) {
+			if (align === "start") return anchorStart;
+			if (align === "end") return anchorStart + anchorSize - panelSize;
+			return anchorStart + anchorSize / 2 - panelSize / 2;
+		}
+		/** Deja el panel dentro del viewport sin generar scroll (nunca negativo). */
+		function clampToViewport(value, size, viewport) {
+			const max = Math.max(VIEWPORT_MARGIN, viewport - size - VIEWPORT_MARGIN);
+			return Math.min(Math.max(value, VIEWPORT_MARGIN), max);
+		}
+		/**
+		* Recalcula la posición del panel en modo fixed (coordenadas de viewport) al abrir y
+		* en cada scroll/resize mientras está abierto.
+		*
+		* Con el tamaño medido el panel se ubica por coordenadas y se **voltea** al lado
+		* opuesto si no entra (right→left, bottom→top) y se **clampea** al viewport: antes,
+		* `position="right"` en el borde derecho generaba scroll horizontal (scrollWidth
+		* 1201 > 900) y `left` daba x=-308.
+		*/
+		function positionPanel(measured) {
+			if (!fixedMode.value || !popoverRef.value) return;
+			const r = popoverRef.value.getBoundingClientRect();
+			const vw = window.innerWidth;
+			const vh = window.innerHeight;
+			const align = effectiveAlign.value;
+			const gap = props.offset;
+			const style = {};
+			const box = measured ?? panelEl.value?.getBoundingClientRect();
+			const pw = box?.width ?? 0;
+			const ph = box?.height ?? 0;
+			const room = {
+				right: vw - r.right - gap - VIEWPORT_MARGIN,
+				left: r.left - gap - VIEWPORT_MARGIN,
+				bottom: vh - r.bottom - gap - VIEWPORT_MARGIN,
+				top: r.top - gap - VIEWPORT_MARGIN
+			};
+			let pos = effectivePosition.value;
+			if (pw > 0) {
+				if (pos === "right" && room.right < pw && room.left >= pw) pos = "left";
+				else if (pos === "left" && room.left < pw && room.right >= pw) pos = "right";
+			}
+			if (ph > 0) {
+				if (pos === "bottom" && room.bottom < ph && room.top >= ph) pos = "top";
+				else if (pos === "top" && room.top < ph && room.bottom >= ph) pos = "bottom";
+			}
+			if (pw > 0 || ph > 0) {
+				let left;
+				let top;
+				if (pos === "bottom" || pos === "top") {
+					left = crossAxisStart(r.left, r.width, pw, align);
+					top = pos === "bottom" ? r.bottom + gap : r.top - gap - ph;
+				} else {
+					top = crossAxisStart(r.top, r.height, ph, align);
+					left = pos === "right" ? r.right + gap : r.left - gap - pw;
+				}
+				if (pw > 0) left = clampToViewport(left, pw, vw);
+				if (ph > 0) top = clampToViewport(top, ph, vh);
+				style.left = `${left}px`;
+				style.top = `${top}px`;
+			} else if (pos === "bottom") {
+				style.top = `${r.bottom + gap}px`;
+				if (align === "start") style.left = `${r.left}px`;
+				else if (align === "end") style.right = `${vw - r.right}px`;
+				else {
+					style.left = `${r.left + r.width / 2}px`;
+					style.transform = "translateX(-50%)";
+				}
+			} else if (pos === "top") {
+				style.bottom = `${vh - r.top + gap}px`;
+				if (align === "start") style.left = `${r.left}px`;
+				else if (align === "end") style.right = `${vw - r.right}px`;
+				else {
+					style.left = `${r.left + r.width / 2}px`;
+					style.transform = "translateX(-50%)";
+				}
+			} else if (pos === "right") {
+				style.left = `${r.right + gap}px`;
+				if (align === "start") style.top = `${r.top}px`;
+				else if (align === "end") style.bottom = `${vh - r.bottom}px`;
+				else {
+					style.top = `${r.top + r.height / 2}px`;
+					style.transform = "translateY(-50%)";
+				}
+			} else {
+				style.right = `${vw - r.left + gap}px`;
+				if (align === "start") style.top = `${r.top}px`;
+				else if (align === "end") style.bottom = `${vh - r.bottom}px`;
+				else {
+					style.top = `${r.top + r.height / 2}px`;
+					style.transform = "translateY(-50%)";
+				}
+			}
+			if (autoFixed.value && !props.panelWidth && pw > 0) style.width = `${pw}px`;
+			panelPos.value = style;
+		}
+		function onViewportChange() {
+			if (isOpen.value && fixedMode.value) positionPanel();
+		}
+		function anchorsFixedDescendants(cs) {
+			const notNone = (v) => !!v && v !== "none";
+			return notNone(cs.transform) || notNone(cs.filter) || notNone(cs.perspective) || notNone(cs.backdropFilter) || !!cs.contain && /paint|layout|strict|content/.test(cs.contain) || !!cs.willChange && /transform|filter|perspective/.test(cs.willChange);
+		}
+		function clipsDescendants(cs) {
+			return !!cs.overflow && cs.overflow !== "visible";
+		}
+		function isClippedByAncestor(panel, anchor, pr) {
+			if (!pr.width && !pr.height) return false;
+			let el = parentInFlatTree(anchor);
+			while (el) {
+				const cs = getComputedStyle(el);
+				if (anchorsFixedDescendants(cs)) return false;
+				if (clipsDescendants(cs)) {
+					const r = el.getBoundingClientRect();
+					if (pr.top < r.top || pr.left < r.left || pr.bottom > r.bottom || pr.right > r.right) return true;
+				}
+				el = parentInFlatTree(el);
+			}
+			return false;
+		}
+		/** ¿El panel medido se sale del viewport? (en `absolute` eso genera scroll). */
+		function overflowsViewport(pr) {
+			if (!pr.width && !pr.height) return false;
+			return pr.left < 0 || pr.top < 0 || pr.right > window.innerWidth || pr.bottom > window.innerHeight;
+		}
+		async function autoFixIfNeeded() {
+			await nextTick();
+			const panel = panelEl.value;
+			const anchor = popoverRef.value;
+			if (!panel || !anchor || !isOpen.value || props.fixed) return;
+			const box = panel.getBoundingClientRect();
+			if (!isClippedByAncestor(panel, anchor, box) && !overflowsViewport(box)) return;
+			autoFixed.value = true;
+			positionPanel({
+				width: box.width,
+				height: box.height
+			});
+		}
+		let hoverTimer;
+		let hoverCloseTimer;
+		function hoverRegistry() {
+			const g = globalThis;
+			return g[HOVER_REGISTRY_KEY] ??= [];
+		}
+		/** ¿`ancestor` contiene a `el` en el flat tree? Un submenú puede vivir en otro shadow. */
+		function containsOverlay(ancestor, el) {
+			for (let node = el; node; node = parentInFlatTree(node)) if (node === ancestor) return true;
+			return false;
+		}
+		function registerHoverOpen() {
+			const el = popoverRef.value;
+			if (!el) return;
+			const reg = hoverRegistry();
+			const toClose = reg.filter((entry) => entry.el !== el && !containsOverlay(entry.el, el));
+			reg.push({
+				el,
+				close
+			});
+			for (const entry of toClose) entry.close();
+		}
+		function unregisterHover() {
+			const el = popoverRef.value ?? mountedRoot;
+			if (!el) return;
+			const reg = hoverRegistry();
+			const idx = reg.findIndex((entry) => entry.el === el);
+			if (idx !== -1) reg.splice(idx, 1);
+		}
+		let lastPointer = {
+			x: -1,
+			y: -1
+		};
+		let pointerListening = false;
+		function ensurePointerListener() {
+			if (pointerListening) return;
+			pointerListening = true;
+			document.addEventListener("mousemove", onPointerMove, true);
+		}
+		function onPointerMove(e) {
+			lastPointer = {
+				x: e.clientX,
+				y: e.clientY
+			};
+		}
+		function isPointerInside() {
+			const el = popoverRef.value;
+			if (!el) return false;
+			const panel = el.querySelector(".cu-popover-panel");
+			const rects = [el.getBoundingClientRect()];
+			if (panel) rects.push(panel.getBoundingClientRect());
+			return rects.some((r) => lastPointer.x >= r.left && lastPointer.x <= r.right && lastPointer.y >= r.top && lastPointer.y <= r.bottom);
+		}
+		/**
+		* Cancela los timers de hover. Sin esto, desmontar dentro del delay dejaba correr un
+		* `open()`/`close()` sobre un nodo ya desconectado: sumaba el popover al registry
+		* global de hover, a la pila de overlays, y emitía eventos de un componente que ya no
+		* existe. Es el único corte necesario: los dos timers viven por instancia y se crean
+		* siempre acá, así que `onUnmounted` los alcanza.
+		*/
+		function clearHoverTimers() {
+			clearTimeout(hoverTimer);
+			hoverTimer = void 0;
+			clearTimeout(hoverCloseTimer);
+			hoverCloseTimer = void 0;
+		}
+		function onMouseEnter() {
+			if (!props.hover || props.disabled) return;
+			clearTimeout(hoverTimer);
+			hoverTimer = void 0;
+			clearTimeout(hoverCloseTimer);
+			hoverCloseTimer = void 0;
+			if (props.hoverDelay === 0) open();
+			else hoverTimer = setTimeout(() => {
+				hoverTimer = void 0;
+				open();
+			}, props.hoverDelay);
+		}
+		function onMouseLeave() {
+			if (!props.hover) return;
+			clearTimeout(hoverTimer);
+			hoverTimer = void 0;
+			ensurePointerListener();
+			clearTimeout(hoverCloseTimer);
+			hoverCloseTimer = setTimeout(() => {
+				hoverCloseTimer = void 0;
+				if (isPointerInside()) return;
+				close();
+			}, 120);
+		}
+		function open() {
+			if (props.disabled) return;
+			autoFixed.value = false;
+			rememberFocus();
+			positionPanel();
+			namePanel();
+			isOpen.value = true;
+			claimOverlay();
+			emit("open");
+			if (props.hover) registerHoverOpen();
+			if (!props.fixed) autoFixIfNeeded();
+			else nextTick(() => {
+				if (isOpen.value) positionPanel();
+			});
+		}
+		function close() {
+			if (!isOpen.value) return;
+			isOpen.value = false;
+			autoFixed.value = false;
+			releaseOverlay();
+			emit("close");
+			unregisterHover();
+			restoreFocus();
+		}
+		function toggle() {
+			if (props.disabled) return;
+			if (closedByOutsideClick) {
+				closedByOutsideClick = false;
+				return;
+			}
+			if (isOpen.value) close();
+			else open();
+		}
+		__expose({
+			open,
+			close,
+			toggle,
+			isOpen: () => isOpen.value
+		});
+		return (_ctx, _cache) => {
+			return openBlock(), createElementBlock("div", {
+				ref_key: "popoverRef",
+				ref: popoverRef,
+				class: "cu-popover",
+				onMouseenter: onMouseEnter,
+				onMouseleave: onMouseLeave
+			}, [renderSlot(_ctx.$slots, "toggle", {
+				toggle,
+				isOpen: isOpen.value
+			}, void 0, true), isOpen.value ? (openBlock(), createElementBlock("div", {
+				key: 0,
+				ref_key: "panelEl",
+				ref: panelEl,
+				id: props.panelId || void 0,
+				style: normalizeStyle(panelStyle.value),
+				class: normalizeClass(["cu-popover-panel", __props.panelClass]),
+				role: __props.role || void 0,
+				"aria-label": panelLabel.value || void 0
+			}, [renderSlot(_ctx.$slots, "default", {}, void 0, true)], 14, _hoisted_1)) : createCommentVNode("v-if", true)], 544);
+		};
+	}
+});
+//#endregion
+//#region src/components/overlay/Popover.vue?vue&type=style&index=0&inline&scoped=d29bb2c8&lang.css
+var Popover_vue_vue_type_style_index_0_inline_scoped_d29bb2c8_lang_default = "\n.cu-popover[data-v-d29bb2c8] {\n  position: relative;\n  display: inline-block;\n  box-sizing: border-box;\n}\n.cu-popover-panel[data-v-d29bb2c8] {\n  padding: var(--cu-space-sm);\n  border-radius: var(--cu-radius-md);\n  font-family: var(--cu-font-sans);\n  box-shadow: var(--cu-shadow-xl);\n}\n";
+//#endregion
+//#region \0plugin-vue:export-helper
+var _plugin_vue_export_helper_default = (sfc, props) => {
+	const target = sfc.__vccOpts || sfc;
+	for (const [key, val] of props) target[key] = val;
+	return target;
+};
+//#endregion
+//#region src/components/overlay/Popover.vue
+var Popover_default = /*#__PURE__*/ _plugin_vue_export_helper_default(Popover_vue_vue_type_script_setup_true_lang_default, [["styles", [Popover_vue_vue_type_style_index_0_inline_scoped_d29bb2c8_lang_default]], ["__scopeId", "data-v-d29bb2c8"]]);
+//#endregion
+//#region src/components/overlay/Tooltip.vue?vue&type=script&setup=true&lang.ts
+var DESCRIPTION_ATTR = "aria-description";
+//#endregion
+//#region src/components/overlay/Tooltip.vue
+var Tooltip_default = /*#__PURE__*/ _plugin_vue_export_helper_default(/* @__PURE__ */ defineComponent({
+	__name: "Tooltip",
+	props: {
+		text: {
+			type: String,
+			required: false,
+			default: ""
+		},
+		color: {
+			type: String,
+			required: false,
+			default: "neutral",
+			validator: isColor
+		},
+		position: {
+			type: String,
+			required: false,
+			default: "top",
+			validator: isPosition
+		},
+		align: {
+			type: String,
+			required: false,
+			default: "center",
+			validator: isAlign
+		},
+		offset: {
+			type: Number,
+			required: false,
+			default: 6
+		},
+		delay: {
+			type: Number,
+			required: false,
+			default: 200
+		},
+		disabled: {
+			type: Boolean,
+			required: false,
+			default: false
+		}
+	},
+	setup(__props) {
+		const props = __props;
+		const safeColor = computed(() => isColor(props.color) ? props.color : "neutral");
+		const tooltipStyles = computed(() => ({
+			"--cu-popover-bg": `var(--cu-color-${safeColor.value}-solid)`,
+			"--cu-popover-fg": `var(--cu-color-${safeColor.value}-solid-text)`
+		}));
+		const popover = ref(null);
+		const slots = useSlots();
+		function hasContent() {
+			return props.text.trim().length > 0 || !!slots.content;
+		}
+		function onFocusIn() {
+			popover.value?.open();
+		}
+		function onFocusOut(event) {
+			const root = event.currentTarget;
+			const next = event.relatedTarget;
+			if (root && next instanceof Node && root.contains(next)) return;
+			popover.value?.close();
+		}
+		let described = [];
+		function popoverRoot() {
+			return popover.value?.$el ?? null;
+		}
+		/** Elementos del slot default: lo que el usuario ve como trigger. */
+		function triggerElements() {
+			const root = popoverRoot();
+			if (!root) return [];
+			const children = Array.from(root.children);
+			const assigned = children.find((el) => el.localName === "slot")?.assignedElements() ?? [];
+			return (assigned.length > 0 ? assigned : children.filter((el) => !el.classList.contains("cu-popover-panel"))).filter((node) => node instanceof HTMLElement);
+		}
+		/** Texto visible del panel, con el slot `content` resuelto en el flat tree. */
+		function tooltipText() {
+			const panel = popoverRoot()?.querySelector(".cu-popover-panel");
+			if (!panel) return "";
+			const outlet = panel.querySelector("slot[name=\"content\"]");
+			return (outlet ? outlet.assignedElements().map((el) => el.textContent ?? "").join(" ") : panel.textContent ?? "").replace(/\s+/g, " ").trim();
+		}
+		function restoreDescription() {
+			for (const { el, previous } of described) if (previous === null) el.removeAttribute(DESCRIPTION_ATTR);
+			else el.setAttribute(DESCRIPTION_ATTR, previous);
+			described = [];
+		}
+		async function describeTrigger() {
+			await nextTick();
+			restoreDescription();
+			if (!popoverRoot()?.querySelector(".cu-popover-panel")) return;
+			const text = tooltipText();
+			if (!text) return;
+			for (const el of triggerElements()) {
+				described.push({
+					el,
+					previous: el.getAttribute(DESCRIPTION_ATTR)
+				});
+				el.setAttribute(DESCRIPTION_ATTR, text);
+			}
+		}
+		function onOpen() {
+			describeTrigger();
+		}
+		function onClose() {
+			restoreDescription();
+		}
+		watch([() => props.disabled, () => props.text], () => {
+			if (props.disabled || !hasContent()) {
+				popover.value?.close();
+				return;
+			}
+			if (popover.value?.isOpen()) describeTrigger();
+		});
+		onBeforeUnmount(restoreDescription);
+		return (_ctx, _cache) => {
+			return openBlock(), createBlock(Popover_default, {
+				ref_key: "popover",
+				ref: popover,
+				hover: "",
+				position: __props.position,
+				align: __props.align,
+				offset: __props.offset,
+				"hover-delay": __props.delay,
+				disabled: __props.disabled || !hasContent(),
+				role: "tooltip",
+				"panel-class": "cu-tooltip-panel",
+				style: normalizeStyle(tooltipStyles.value),
+				class: "cu-tooltip",
+				onFocusin: onFocusIn,
+				onFocusout: onFocusOut,
+				onOpen,
+				onClose
+			}, {
+				toggle: withCtx(() => [renderSlot(_ctx.$slots, "default", {}, void 0, true)]),
+				default: withCtx(() => [renderSlot(_ctx.$slots, "content", {}, () => [createTextVNode(toDisplayString(__props.text), 1)], true)]),
+				_: 3
+			}, 8, [
+				"position",
+				"align",
+				"offset",
+				"hover-delay",
+				"disabled",
+				"style"
+			]);
+		};
+	}
+}), [["styles", ["\n.cu-tooltip[data-v-52e55e39] {\n  --cu-popover-width: max-content;\n  --cu-popover-min-width: 0;\n  --cu-popover-max-width: 18rem;\n}\n.cu-tooltip[data-v-52e55e39] .cu-tooltip-panel {\n  color: var(--cu-popover-fg, var(--cu-color-surface));\n  font-size: var(--cu-font-size-xs);\n  font-weight: var(--cu-font-weight-medium);\n  padding: var(--cu-space-xs) var(--cu-space-sm);\n  border-radius: var(--cu-radius-sm);\n  box-shadow: var(--cu-shadow-md);\n}\n"]], ["__scopeId", "data-v-52e55e39"]]);
+//#endregion
+//#region src/lib/overlay/tooltip.ts
+var CuTooltip = defineComegenElement("cu-tooltip", /* @__PURE__ */ defineComponent({
+	__name: "Tooltip.ce",
+	props: {
+		/** Texto del tooltip. Si se usa el slot `content`, tiene prioridad */
+		text: {
+			type: String,
+			default: ""
+		},
+		/** Color semántico del fondo: `primary`, `secondary`, `neutral`, `success`, `warning`, `danger` */
+		color: {
+			type: String,
+			default: "neutral",
+			validator: isColor
+		},
+		/** Lado donde aparece: `top`, `bottom`, `left`, `right` */
+		position: {
+			type: String,
+			default: "top",
+			validator: isPosition
+		},
+		/** Alineación respecto al elemento: `start`, `center`, `end` */
+		align: {
+			type: String,
+			default: "center",
+			validator: isAlign
+		},
+		/** Distancia (px) entre el elemento y el tooltip */
+		offset: {
+			type: Number,
+			default: 6
+		},
+		/** Retardo (ms) antes de mostrar el tooltip al hacer hover */
+		delay: {
+			type: Number,
+			default: 200
+		},
+		/** Deshabilita el tooltip (no se muestra) */
+		disabled: {
+			type: Boolean,
+			default: false
+		}
+	},
+	setup(__props) {
+		const props = __props;
+		const host = useHost();
+		const hasContent = ref(false);
+		let observer = null;
+		function syncContent() {
+			hasContent.value = !!host?.querySelector("[slot=\"content\"]");
+		}
+		onMounted(() => {
+			if (!host) return;
+			syncContent();
+			observer = new MutationObserver(syncContent);
+			observer.observe(host, {
+				childList: true,
+				subtree: true,
+				attributes: true,
+				attributeFilter: ["slot"]
+			});
+		});
+		onUnmounted(() => {
+			observer?.disconnect();
+			observer = null;
+		});
+		return (_ctx, _cache) => {
+			return openBlock(), createBlock(Tooltip_default, {
+				text: props.text,
+				color: props.color,
+				position: props.position,
+				align: props.align,
+				offset: props.offset,
+				delay: props.delay,
+				disabled: props.disabled
+			}, createSlots({
+				default: withCtx(() => [renderSlot(_ctx.$slots, "default")]),
+				_: 2
+			}, [hasContent.value ? {
+				name: "content",
+				fn: withCtx(() => [renderSlot(_ctx.$slots, "content")]),
+				key: "0"
+			} : void 0]), 1032, [
+				"text",
+				"color",
+				"position",
+				"align",
+				"offset",
+				"delay",
+				"disabled"
+			]);
+		};
+	}
+}));
+//#endregion
+export { CuTooltip as default };
