@@ -220,6 +220,22 @@ const MUTATIONS = [
     replace: `  "--cu-loader-delay": \`2000ms\`,`,
   },
   {
+    id: "loader-ce-ignora-animation",
+    file: "src/components/customElements/information/Loader.ce.vue",
+    test: "src/components/information/Loader.test.ts",
+    expect: "el custom element reenvía `animation` (loading vs cooldown)",
+    find: `:animation="props.animation"`,
+    replace: `animation="loading"`,
+  },
+  {
+    id: "loader-ce-ignora-delay",
+    file: "src/components/customElements/information/Loader.ce.vue",
+    test: "src/components/information/Loader.test.ts",
+    expect: "el custom element reenvía `delay` numérico al componente",
+    find: `:delay="props.delay"`,
+    replace: `:delay="2000"`,
+  },
+  {
     id: "author-card-avatar-no-decorativo",
     file: "src/components/information/AuthorCard.vue",
     expect: "el avatar de la tarjeta es decorativo (el nombre ya está en texto)",
@@ -3691,6 +3707,29 @@ const MUTATIONS = [
     expect: "la plantilla CSV usa el separator con el que se importa",
     find: `    delimiter: options.delimiter ?? ',',`,
     replace: `    delimiter: ',',`,
+  },
+  {
+    id: "theme-builder-no-sync-on-theme-change",
+    file: "src/composables/useThemeBuilder.ts",
+    expect: "cambiar de tema re-sincroniza los colores del form",
+    find: `    isEditing.value = store.isCustom
+    initColorsFromTheme(name)`,
+    replace: `    isEditing.value = store.isCustom`,
+  },
+  {
+    id: "theme-builder-edita-tras-cambiar-tema",
+    file: "src/composables/useThemeBuilder.ts",
+    expect: "cambiar a un tema incluido sale del modo edición",
+    find: `    isEditing.value = store.isCustom
+    initColorsFromTheme(name)`,
+    replace: `    initColorsFromTheme(name)`,
+  },
+  {
+    id: "theme-builder-reload-ignora-tema",
+    file: "src/composables/useThemeBuilder.ts",
+    expect: "al recargar el form toma el tema persistido",
+    find: `    initColorsFromTheme(store.current || 'light')`,
+    replace: `    initColorsFromTheme('light')`,
   },
 ];
 

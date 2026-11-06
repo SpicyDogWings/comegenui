@@ -25,13 +25,13 @@ La **documentación es la fuente y está almacenada**; el sitio la **consume** p
 docs/
 ├── site/                 ← VitePress: theme + páginas finas (@include) + demos
 └── versiones/
-    └── 5.2.4/            ← la única versión publicada (la `latest` del manifiesto)
+    └── 5.2.6/            ← la única versión publicada (la `latest` del manifiesto)
         └── lib/          ← build esm-shared congelado (versionado en git)
 ```
 
-Cuando una release reemplaza a otra (5.2.4 sobre 5.2.3), la versión vieja **sale del manifiesto y de
+Cuando una release reemplaza a otra (5.2.6 sobre 5.2.4), la versión vieja **sale del manifiesto y de
 `versiones/`**: no se publica más y el selector no la muestra. Su doc y su lib quedan en el tag
-(`v5.2.3`), que es la trazabilidad, y se leen desde ahí (`git checkout v5.2.3 && pnpm dev`; ver
+(`v5.2.4`), que es la trazabilidad, y se leen desde ahí (`git checkout v5.2.4 && pnpm dev`; ver
 `docs/site/versiones-anteriores.md`). `docs-versions` borra del destino las carpetas de versión que
 salieron del manifiesto, para que tampoco queden accesibles por URL.
 

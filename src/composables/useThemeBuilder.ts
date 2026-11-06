@@ -8,6 +8,8 @@ import { DEFAULTS, DEFAULT_COLORS } from '@/plugins/cu-tokens/defaults'
 // Motor del ThemeBuilder: estado editable (colors/shared/opacity), modo edición,
 // import/export y la persistencia vía el store/plugin de temas.
 // La página (ThemeBuilder.vue) solo consume estos refs y handlers; no hay lógica acá de UI.
+export type ThemeBuilderApi = ReturnType<typeof useThemeBuilder>
+
 export function useThemeBuilder() {
   const store = useThemeStore()
 
@@ -33,10 +35,11 @@ export function useThemeBuilder() {
 
   function initColorsFromTheme(name: string) {
     const themeColors = allThemes.value[name]?.colors
-    if (themeColors) {
-      const { shadowOpacity, ...rest } = themeColors
-      colors.value = { ...colors.value, ...rest }
-    }
+    if (!themeColors) return
+    const { shadowOpacity, ...rest } = themeColors
+    // Reemplaza el set completo: al cambiar de tema no deben sobrevivir colores
+    // del tema anterior (todos los temas traen los defaults mergeados).
+    colors.value = { ...DEFAULT_COLORS, ...rest }
   }
 
   const colors = ref({ ...DEFAULT_COLORS })
@@ -345,9 +348,22 @@ export function useThemeBuilder() {
     nextTick(readAppliedTokens)
   }, { deep: true })
 
-  // El preview cambia de tokens al editar o al aplicar otro tema: releer
+  // Cambiar de tema desde el selector dejaba el form con los colores del tema
+  // anterior (los chips sí se releían del CSS). Al cambiar el tema activo se
+  // re-sincronizan colores y opacidad de sombra; si el nuevo tema no es el
+  // custom, el form sale del modo edición y vuelve a ser de lectura.
+  watch(activeThemeName, (name) => {
+    // Antes de tocar `colors`: el watch profundo de abajo no debe re-registrar
+    // el custom con los colores del tema que se acaba de dejar.
+    isEditing.value = store.isCustom
+    initColorsFromTheme(name)
+    shadowOpacityRaw.value = String(resolveOpacity(name))
+    nextTick(readAppliedTokens)
+  })
+
+  // El preview cambia de tokens al editar o al renombrar el tema: releer
   // después del re-render que regenera el CSS.
-  watch([themeName, activeThemeName, isEditing], () => nextTick(readAppliedTokens))
+  watch([themeName, isEditing], () => nextTick(readAppliedTokens))
 
   return {
     themeName,

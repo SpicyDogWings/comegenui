@@ -4,7 +4,7 @@ description: 'Genera el changelog de una release de ComegenUI a partir del diff 
 metadata:
   repository: https://github.com/SpicyDogWings/comegenui
   path: docs/skills/release-changelog
-  version: 5.2.4
+  version: 5.2.6
 ---
 
 # `release-changelog` — notas de release

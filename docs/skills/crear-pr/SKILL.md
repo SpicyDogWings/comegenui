@@ -4,7 +4,7 @@ description: 'Arma y crea el pull request de la rama actual usando la plantilla 
 metadata:
   repository: https://github.com/SpicyDogWings/comegenui
   path: docs/skills/crear-pr
-  version: 5.2.4
+  version: 5.2.6
 ---
 
 # `crear-pr`

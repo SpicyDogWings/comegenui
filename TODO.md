@@ -1,5 +1,8 @@
 # TODO — release 5.2.0
 
+> **Histórico:** esta checklist corresponde a la release 5.2.0, unificada en **5.2.6**. El changelog
+> vigente es [`docs/changelog/v5.2.6.md`](docs/changelog/v5.2.6.md); `v5.2.0.md` ya no existe.
+
 **Estado:** cerrada y lista para publicar (PR de release abierto, pendiente de merge y tag).
 **Rama:** `release/5.2.0` (cortada desde `main`).
 **Última verificación:** `./scripts/guard.sh --full` verde (1884 tests, 115/115 mutaciones).
@@ -16,7 +19,7 @@ funcionó y pasa a `show()`.
 - [x] Verificación del build real con Lightpanda (`umd-core`).
 - [x] `package.json` en `5.2.0` y `metadata.version` de las 8 skills.
 - [x] `docs/versions.json`: `5.2.0` = `latest`, `5.1.1` con `ref: v5.1.1`.
-- [x] Changelog inicial en `docs/changelog/v5.2.0.md`.
+- [x] Changelog inicial en `docs/changelog/v5.2.0.md` (consolidado en `v5.2.6.md`).
 - [x] Doc de `5.2.0`: `componentes/` + `partials/` (las páginas se heredan de `5.1.1`).
 - [x] Baseline de contrato de `cu-switch` regenerado.
 - [x] `cu-side-over`: `show()` reemplaza al método `open()` (la prop booleana `open` lo tapaba en

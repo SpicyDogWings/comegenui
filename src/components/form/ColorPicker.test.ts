@@ -1,4 +1,4 @@
-// Comportamiento de ColorPicker según su ficha (docs/versiones/5.2.4/componentes/vue/color-picker.md).
+// Comportamiento de ColorPicker según su ficha (docs/versiones/5.2.6/componentes/vue/color-picker.md).
 //
 // Aserciones escritas a mano desde la prosa: fallan por bugs reales.
 import { describe, it, expect } from "vitest";
