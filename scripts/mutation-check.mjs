@@ -3708,6 +3708,13 @@ const MUTATIONS = [
     initColorsFromTheme(name)`,
     replace: `    initColorsFromTheme(name)`,
   },
+  {
+    id: "theme-builder-reload-ignora-tema",
+    file: "src/composables/useThemeBuilder.ts",
+    expect: "al recargar el form toma el tema persistido",
+    find: `    initColorsFromTheme(store.current || 'light')`,
+    replace: `    initColorsFromTheme('light')`,
+  },
 ];
 
 export { MUTATIONS };

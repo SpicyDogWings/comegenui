@@ -99,6 +99,34 @@ describe('useThemeBuilder: el form sigue al tema activo', () => {
     unmount()
   })
 
+  it('al recargar toma el tema persistido aunque el plugin cargue después del montaje', async () => {
+    // Simula el reload real: la página monta antes de que termine init().
+    localStorage.setItem('cu-theme', 'dark')
+    const plugin = await import('@/plugins/cu-tokens')
+    const { useThemeBuilder } = await import('@/composables/useThemeBuilder')
+    setActivePinia(createPinia())
+
+    let api!: ThemeBuilderApi
+    const app = createApp({
+      setup() {
+        api = useThemeBuilder()
+        return () => h('div')
+      },
+    })
+    app.mount(document.createElement('div'))
+    await nextTick()
+
+    await plugin.init()
+    await nextTick()
+    await nextTick()
+
+    expect(api.activeThemeName.value).toBe('dark')
+    expect(api.colors.value.primary).toBe('#60a5fa')
+    expect(api.shadowOpacityRaw.value).toBe('40')
+    expect(api.isEditing.value).toBe(false)
+    app.unmount()
+  })
+
   it('cambiar de tema mientras se edita sale del modo edición sin re-registrar el custom', async () => {
     const { plugin, api, unmount } = await boot()
 
