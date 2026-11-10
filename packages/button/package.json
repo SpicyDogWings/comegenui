@@ -1,0 +1,31 @@
+{
+  "name": "@comegenui/button",
+  "version": "0.0.0",
+  "private": true,
+  "type": "module",
+  "description": "Button de ComegenUI: Reka UI + tokens de gandalf",
+  "exports": {
+    ".": "./src/index.ts"
+  },
+  "scripts": {
+    "dev": "vite --config playground/vite.config.ts",
+    "gen:tokens": "tsx scripts/gen-tokens.mts",
+    "test": "vitest run"
+  },
+  "dependencies": {
+    "@comegenui/tokens": "workspace:*",
+    "reka-ui": "^2.11.0"
+  },
+  "peerDependencies": {
+    "vue": ">=3.4.0"
+  },
+  "devDependencies": {
+    "@vitejs/plugin-vue": "^6.0.8",
+    "@vue/test-utils": "^2.4.11",
+    "jsdom": "^30.0.1",
+    "tsx": "^4.23.1",
+    "vite": "^8.0.8",
+    "vitest": "^4.1.9",
+    "vue": "3.6.0-rc.11"
+  }
+}
