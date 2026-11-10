@@ -1,3 +1,3 @@
-export { useTheme } from "./useTheme.ts";
-export type { UseThemeOptions, UseThemeReturn } from "./useTheme.ts";
+export { useTheme } from "@spicydogwings/gandalf-tokens/vue";
+export type { UseTheme, UseThemeOptions } from "@spicydogwings/gandalf-tokens/vue";
 export { gandalfConfig } from "../gandalf.config.ts";

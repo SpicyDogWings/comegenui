@@ -268,8 +268,8 @@ importers:
   packages/tokens:
     dependencies:
       '@spicydogwings/gandalf-tokens':
-        specifier: 0.1.0-beta.3
-        version: 0.1.0-beta.3(vite@8.2.2(@types/node@24.13.3)(esbuild@0.28.2)(jiti@2.7.0)(tsx@4.23.13))(vue@3.6.0-rc.11(typescript@6.0.3))
+        specifier: 0.1.0-beta.4
+        version: 0.1.0-beta.4(vite@8.2.2(@types/node@24.13.3)(esbuild@0.28.2)(jiti@2.7.0)(tsx@4.23.13))(vue@3.6.0-rc.11(typescript@6.0.3))
     devDependencies:
       jsdom:
         specifier: ^30.0.1
@@ -1454,8 +1454,8 @@ packages:
   '@shikijs/vscode-textmate@10.0.2':
     resolution: {integrity: sha512-83yeghZ2xxin3Nj8z1NMd/NCuca+gsYXswywDy5bHvwlWL8tpTQmzGeUuHd9FC3E/SBEMvzJRwWEOz5gGes9Qg==}
 
-  '@spicydogwings/gandalf-tokens@0.1.0-beta.3':
-    resolution: {integrity: sha1-wZA70CPDCypEKQDazYdu3r8xn1o=, tarball: https://gitlab.com/api/v4/projects/88724507/packages/npm/@spicydogwings/gandalf-tokens/-/@spicydogwings/gandalf-tokens-0.1.0-beta.3.tgz}
+  '@spicydogwings/gandalf-tokens@0.1.0-beta.4':
+    resolution: {integrity: sha1-e2zSqBA6sa5SBSXvf/3Z/VDpgTk=, tarball: https://gitlab.com/api/v4/projects/88724507/packages/npm/@spicydogwings/gandalf-tokens/-/@spicydogwings/gandalf-tokens-0.1.0-beta.4.tgz}
     engines: {node: '>=18'}
     peerDependencies:
       vite: '>=5.0.0'
@@ -4829,7 +4829,7 @@ snapshots:
 
   '@shikijs/vscode-textmate@10.0.2': {}
 
-  '@spicydogwings/gandalf-tokens@0.1.0-beta.3(vite@8.2.2(@types/node@24.13.3)(esbuild@0.28.2)(jiti@2.7.0)(tsx@4.23.13))(vue@3.6.0-rc.11(typescript@6.0.3))':
+  '@spicydogwings/gandalf-tokens@0.1.0-beta.4(vite@8.2.2(@types/node@24.13.3)(esbuild@0.28.2)(jiti@2.7.0)(tsx@4.23.13))(vue@3.6.0-rc.11(typescript@6.0.3))':
     dependencies:
       color2k: 2.0.4
       vite: 8.2.2(@types/node@24.13.3)(esbuild@0.28.2)(jiti@2.7.0)(tsx@4.23.13)

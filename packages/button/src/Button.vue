@@ -263,8 +263,8 @@ const rootClasses = computed(() => [
 }
 
 .cu-button--disabled {
-  /* gandalf no modela alfas de estado; el tono disabled es del componente. */
-  opacity: 0.7;
+  /* gandalf expone el tono disabled como token (default 0.7). */
+  opacity: var(--cu-opacity-disabled, 0.7);
   cursor: not-allowed;
 }
 
@@ -370,7 +370,7 @@ const rootClasses = computed(() => [
   text-underline-offset: var(--cu-space-0-5);
 }
 .cu-button-link.cu-button--disabled {
-  opacity: 0.7;
+  opacity: var(--cu-opacity-disabled, 0.7);
   cursor: not-allowed;
 }
 
