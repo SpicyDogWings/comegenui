@@ -15,13 +15,12 @@ export default defineConfig({
       entry: {
         index: fileURLToPath(new URL("src/index.ts", import.meta.url)),
         vite: fileURLToPath(new URL("src/vite.ts", import.meta.url)),
-        "gandalf.config": fileURLToPath(new URL("src/gandalf.config.ts", import.meta.url)),
       },
       formats: ["es"],
       fileName: (_format, entryName) => `${entryName}.js`,
     },
     rollupOptions: {
-      external: ["vue", /^@spicydogwings\/gandalf-tokens/],
+      external: ["vue"],
     },
   },
 });

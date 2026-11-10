@@ -1,6 +1,6 @@
 {
   "name": "@comegenui/tokens",
-  "version": "0.0.0",
+  "version": "6.0.0-alpha",
   "private": true,
   "type": "module",
   "description": "Tokens de ComegenUI: gandalf + CSS + composable de tema",
@@ -13,21 +13,15 @@
     "./vite": {
       "types": "./dist/vite.d.ts",
       "import": "./dist/vite.js"
-    },
-    "./config": {
-      "types": "./dist/gandalf.config.d.ts",
-      "import": "./dist/gandalf.config.js"
     }
   },
   "scripts": {
-    "build": "vite build && tsc -p tsconfig.build.json",
+    "build": "vite build && tsc6 -p tsconfig.build.json",
     "prepare": "pnpm build",
     "prepack": "pnpm build",
     "test": "vitest run"
   },
-  "dependencies": {
-    "@spicydogwings/gandalf-tokens": "0.1.0-beta.4"
-  },
+  "dependencies": {},
   "peerDependencies": {
     "vue": ">=3.4.0",
     "vite": ">=5.0.0"
@@ -37,7 +31,8 @@
     "vitest": "^4.1.9",
     "vue": "3.6.0-rc.11",
     "vite": "^8.0.8",
-    "typescript": "npm:@typescript/typescript6@^6.0.2"
+    "typescript": "npm:@typescript/typescript6@^6.0.2",
+    "@spicydogwings/gandalf-tokens": "0.1.0-beta.4"
   },
   "files": [
     "dist"
@@ -46,5 +41,8 @@
     "vite": {
       "optional": true
     }
-  }
+  },
+  "sideEffects": [
+    "**/*.css"
+  ]
 }

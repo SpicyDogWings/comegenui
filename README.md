@@ -8,6 +8,32 @@ importarlo dentro de un proyecto Vue.
 Repo: [`SpicyDogWings/comegenui`](https://github.com/SpicyDogWings/comegenui) ·
 Licencia: [MIT](./LICENSE).
 
+## Paquetes nuevos (6.0.0-alpha)
+
+La nueva arquitectura separa cada componente en un paquete independiente dentro de
+[`packages/`](./packages): `@comegenui/button`, `@comegenui/tokens` y, a futuro, uno por
+componente. Cada paquete se distribuye como **tarball instalable**:
+
+```bash
+# en el repo: generar los tarballs
+pnpm pack:components
+
+# en el proyecto consumidor
+pnpm add ./dist-packages/comegenui-tokens-6.0.0-alpha.tgz
+pnpm add ./dist-packages/comegenui-button-6.0.0-alpha.tgz
+```
+
+```ts
+// main.ts
+import "@comegenui/tokens/tokens.css";
+import "@comegenui/button/style.css";
+import { Button } from "@comegenui/button";
+```
+
+Detalle de la arquitectura, contrato de estilos y API:
+[`packages/README.md`](./packages/README.md). La sección siguiente describe la
+distribución anterior (Web Components en zips), que sigue vigente en `src/`.
+
 ## Instalar (vanilla, sin bundler)
 
 Bajá de [Releases](https://github.com/SpicyDogWings/comegenui/releases) el zip de la configuración

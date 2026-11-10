@@ -9,5 +9,5 @@
     "allowImportingTsExtensions": true,
     "types": ["vitest/globals"]
   },
-  "include": ["src/**/*.ts", "src/**/*.vue", "scripts/**/*.mts", "playground/**/*.ts", "playground/**/*.vue", "gandalf.config.ts"]
+  "include": ["src/**/*.ts", "src/**/*.vue", "playground/**/*.ts", "playground/**/*.vue"]
 }

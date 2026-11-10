@@ -23,7 +23,10 @@
     "contract:update": "node scripts/contract.mjs --update",
     "impact": "node scripts/impact.mjs",
     "docs:compose": "node scripts/docs-compose.mjs",
-    "docs:freeze": "node scripts/docs-freeze.mjs"
+    "docs:freeze": "node scripts/docs-freeze.mjs",
+    "pack:tokens": "pnpm --filter @comegenui/tokens pack --pack-destination dist-packages",
+    "pack:button": "pnpm --filter @comegenui/button pack --pack-destination dist-packages",
+    "pack:components": "pnpm pack:tokens && pnpm pack:button"
   },
   "dependencies": {
     "@vueuse/core": "^14.2.1",
